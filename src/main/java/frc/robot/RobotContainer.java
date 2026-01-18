@@ -2,6 +2,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 //happy new year gng
+//testing to see if i set it up on my pc right
 
 package frc.robot;
 
