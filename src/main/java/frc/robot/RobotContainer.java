@@ -87,11 +87,11 @@ public class RobotContainer {
 
   // Subsystems - Cameras
   // photon
-  public static final DemonPhotonCamera kFrontRightPhotonCamera = new DemonPhotonCamera(
-       PhotonVisionConfig.PhotonCameraName, PhotonVisionConfig.RobotToPhotonCamera);
+  //public static final DemonPhotonCamera kFrontRightPhotonCamera = new DemonPhotonCamera(
+       //PhotonVisionConfig.PhotonCameraName, PhotonVisionConfig.RobotToPhotonCamera);
   // limelight
-  public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
-      LimelightConfig.LimelightCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+  //public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
+      //LimelightConfig.LimelightCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
 
   // Subsystems - LED indicators
   // public static final LEDStrip kLedStrip = new LEDStrip(
@@ -121,10 +121,10 @@ public class RobotContainer {
         DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
     // RearLimelightCamera - AprilTag updates for odometry
-    kRearLimelightCamera.setDefaultCommand(
-        kRearLimelightCamera
-            .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
-                estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
+  //   kRearLimelightCamera.setDefaultCommand(
+  //       kRearLimelightCamera
+  //           .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
+  //               estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
   }
 
   /**
