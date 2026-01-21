@@ -33,6 +33,7 @@ public class Robot extends TimedRobot {
 
     // Joystick connection info
     SmartDashboard.putBoolean("Joysticks/Xbox Controller", RobotContainer.kDriverController.isConnected());
+    SmartDashboard.putBoolean("Joysticks/Operator Stick", RobotContainer.kOperatorStick.isConnected());
     SmartDashboard.putBoolean("NavX-Connected", RobotContainer.kNavx.isConnected());
   }
 

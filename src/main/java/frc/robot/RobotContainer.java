@@ -78,7 +78,7 @@ public class RobotContainer {
   // https://docs.wpilib.org/en/stable/docs/software/basic-programming/joystick.html
   public static final DemonCommandXboxController kDriverController = new DemonCommandXboxController(RobotMap.XBOX_PORT);
   public static final OperatorStick kOperatorStick = new OperatorStick(RobotMap.OPERATOR_STICK_PORT);
-
+  
   // Subsystems
   // https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html
 
