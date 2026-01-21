@@ -8,10 +8,20 @@
 
 // public class GrabbyWheels extends SubsystemBase {
 //     private final SparkMax motor;
-//     private final AbsoluteEncoder encoder;
-//     private final PIDConstants pid;
 
 //     public GrabbyWheels(){
 
+//super(Intake.class.getSimpleName() + "/" + GrabbyWheels.class.getSimpleName());
+
+    // var GrabbyWheelsConfig = new SparkMaxConfig()
+    //   .idleMode(IdleMode.kBrake)
+    //   .smartCurrentLimit(30)
+    //   .inverted(false)
+    // motor = new SparkMax(RobotMap.GRABBY_WHEELS_ID, MotorType.kBrushless);
+    // motor.configure(GrabbyWheelsConfig, SparkBase.ResetMode.kResetSafeParameters,
+    //     SparkBase.PersistMode.kPersistParameters);
+
+    // SmartDashboard.putData(getName(), this);
+    // SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
 //     }
 // }

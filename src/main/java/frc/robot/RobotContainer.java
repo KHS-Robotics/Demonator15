@@ -84,6 +84,7 @@ public class RobotContainer {
 
   // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
+  //public static final Intake kIntake = new Intake()
 
   // Subsystems - Cameras
   // photon
@@ -188,6 +189,9 @@ public class RobotContainer {
   private void configureNamedCommandsForAuto() {
     // String names here must match what is used in the PathPlanner GUI in order to
     // work properly!
+
+    //EXAMPLE:
+    //NamedCommands.registerCommand("DeployIntake", kIntake.deploy());
   }
 
   /** https://pathplanner.dev/pplib-custom-logging.html */
