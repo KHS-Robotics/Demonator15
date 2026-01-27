@@ -8,7 +8,9 @@
 // import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // public class Deployer extends SubsystemBase {
-//     private final SparkMax motor;
+//     private final SparkMax motorLeft, motorRight;
+//   ^ There are two seperate motors for the intake pivot,
+//might want to change right/left names to avoid confusion
 //     private final AbsoluteEncoder encoder;
 //     private final PIDController pid;
 

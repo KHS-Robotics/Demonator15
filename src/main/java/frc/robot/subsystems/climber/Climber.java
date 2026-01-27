@@ -8,6 +8,7 @@
 
 // public class Climber extends SubsystemBase {
 //     private final SparkMax climber;
+// two motors in the climber: leader, follower
 //     private final AbsoluteEncoder encoder;
 //     private final PIDController pid;
 

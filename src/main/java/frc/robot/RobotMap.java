@@ -40,4 +40,15 @@ public final class RobotMap {
 
   // LEDs over PWM
 //   public static final int LED_PORT = 0;
+
+//two climber motors - lead and follower
+//eight swerve motors
+//one indexer motor - hopper
+//two deployer motors - deployer lead and deployer follower
+//one grabby wheel motor - grabber
+//four wheel motors for the shooter:
+//indexer -> tower motor - belt
+//pre-shooter motor - kicker
+//two shooter motors - spitter lead and spitter follower
+//two motors for aiming the shooter - hood (pitch) and waist (yaw)
 }
