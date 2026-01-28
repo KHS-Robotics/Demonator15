@@ -17,3 +17,14 @@
 //
 //      }
 // }
+// 
+// public Command stopCommand() {
+   // return runOnce(this::stop)
+   // .withName("StopIntake");
+  // }
+
+// public void stop() {
+   //intakeState = IntakeState.IDLE;
+   //motor.stopMotor();
+  //}
+
