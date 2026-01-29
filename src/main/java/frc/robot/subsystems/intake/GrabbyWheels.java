@@ -17,7 +17,7 @@
     //   .idleMode(IdleMode.kBrake)
     //   .smartCurrentLimit(30)
     //   .inverted(false)
-    // motor = new SparkMax(RobotMap.GRABBY_WHEELS_ID, MotorType.kBrushless);
+    // motor = new SparkMax(RobotMap.INTAKE_GRABBY_WHEELS_ID, MotorType.kBrushless);
     // motor.configure(GrabbyWheelsConfig, SparkBase.ResetMode.kResetSafeParameters,
     //     SparkBase.PersistMode.kPersistParameters);
 

@@ -10,14 +10,13 @@
 //          var encoderConfig = new AbsoluteEncoderConfig()
 //            .inverted(true);
 
-//          var aimerConfig = new SparkMaxConfig()
-//            .idleMode(IdleMode.kBrake)
+//          var hoodConfig = new SparkMaxConfig()
+//             .idleMode(IdleMode.kBrake)
 //             .smartCurrentLimit(30)
 //             .inverted(false)
-//             .apply(limitSwitchConfig)
 //             .apply(encoderConfig);
 
-//          motor = new SparkMax(RobotMap.TURRET_AIMER_ID, MotorType.kBrushless);
+//          motor = new SparkMax(RobotMap.TURRET_AIMER_HOOD_ID, MotorType.kBrushless);
 //          motor.configure(aimerConfig, SparkBase.ResetMode.kResetSafeParameters,
 //              SparkBase.PersistMode.kPersistParameters);
 

@@ -38,6 +38,19 @@ public final class RobotMap {
   public static final int REAR_LEFT_PIVOT_ENCODER = 32;
   public static final int REAR_RIGHT_PIVOT_ENCODER = 42;
 
+//climber motors
+  //public static final int CLIMBER_LEADER_ID = -1
+  //public static final int CLIMBER_FOLLOWER_ID = -1
+
+//intake motors
+  //public static final int INTAKE_DEPLOYER_LEADER_ID = -1
+  //public static final int INTAKE_DEPLOYER_FOLLOWER_ID = -1
+  //public static final int INTAKE_GRABBY_WHEELS_ID = -1
+
+//turret motors
+  //
+
+
   // LEDs over PWM
 //   public static final int LED_PORT = 0;
 
