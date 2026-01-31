@@ -7,8 +7,7 @@
 // import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // public class Climber extends SubsystemBase {
-//     private final SparkMax leader, follower;
-// two motors in the climber: leader, follower
+//     private final SparkMax motor;
 //     private final AbsoluteEncoder encoder;
 //     private final PIDController pid;
 

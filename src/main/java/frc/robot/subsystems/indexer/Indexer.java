@@ -23,38 +23,38 @@
   // }
 
   // public void stop() {
-   //intakeState = IntakeState.IDLE;
+   //indexerState = IndexerState.IDLE;
    //motor.stopMotor();
   //}
 
-//public void start() {
-   // intakeState = IntakeState.INTAKING;
+ //public void forward() {
+   // indexerState = IndexerState.FORWARD;
    // motor.setVoltage(2.75);
   // }
 
-//public Command intakeCommand() {
+ //public Command forwardCommand() {
    // var cmd = runOnce(this::start);
-   // return cmd.withName("StartIndexer");
+   // return cmd.withName("ForwardIndexer");
   //}
 
-//public void reverse() {
-   //intakeState = IntakeState.OUTAKING;
-   //motor.setVoltage(-12);
-  // }
+  //public void reverse() {
+   // indexerState = IndexerState.REVERSE;
+   // motor.setVoltage(-6);
+  //}
 
-  //public Command outtakeCommand() {
+  //public Command reverseCommand() {
     //var cmd = runOnce(this::reverse);
     //return cmd.withName("ReverseIndexer");
   //}
 
- //public enum IntakeState {
+ //public enum IndexerState {
     //IDLE("Idle"),
-    //INTAKING("Intaking"),
-    //OUTAKING("Outaking");
+    //FORWARD("Forward"),
+    //REVERSE("Reverse"),
 
     //private final String state;
 
-    //private IntakeState(String s) {
+    //private Indexer(String s) {
       //state = s;
     //}
 
