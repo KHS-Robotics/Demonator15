@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.78,
-        "y": 7.341
+        "x": 3.69,
+        "y": 0.794
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.366248216833095,
-        "y": 6.590385164051355
+        "x": 2.504967092476572,
+        "y": 0.8271645658176653
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.5,
-        "y": 6.94
+        "x": 0.455,
+        "y": 0.897
       },
       "prevControl": {
-        "x": 2.0224251069900134,
-        "y": 6.862368045649074
+        "x": 0.1793410957658232,
+        "y": 0.9058701802144953
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Outpost Pickup"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Start Left",
+  "folder": "Start Right No Vision",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0

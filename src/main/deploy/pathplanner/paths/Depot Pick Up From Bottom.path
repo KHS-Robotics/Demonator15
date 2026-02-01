@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.780285306704707,
-        "y": 7.340827389443652
+        "x": 0.446,
+        "y": 4.974783132530121
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.665707085494628,
-        "y": 5.504348423726291
+        "x": 0.43483132530120483,
+        "y": 5.903638554216868
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Depot Bottom"
     },
     {
       "anchor": {
-        "x": 1.5548359486447931,
-        "y": 3.7050641940085596
+        "x": 0.446,
+        "y": 6.876204819277109
       },
       "prevControl": {
-        "x": 2.073520065816563,
-        "y": 4.605402819394466
+        "x": 0.44575903614457807,
+        "y": 5.914566265060241
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "After Depot Bottom Pickup"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Start Left",
+  "folder": "Depot Pickup No Vision",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0
