@@ -1,30 +1,28 @@
 // package frc.robot.subsystems.turret;
 
-// public class Aimer {
+// public class Waist {
 //      private final SparkMax motor;
 //      private final PIDController pid;
 //      private final AbsoluteEncoder encoder;
 
-//      public Aimer() {
+//      public Waist() {
 
 //          var encoderConfig = new AbsoluteEncoderConfig()
 //            .inverted(true);
 
-//          var hoodConfig = new SparkMaxConfig()
+//          var waistConfig = new SparkMaxConfig()
 //             .idleMode(IdleMode.kBrake)
 //             .smartCurrentLimit(30)
 //             .inverted(false)
 //             .apply(encoderConfig);
 
-//          motor = new SparkMax(RobotMap.TURRET_AIMER_HOOD_ID, MotorType.kBrushless);
-//          motor.configure(aimerConfig, SparkBase.ResetMode.kResetSafeParameters,
+//          motor = new SparkMax(RobotMap.TURRET_AIMER_WAIST_ID, MotorType.kBrushless);
+//          motor.configure(waistConfig, SparkBase.ResetMode.kResetSafeParameters,
 //              SparkBase.PersistMode.kPersistParameters);
 
 //          encoder = motor.getAbsoluteEncoder();
 
-//          pid = new PIDController(AimerConfig.kAimerP, AimerConfig.kAimerI, AimerConfig.kAimerD);
+//          pid = new PIDController(WaistConfig.kWaistP, WaistConfig.kWaistI, WaistConfig.kWaistD);
 //      }
 // }
-
-// one yaw adjustment motor
-// one pitch adjustment motor
+//yaw adjustment
