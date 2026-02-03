@@ -1,49 +1,64 @@
-// package frc.robot.subsystems.turret;
+package frc.robot.subsystems.turret;
 
-// public class Spitter {
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import frc.robot.RobotMap;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-  // private final SparkMax leader, follower;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-  // public Spitter() {
-  //   super(Spitter.class.getSimpleName() + "/" + Spitter.class.getSimpleName());
-    
-  //   var leaderConfig = new SparkMaxConfig()
-  //     .idleMode(IdleMode.kBrake)
-  //     .smartCurrentLimit(30)
-  //     .inverted(true);
-  //   leader = new SparkMax(RobotMap.TURRET_SPITTER_LEADER_MOTOR_ID, MotorType.kBrushless);
-  //   leader.configure(leaderConfig, SparkBase.ResetMode.kResetSafeParameters,
-  //       SparkBase.PersistMode.kPersistParameters); 
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
-  //  var followerConfig = new SparkMaxConfig()
-  //     .ildeMode(IdleMode.kBrake)
-  //     .smartCurrentLimit(30)
-  //     .follow(RobotMap.TURRET_SPITTER_LEADER_ID, true)
-  //   follower = new SparkMax(RobotMap.TURRET_SPITTER_FOLLOWER_ID, MotorType.kBrushless);
-  //   follower.configure(followerConfig, SparkBase.ResetMode.kResetSafeParameters,
-  //       SparkBase.PersistMode.kPersistParameters);
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 
-  //   SmartDashboard.putData(getName(), this);
-  // }
+public class Spitter extends SubsystemBase {
 
-  // public void stop() {
-  //   motor.stopMotor();
-  // }
+  private final SparkMax leader,follower;
 
-  // public Command stopCommand() {
-  //   var cmd = runOnce(this::stop);
-  //   return cmd.withName("StopIntake");
-  // }
+  public Spitter() {
+    super(Spitter.class.getSimpleName() + "/" + Spitter.class.getSimpleName());
 
-  // public void spit() {
-  //   motor.setVoltage(2.75);
-  // }
+    var leaderConfig = new SparkMaxConfig()
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(30)
+        .inverted(true);
+    leader = new SparkMax(RobotMap.TURRET_SPITTER_LEADER_MOTOR_ID, MotorType.kBrushless);
+    leader.configure(leaderConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
-  // public Command spitCommand() {
-  //   var cmd = runOnce(this::start);
-  //   return cmd.withName("StartIntake");
-  // }
+    var followerConfig = new SparkMaxConfig()
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(30)
+        .follow(RobotMap.TURRET_SPITTER_LEADER_ID, true);
+    follower= new SparkMax(RobotMap.TURRET_SPITTER_FOLLOWER_ID, MotorType.kBrushless);
+    follower.configure(followerConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
-//two shooter motors
+    SmartDashboard.putData(getName(), this);
+  }
+
+  public void stop() {
+    leader.stopMotor();
+  }
+
+  public Command stopCommand() {
+    var cmd = runOnce(this::stop);
+    return cmd.withName("StopSpitter");
+  }
+
+  public void start() {
+    leader.setVoltage(2.75);
+  }
+
+  public Command startCommand() {
+    var cmd = runOnce(this::start);
+    return cmd.withName("StartSpitter");
+
+  }
+}
+// two shooter motors
 //

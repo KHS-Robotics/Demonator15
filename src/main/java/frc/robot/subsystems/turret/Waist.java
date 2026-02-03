@@ -1,28 +1,48 @@
-// package frc.robot.subsystems.turret;
+package frc.robot.subsystems.turret;
 
-// public class Waist {
-//      private final SparkMax motor;
-//      private final PIDController pid;
-//      private final AbsoluteEncoder encoder;
+import com.revrobotics.spark.SparkMax;
+import edu.wpi.first.math.controller.PIDController;
 
-//      public Waist() {
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 
-//          var encoderConfig = new AbsoluteEncoderConfig()
-//            .inverted(true);
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import frc.robot.RobotMap;
+import frc.robot.subsystems.turret.TurretConfig.WaistConfig;
 
-//          var waistConfig = new SparkMaxConfig()
-//             .idleMode(IdleMode.kBrake)
-//             .smartCurrentLimit(30)
-//             .inverted(false)
-//             .apply(encoderConfig);
 
-//          motor = new SparkMax(RobotMap.TURRET_AIMER_WAIST_ID, MotorType.kBrushless);
-//          motor.configure(waistConfig, SparkBase.ResetMode.kResetSafeParameters,
-//              SparkBase.PersistMode.kPersistParameters);
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 
-//          encoder = motor.getAbsoluteEncoder();
+public class Waist {
+    private final SparkMax motor;
+    private final PIDController pid;
+    private final AbsoluteEncoder encoder;
 
-//          pid = new PIDController(WaistConfig.kWaistP, WaistConfig.kWaistI, WaistConfig.kWaistD);
-//      }
-// }
-//yaw adjustment
+    public Waist() {
+
+        var encoderConfig = new AbsoluteEncoderConfig()
+                .inverted(true);
+
+        var waistConfig = new SparkMaxConfig()
+                .idleMode(IdleMode.kBrake)
+                .smartCurrentLimit(30)
+                .inverted(false)
+                .apply(encoderConfig);
+
+        motor = new SparkMax(RobotMap.TURRET_AIMER_WAIST_ID, MotorType.kBrushless);
+        motor.configure(waistConfig, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+
+        encoder = motor.getAbsoluteEncoder();
+
+        pid = new PIDController(WaistConfig.kAimerWaistP, WaistConfig.kAimerWaistI, WaistConfig.kAimerWaistD);
+
+    }
+}
+// yaw adjustment
+// o–(•o•)–o
+//   /   \
+//   o   o yay!!!

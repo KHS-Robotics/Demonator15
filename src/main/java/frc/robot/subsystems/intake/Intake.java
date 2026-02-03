@@ -1,8 +1,8 @@
-// package frc.robot.subsystems.intake;
+package frc.robot.subsystems.intake;
 
-// import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-// public class Intake extends SubsystemBase {
-//     private final Deployer deployer = new Deployer();
-//     private final GrabbyWheels grabbyWheels = new GrabbyWheels();
-// }
+public class Intake extends SubsystemBase {
+    private final Deployer deployer = new Deployer();
+    private final GrabbyWheels grabbyWheels = new GrabbyWheels();
+}

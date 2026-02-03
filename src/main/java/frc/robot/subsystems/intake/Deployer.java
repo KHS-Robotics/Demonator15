@@ -1,59 +1,72 @@
-// package frc.robot.subsystems.intake;
+package frc.robot.subsystems.intake;
 
-// import com.revrobotics.AbsoluteEncoder;
-// import com.revrobotics.spark.SparkMax;
-// import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 
-// import edu.wpi.first.math.controller.PIDController;
-// import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.RelativeEncoder;
 
-// public class Deployer extends SubsystemBase {
-//     private final SparkMax motorLead, motorFollower;
-//   ^ There are two seperate motors for the intake pivot,
-//might want to change right/left names to avoid confusion
-//     private final RelativeEncoder relativeEncoder;
-//     private final PIDController pid;
-//     private final SparkLimitSwitch bottomLimitSwitch;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig.Behavior;
+import com.revrobotics.spark.SparkLimitSwitch;
+import com.revrobotics.spark.config.LimitSwitchConfig;
 
-//     public Deployer(){
-//
-//super(Coraller.class.getSimpleName() + "/" + Deployer.class.getSimpleName());
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-//var relativeEncoderConfig = new EncoderConfig()
-//       .positionConversionFactor(DeployerConfig.kDeployerEncoderPositionConversionFactor)
-//       .velocityConversionFactor(DeployerConfig.kDeployerEncoderVelocityConversionFactor);
-//
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import frc.robot.RobotMap;
+import frc.robot.subsystems.intake.IntakeConfig.DeployerConfig;
 
-    // var limitSwitchConfig = new LimitSwitchConfig()
-    //   .forwardLimitSwitchEnabled(false)
-    //   .reverseLimitSwitchEnabled(false);
+public class Deployer extends SubsystemBase {
+    // ^ There are two seperate motors for the intake pivot,
+    // might want to change right/left names to avoid confusion
+    private final RelativeEncoder relativeEncoder;
+    private final PIDController pid;
+    private final SparkLimitSwitch sensor;
+    private final SparkMax leader, follower;
 
-    // var deployerLeaderConfig = new SparkMaxConfig()
-    //   .idleMode(IdleMode.kBrake)
-    //   .smartCurrentLimit(30)
-    //   .inverted(false)
-    //   .apply(limitSwitchConfig)
-    //   .apply(relativeEncoderConfig);
-    // leader = new SparkMax(RobotMap.INTAKE_DEPLOYER_LEADER_ID, MotorType.kBrushless);
-    // leader.configure(deployerLeaderConfig, SparkBase.ResetMode.kResetSafeParameters,
-    //     SparkBase.PersistMode.kPersistParameters);
+    public Deployer() {
 
-    // var followerConfig = new SparkMaxConfig()
-    //     .idleMode(IdleMode.kBrake)
-    //     .smartCurrentLimit(30)
-    //     .follow(RobotMap.INTAKE_DEPLOYER_LEADER_ID, true)
-    //     .apply(relativeEncoderConfig);
-    // follower = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
-    // follower.configure(followerConfig, SparkBase.ResetMode.kResetSafeParameters,
-    //      SparkBase.PersistMode.kPersistParameters);
+        super(Deployer.class.getSimpleName() + "/" + Deployer.class.getSimpleName());
 
-    // encoder = leader.getEncoder();
-    // sensor = motor.getForwardLimitSwitch();
+        var relativeEncoderConfig = new EncoderConfig()
+                .positionConversionFactor(DeployerConfig.kDeployerEncoderPositionConversionFactor)
+                .velocityConversionFactor(DeployerConfig.kDeployerEncoderVelocityConversionFactor);
 
-    // pid = new PIDController(DeployerConfig.kDeployerP, DeployerConfig.kDeployerI, DeployerConfig.kDeployerD);
-    // pid.setIZone(7);
+        var limitSwitchConfig = new LimitSwitchConfig()
+                .forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor);
 
-    // SmartDashboard.putData(getName(), this);
-    // SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
-//
-// }
+        var deployerLeaderConfig = new SparkMaxConfig()
+                .idleMode(IdleMode.kBrake)
+                .smartCurrentLimit(30)
+                .inverted(false)
+                .apply(limitSwitchConfig)
+                .apply(relativeEncoderConfig);
+        leader = new SparkMax(RobotMap.INTAKE_DEPLOYER_LEADER_ID, MotorType.kBrushless);
+        leader.configure(deployerLeaderConfig, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+
+        var followerConfig = new SparkMaxConfig()
+                .idleMode(IdleMode.kBrake)
+                .smartCurrentLimit(30)
+                .follow(RobotMap.INTAKE_DEPLOYER_LEADER_ID, true)
+                .apply(relativeEncoderConfig);
+        follower = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
+        follower.configure(followerConfig, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+
+        relativeEncoder = leader.getEncoder();
+        sensor = leader.getForwardLimitSwitch();
+
+        pid = new PIDController(DeployerConfig.kDeployerP, DeployerConfig.kDeployerI, DeployerConfig.kDeployerD);
+        pid.setIZone(7);
+
+        SmartDashboard.putData(getName(), this);
+        SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
+
+    }
+}
