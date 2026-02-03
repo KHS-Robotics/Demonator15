@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9372771084337352,
-        "y": 4.264481927710843
+        "x": 2.806144578313253,
+        "y": 5.062204819277108
       },
       "isLocked": false,
       "linkedName": "Start Hub"
@@ -20,12 +20,12 @@
         "y": 4.974783132530121
       },
       "prevControl": {
-        "x": 0.8937951807228919,
-        "y": 4.778084337349399
+        "x": 1.341831325301205,
+        "y": 5.029421686746988
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Depot Bottom"
     }
   ],
   "rotationTargets": [],
@@ -45,10 +45,10 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Start Hub",
+  "folder": "Start Hub No Vision",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

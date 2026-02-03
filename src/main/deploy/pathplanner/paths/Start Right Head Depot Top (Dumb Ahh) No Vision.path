@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.504967092476572,
-        "y": 0.8271645658176653
+        "x": 2.05944365192582,
+        "y": 1.1939272467902995
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.455,
-        "y": 0.897
+        "x": 0.5,
+        "y": 6.94
       },
       "prevControl": {
-        "x": 0.1793410957658232,
-        "y": 0.9058701802144953
+        "x": 2.712510699001426,
+        "y": 7.198773181169758
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "End Outpost"
+      "linkedName": "Depot Top"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Start Right",
+  "folder": "Start Right No Vision",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0

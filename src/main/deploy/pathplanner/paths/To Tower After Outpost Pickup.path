@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.455,
+        "y": 0.897
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.4073975903589808,
+        "y": 1.5544096385518982
+      },
+      "isLocked": false,
+      "linkedName": "Outpost Pickup"
+    },
+    {
+      "anchor": {
+        "x": 1.5548359486447931,
+        "y": 3.7050641940085596
+      },
+      "prevControl": {
+        "x": 1.8445060240939206,
+        "y": 3.4995421686723813
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Tower"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "To Tower (Not From Start) No Vision",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.455,
-        "y": 0.897
+        "x": 0.446,
+        "y": 6.876204819277109
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2106987951807227,
-        "y": 1.7838915662650607
+        "x": 2.1395542168674697,
+        "y": 7.367951807228916
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "After Depot Bottom Pickup"
     },
     {
       "anchor": {
-        "x": 1.5822409638554213,
-        "y": 3.7727349397590366
+        "x": 1.5548359486447931,
+        "y": 3.7050641940085596
       },
       "prevControl": {
-        "x": 1.66966265060241,
-        "y": 2.8329518072289157
+        "x": 1.8117228915662649,
+        "y": 4.056855421686747
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Tower"
     }
   ],
   "rotationTargets": [],
@@ -45,10 +45,10 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "To Tower (Not From Start) No Vision",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
