@@ -10,10 +10,10 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.ResetMode;
 
 
 /**
@@ -83,8 +84,8 @@ public class SwerveModule extends SubsystemBase {
         .apply(driveEncoderConfig)
         .apply(driveClosedLoopConfig);
     driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
-    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters,
-        SparkBase.PersistMode.kPersistParameters);
+    driveMotor.configure(driveMotorConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
     drivePID = driveMotor.getClosedLoopController();
     driveFeedForward = new SimpleMotorFeedforward(drivekS, drivekV, drivekA);
     driveEncoder = driveMotor.getEncoder();
@@ -93,8 +94,8 @@ public class SwerveModule extends SubsystemBase {
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30);
     pivotMotor = new SparkMax(pivotMotorChannel, MotorType.kBrushless);
-    pivotMotor.configure(pivotMotorConfig, SparkBase.ResetMode.kResetSafeParameters,
-        SparkBase.PersistMode.kPersistParameters);
+    pivotMotor.configure(pivotMotorConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
     pivotEncoder = new CANcoder(pivotEncoderId);
     pivotPID = new PIDController(pivotP, pivotI, pivotD);
@@ -187,7 +188,7 @@ public class SwerveModule extends SubsystemBase {
     var sign = isCurrentlyFlippedForShorterPath && useShortestPath ? -1 : 1;
     var cosineComp = calculateCosineCompensation(currentPivotAngle, targetPivotAngle);
     var driveOutput = sign * cosineComp * state.speedMetersPerSecond;
-    drivePID.setReference(driveOutput, SparkMax.ControlType.kVoltage, ClosedLoopSlot.kSlot0,
+    drivePID.setSetpoint(driveOutput, SparkMax.ControlType.kVoltage, ClosedLoopSlot.kSlot0,
         driveFeedForward.calculate(driveOutput));
   }
 

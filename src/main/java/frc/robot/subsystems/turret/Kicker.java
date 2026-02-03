@@ -51,6 +51,6 @@ public class Kicker extends SubsystemBase {
 
 }
 
-// indexer -> tower motor <- put the belt into indexer
+// indexer to tower motor <- put the belt into indexer
 
 // pre-shooter motor
