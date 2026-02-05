@@ -1,5 +1,7 @@
 package frc.robot.subsystems.turret;
 
+import edu.wpi.first.math.geometry.Translation2d;
+
 public class TurretConfig {
 
     protected final class HoodConfig {
@@ -12,6 +14,22 @@ public class TurretConfig {
 
         //I think we will need a conversion for rotations of motor to how many degrees the hood will change
         public static final double kRotationsToDegreesConversion = 0.0;
+    }
+
+    protected final class AbsoluteShooterConfig {
+        //in meters
+        public static final double kRedHubPositionX = 0.0;
+        public static final double kRedHubPositionY = 0.0;
+        public static final Translation2d kRedHubPositionOnField = new Translation2d(kRedHubPositionX, kRedHubPositionY);
+
+        //in meters
+        public static final double kBlueHubPositionX = 0.0;
+        public static final double kBlueHubPositionY = 0.0;
+        public static final Translation2d kBlueHubPositionOnField = new Translation2d(kBlueHubPositionX, kBlueHubPositionY);
+
+        public static final double kGravity = 9.8;
+
+        public static final double kShooterVelocity = 0;
     }
 
 
