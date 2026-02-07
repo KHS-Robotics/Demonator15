@@ -27,7 +27,7 @@ public class Deployer extends SubsystemBase {
     private final RelativeEncoder relativeEncoder;
     private final PIDController pid;
     private final SparkLimitSwitch sensor;
-    private final SparkMax leader, follower;
+    private final SparkMax motor;
 
     public Deployer() {
 
@@ -46,21 +46,12 @@ public class Deployer extends SubsystemBase {
                 .inverted(false)
                 .apply(limitSwitchConfig)
                 .apply(relativeEncoderConfig);
-        leader = new SparkMax(RobotMap.INTAKE_DEPLOYER_LEADER_ID, MotorType.kBrushless);
-        leader.configure(deployerLeaderConfig, ResetMode.kResetSafeParameters,
+        motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_LEADER_ID, MotorType.kBrushless);
+        motor.configure(deployerLeaderConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        var followerConfig = new SparkMaxConfig()
-                .idleMode(IdleMode.kBrake)
-                .smartCurrentLimit(30)
-                .follow(RobotMap.INTAKE_DEPLOYER_LEADER_ID, true)
-                .apply(relativeEncoderConfig);
-        follower = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
-        follower.configure(followerConfig, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
-
-        relativeEncoder = leader.getEncoder();
-        sensor = leader.getForwardLimitSwitch();
+        relativeEncoder = motor.getEncoder();
+        sensor = motor.getForwardLimitSwitch();
 
         pid = new PIDController(DeployerConfig.kDeployerP, DeployerConfig.kDeployerI, DeployerConfig.kDeployerD);
         pid.setIZone(7);
