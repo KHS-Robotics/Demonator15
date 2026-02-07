@@ -5,6 +5,8 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.ResetMode;
+
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
@@ -56,6 +58,13 @@ class Indexer extends SubsystemBase {
   public Command reverseCommand() {
     var cmd = runOnce(this::reverse);
     return cmd.withName("ReverseIndexer");
+  }
+
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.addStringProperty("IdexerState", () -> indexerState.toString(), null);
   }
 
   public enum IndexerState {
