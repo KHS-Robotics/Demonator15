@@ -58,6 +58,7 @@ public class Waist extends SubsystemBase{
     }
 
     public Command setDegreesCommand(double angleDegrees) {
+    //0 degrees should be perpendicular with the back
     var cmd = this.run(() -> setSetpointDegrees(angleDegrees)).until(this::isAtSetpoint);
     return cmd.withName("SetWaistSetpoint");
   }
@@ -68,7 +69,7 @@ public class Waist extends SubsystemBase{
   }
 
     public double getDegrees() {
-    //0 is flat
+    //0 should be perpendicular with the back
     var angle = Units.rotationsToDegrees(encoder.getPosition()) * HoodConfig.kRotationsToDegreesConversion;
     return angle;
   }
@@ -78,7 +79,7 @@ public class Waist extends SubsystemBase{
     if (setpointDegrees != setpointRotationDegrees) {
       pid.reset();
     }
-    setpointRotationDegrees = setpointDegrees;
+    setpointRotationDegrees = MathUtil.clamp(setpointDegrees, -180.0, 180.0);
   }
 
   public boolean isAtSetpoint() {

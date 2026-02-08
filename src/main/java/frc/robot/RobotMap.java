@@ -62,10 +62,10 @@ public final class RobotMap {
 //LEDs over PWM
   public static final int LED_PORT = 0;
 
-//two climber motors - lead and follower
+//one climber motor - climber
 //eight swerve motors
 //one indexer motor - hopper
-//two deployer motors - deployer lead and deployer follower
+//one deployer motor - deployer
 //one grabby wheel motor - grabber
 //four wheel motors for the shooter:
 //indexer -> tower motor - belt
