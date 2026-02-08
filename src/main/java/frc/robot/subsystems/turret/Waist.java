@@ -8,6 +8,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 
@@ -33,6 +36,8 @@ public class Waist extends SubsystemBase{
     private final SparkMax motor;
     private final PIDController pid;
     private final AbsoluteEncoder encoder;
+
+    private BooleanSupplier IsAtSetpoint;
 
     private double setpointRotationDegrees;
 
@@ -67,13 +72,17 @@ public class Waist extends SubsystemBase{
     return cmd.withName("StopWaist");
   }
 
-    public double getDegrees() {
+  public double getDegrees() {
     //0 is flat
     var angle = Units.rotationsToDegrees(encoder.getPosition()) * HoodConfig.kRotationsToDegreesConversion;
     return angle;
   }
 
-    public void setSetpointDegrees(double setpointDegrees) {
+  public double getSetpointDegrees(){
+    return setpointRotationDegrees;
+  }
+
+  public void setSetpointDegrees(double setpointDegrees) {
     // only reset for new setpoints
     if (setpointDegrees != setpointRotationDegrees) {
       pid.reset();
@@ -110,7 +119,14 @@ public class Waist extends SubsystemBase{
     updateSetpointsForDisabledMode();
   }
 
-
+  public void initSendable(SendableBuilder builder){
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.addBooleanProperty("IsAtSetpoint", () -> this.isAtSetpoint(), null);
+    builder.addDoubleProperty("Degrees", () -> this.getDegrees(), null);
+    builder.addDoubleProperty("Setpoint", () -> this.getSetpointDegrees(), null);
+  }
 
 
 }
