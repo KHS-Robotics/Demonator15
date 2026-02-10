@@ -1,5 +1,8 @@
 package frc.robot.subsystems.turret;
 
+import java.util.ArrayList;
+import java.util.Vector;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -42,26 +45,31 @@ public class Turret extends SubsystemBase{
         return cmd;
     }
 
-    public Command aimWaistTowardsHub() {
+    private double getAngleToHub() {
         Translation2d robotPosition = RobotContainer.kSwerveDrive.getPose().getTranslation();
         var alliance = DriverStation.getAlliance();
         double yDistanceToHub;
-        double distanceToHub;
         if ( alliance.get() == Alliance.Red) {
             yDistanceToHub = robotPosition.getY() - TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionY;
-            distanceToHub = robotPosition.getDistance(TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionOnField);
         //if the alliance is null, it is auto set to blue variables
         }else {
             yDistanceToHub = robotPosition.getY() - TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionY;
+        }
+        var angleToHub =  Math.asin(yDistanceToHub / getDistanceToHub());
+        return angleToHub;
+    }
+
+    private double getDistanceToHub() {
+        Translation2d robotPosition = RobotContainer.kSwerveDrive.getPose().getTranslation();
+        var alliance = DriverStation.getAlliance();
+        double distanceToHub;
+        if ( alliance.get() == Alliance.Red) {
+            distanceToHub = robotPosition.getDistance(TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionOnField);
+        //if the alliance is null, it is auto set to blue variables
+        }else {
             distanceToHub = robotPosition.getDistance(TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionOnField);
         }
-        //the adding of the yaw is to account for the rotation of the robot
-        var angleToHub =  Math.asin(yDistanceToHub / distanceToHub)  + RobotContainer.kNavx.getYaw();
-        //clamping the value because our turret only goes 360 degrees exactly
-        angleToHub = MathUtil.clamp(angleToHub, -180.0, 180.0);
-        //Theta = arcsin(yDistanceToHub / distanceToHub)
-        var cmd = waist.setDegreesCommand(angleToHub + TurretConfig.WaistConfig.kWaistDegreesOffset);
-        return cmd;
+        return distanceToHub;
     }
 
     private double solvePitch(double distance) {
@@ -84,6 +92,57 @@ public class Turret extends SubsystemBase{
             theta = theta - step;
         }
         return theta;
+    }
+
+        //var velocityX = RobotContainer.kNavx.getVelocityX();
+        //var velocityY = RobotContainer.kNavx.getVelocityY();
+        //use these variable when getting the robots radial
+
+        //use different things for the turret radial
+    private double getRadialVelocity(double velocityX, double velocityY) {
+        //radial velocity is in reference to the velocity of the robot towards the hub
+        // all velocity is in meters per second
+        Translation2d robotPosition = RobotContainer.kSwerveDrive.getPose().getTranslation();
+        var alliance = DriverStation.getAlliance();
+        Translation2d radialVector;
+        double rX;
+        double rY;
+        if ( alliance.get() == Alliance.Red) {
+            rX = TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionX - robotPosition.getX();
+            rY = TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionY - robotPosition.getY();
+        //if the alliance is null, it is auto set to blue variables
+        }else {
+            rX = TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionX - robotPosition.getX();
+            rY = TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionY - robotPosition.getY();
+        }
+        radialVector = new Translation2d(rX, rY);
+        //distance to hub
+        var radialVectorNorm = radialVector.getNorm();
+        Translation2d radialUnitVector = new Translation2d(radialVector.getX() / radialVectorNorm, radialVector.getY() / radialVectorNorm);
+        double radialVelocity = (velocityX * radialUnitVector.getX() + velocityY * radialUnitVector.getY());
+        return radialVelocity;
+    }
+
+    private double getTangentialVelocity(double velocityX, double velocityY) {
+        //tangential velocity is in reference to the velocity of the robot in a circle around the hub
+        Translation2d targetsVelocity = new Translation2d(velocityX, velocityY);
+        var angleToHub =  getAngleToHub();
+        double radialVelocity = getRadialVelocity(velocityX, velocityY);
+
+        Translation2d radialXYVelocity = new Translation2d( radialVelocity * Math.sin(angleToHub) ,radialVelocity * Math.cos(angleToHub) );
+        Translation2d tagXYVelocity = new Translation2d(targetsVelocity.getX() - radialXYVelocity.getX(), targetsVelocity.getY() - radialXYVelocity.getY());
+        double tagVelocity = tagXYVelocity.getNorm();
+
+        return tagVelocity;
+    }
+
+    public Command aimWaistTowardsHub() {
+        //the adding of the yaw is to account for the rotation of the robot
+        var angleToHub =  getAngleToHub()  + RobotContainer.kNavx.getYaw();
+        //clamping the value because our turret only goes 360 degrees exactly
+        angleToHub = MathUtil.clamp(angleToHub, -180.0, 180.0);
+        var cmd = waist.setDegreesCommand(angleToHub + TurretConfig.WaistConfig.kWaistDegreesOffset);
+        return cmd;
     }
 
     public Command aimHoodTowardsHub() {
@@ -120,4 +179,4 @@ public class Turret extends SubsystemBase{
     //    var navXVelocityY = RobotContainer.kNavx.getVelocityY();
     //    var swerveDrivePosition = RobotContainer.kSwerveDrive.getPose();
     // T = distanceToHub / v;
-    // aimPitch = T * 
+    // phantomPitchPosition = T * getRadialVelocity();
