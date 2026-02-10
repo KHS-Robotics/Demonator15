@@ -14,9 +14,11 @@ public class TurretConfig {
 
         //I think we will need a conversion for rotations of motor to how many degrees the hood will change
         public static final double kRotationsToDegreesConversion = 0.0;
+
+        public static final double kHoodDegreesOffset = 0;
     }
 
-    protected final class AbsoluteShooterConfig {
+    protected final class TurretFieldAndRobotInfo {
         //in meters
         public static final double kRedHubPositionX = 0.0;
         public static final double kRedHubPositionY = 0.0;
@@ -30,6 +32,8 @@ public class TurretConfig {
         public static final double kGravity = 9.8;
 
         public static final double kShooterVelocity = 0;
+        //in meters, at ground level
+        public static final double kHeightBetweenShooterAndHub = 0;
     }
 
 
@@ -37,5 +41,7 @@ public class TurretConfig {
         public static final double kAimerWaistP = 0;
         public static final double kAimerWaistI = 0;
         public static final double kAimerWaistD = 0;
+        
+        public static final double kWaistDegreesOffset = 0;
     }
 }
