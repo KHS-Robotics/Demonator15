@@ -10,7 +10,9 @@ public class ClimberConfig {
      public static final double kClimberKG = 0.0;
      public static final double kClimberGearing = 0.0;
 
+
 //(credit to griffin for giving emotional support)
+
 }
 
  protected final class ClimberSetpoints{
@@ -19,4 +21,13 @@ public class ClimberConfig {
      public static final double L2 = 0;
      public static final double L3 = 0;
     }
+ 
+ protected final class ClimberHookAngle {
+     public static final int DeployedHookAngle = 0;
+     public static final int RetractedHookAngle = 0; 
+     public static final double HookAngleSTOW = 0;  
+ } 
+
+ public static final double kClimberAbsoluteEncoderMinVoltage = 0.0;
+ public static final double kClimberAbsoluteEncoderMaxVoltage = 0.0;
 }
