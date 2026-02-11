@@ -30,6 +30,7 @@ import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.drive.SwerveDrive;
 // import frc.robot.subsystems.led.LEDStrip;
+import frc.robot.subsystems.turret.Turret;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -85,11 +86,11 @@ public class RobotContainer {
   // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   //public static final Intake kIntake = new Intake()
-
+  public static final Turret kTurret = new Turret();
   // Subsystems - Cameras
   // photon
-  public static final DemonPhotonCamera kFrontRightPhotonCamera = new DemonPhotonCamera(
-       PhotonVisionConfig.PhotonCameraName, PhotonVisionConfig.RobotToPhotonCamera);
+  //public static final DemonPhotonCamera kFrontRightPhotonCamera = new DemonPhotonCamera(
+  //     PhotonVisionConfig.PhotonCameraName, PhotonVisionConfig.RobotToPhotonCamera);
   // limelight
   //public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
       //LimelightConfig.LimelightCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);

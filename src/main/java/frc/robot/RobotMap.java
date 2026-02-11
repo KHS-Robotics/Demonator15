@@ -42,20 +42,18 @@ public final class RobotMap {
   public static final int CLIMBER_ID = -1;
 
 //indexer motors
-  public static final int HOPPER_MOTOR_ID = -1;
+  public static final int HOPPER_MOTOR_ID = -2;
 
 //intake motors
-  public static final int INTAKE_DEPLOYER_LEADER_ID = -1;
-  public static final int INTAKE_DEPLOYER_FOLLOWER_ID = -1;
-  public static final int INTAKE_GRABBY_WHEELS_ID = -1;
+  public static final int INTAKE_DEPLOYER_LEADER_ID = -3;
+  public static final int INTAKE_DEPLOYER_FOLLOWER_ID = -4;
+  public static final int INTAKE_GRABBY_WHEELS_ID = -5;
 
 //turret motors
-  public static final int TURRET_AIMER_HOOD_ID = -1;
-  public static final int TURRET_AIMER_WAIST_ID = -1;
-  public static final int TURRET_SPITTER_LEADER_ID = -1;
-  public static final int TURRET_SPITTER_FOLLOWER_ID = -1;
-  public static final int TURRET_KICKER_MOTOR_ID = -1;
-  public static final int TURRET_SPITTER_LEADER_MOTOR_ID = -1;
+  public static final int TURRET_AIMER_HOOD_ID = 41;
+  public static final int TURRET_AIMER_WAIST_ID = 42;
+  public static final int TURRET_SPITTER_LEADER_ID = 43;
+  public static final int TURRET_KICKER_MOTOR_ID = 44;
   
 
 
