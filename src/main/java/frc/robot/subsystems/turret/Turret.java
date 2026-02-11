@@ -43,6 +43,7 @@ public class Turret extends SubsystemBase{
     }
 
     private double getAngleToHub() {
+        //revamp: use atan2 and hub - robot
         Translation2d robotPosition = RobotContainer.kSwerveDrive.getPose().getTranslation();
         var alliance = DriverStation.getAlliance();
         double yDistanceToHub;
