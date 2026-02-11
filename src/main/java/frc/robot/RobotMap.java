@@ -59,7 +59,7 @@ public final class RobotMap {
   
 
 
-//LEDs over PWM
+//LED strips
   public static final int LED_PORT = 0;
 
 //two climber motors - lead and follower

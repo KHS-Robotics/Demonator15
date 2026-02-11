@@ -123,11 +123,10 @@ public class Waist extends SubsystemBase{
     super.initSendable(builder);
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
-    builder.addBooleanProperty("IsAtSetpoint", () -> this.isAtSetpoint(), null);
-    builder.addDoubleProperty("Degrees", () -> this.getDegrees(), null);
+    builder.addBooleanProperty("IsAtSetpointDegrees", () -> this.isAtSetpoint(), null);
+    builder.addDoubleProperty("TurretDegrees", () -> this.getDegrees(), null);
     builder.addDoubleProperty("Setpoint", () -> this.getSetpointDegrees(), null);
   }
-
 
 }
 // yaw adjustment

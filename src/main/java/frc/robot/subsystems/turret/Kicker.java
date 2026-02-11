@@ -20,7 +20,6 @@ import com.revrobotics.ResetMode;
 
 public class Kicker extends SubsystemBase { 
     private final SparkMax motor;
-    private final SparkLimitSwitch sensor;
 
     public Kicker() {
         super(Kicker.class.getSimpleName() + "/" + Kicker.class.getSimpleName());
@@ -52,10 +51,8 @@ public class Kicker extends SubsystemBase {
         var cmd = runOnce(this::start);
         return cmd.withName("StartKicker");
     }
-
-    public Boolean
-
 }
+
 
 // indexer to tower motor <- put the belt into indexer
 

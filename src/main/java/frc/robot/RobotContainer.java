@@ -29,8 +29,6 @@ import frc.robot.subsystems.cameras.CameraConfig;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.drive.SwerveDrive;
-// import frc.robot.subsystems.led.LEDStrip;
-import frc.robot.subsystems.led.LEDStrip;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -96,9 +94,6 @@ public class RobotContainer {
       //LimelightConfig.LimelightCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
 
   // Subsystems - LED indicators
-  public static final LEDStrip kLedStrip = new LEDStrip(
-    
-  );
 
   /**
    * The container for the robot. Contains subsystems, operator interface devices,
@@ -122,7 +117,6 @@ public class RobotContainer {
     kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> !kDriverController.robotRelative().getAsBoolean(),
         DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
-    kLedStrip.setDefaultCommand(kLedStrip.updateCommand());
 
     // RearLimelightCamera - AprilTag updates for odometry
   //   kRearLimelightCamera.setDefaultCommand(
