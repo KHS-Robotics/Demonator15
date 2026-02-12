@@ -31,9 +31,9 @@ public class TurretConfig {
 
         public static final double kGravity = 9.8;
 
-        public static final double kShooterVelocity = 0;
+        public static final double kShooterVelocity = 9;
         //in meters, at ground level
-        public static final double kHeightBetweenShooterAndHub = 0;
+        public static final double kHeightBetweenShooterAndHub = 1.8;
     }
 
 
