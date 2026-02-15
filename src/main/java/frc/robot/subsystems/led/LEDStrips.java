@@ -10,10 +10,10 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color.RGBChannel;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
-
 
 public class LEDStrips extends SubsystemBase {
     private final BooleanSupplier IsAtSetpointAngle, IsAtSetpointDegrees;
@@ -40,9 +40,19 @@ public class LEDStrips extends SubsystemBase {
         addressableLED.start();
     }
 
+    public Boolean secondaryColorEnabled = true;
+    Color colorPrimary = Color.;
+    Color colorSecondary;
+
     public void setTheme(Color primaryColor, Color secondaryColor){
-        Color colorPrimary = primaryColor;
-        Color colorSecondary = secondaryColor;
+        colorPrimary = primaryColor;
+        if (secondaryColorEnabled){
+            colorSecondary = secondaryColor;
+        }
+        else{
+            colorSecondary = Color.fromHSV(0, 0, 0);
+            
+        }
     }
 
     public void setHSV(AddressableLEDBufferView bufferView, int index, int h, int s, int v){
@@ -56,7 +66,7 @@ public class LEDStrips extends SubsystemBase {
     public void ledOff(AddressableLEDBufferView bufferView, int index){
         setRGB(bufferView, index, 0, 0, 0);
     }
-    /**
+    /** Gets the
      * 
      * @param index
      * @return degrees  of the given index led
@@ -70,7 +80,7 @@ public class LEDStrips extends SubsystemBase {
     }
 
     /**
-     * Tracks which leds are at or below the turret's angle.
+     * Tracks which leds are at or below the turret's angle. Assumes the first LED in the strip is at degree zero.
      * @return The largest index of the turret LED strip whose angle does not exceed the turret's
      */
     public int traceTurretAngle(){
