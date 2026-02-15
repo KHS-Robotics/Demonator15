@@ -35,6 +35,19 @@ public class Turret extends SubsystemBase{
         cmd.addRequirements(this);
         return cmd;
     }
+
+    public void stop() {
+        hood.stop();
+        waist.stop();
+        kicker.stop();
+        spitter.stop();
+    }
+
+    public Command stopCommand() {
+        var cmd = runOnce(this::stop);
+        cmd.addRequirements(hood, waist, kicker, spitter);
+        return cmd.withName("StopTurret");
+    }
     //for getting the position and rotation (which we will probably want to do in hood and waist), use our humble kNavx
     //kNavx.getVelocityX and VelocityY
     //kNavx.getRotation2d

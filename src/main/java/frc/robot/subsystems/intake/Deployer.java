@@ -6,7 +6,6 @@ import com.revrobotics.ResetMode;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
-import com.revrobotics.spark.config.EncoderConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -98,7 +97,8 @@ public class Deployer extends SubsystemBase {
     return (error < 2);
   }
 
-  public boolean hasCoral() {
+  //if the deployer is at the same spot as the the limitswitch
+  public boolean isAtTop() {
     return sensor.isPressed();
   }
 

@@ -15,7 +15,7 @@ public class ClimberConfig {
 
 }
 
- protected final class ClimberSetpoints{
+ protected final class ElevatorSetpoints{
      public static final double STOW = 0;
      public static final double L1 = 0;
      public static final double L2 = 0;
@@ -25,7 +25,7 @@ public class ClimberConfig {
  protected final class ClimberHookAngle {
      public static final int DeployedHookAngle = 0;
      public static final int RetractedHookAngle = 0; 
-     public static final double HookAngleSTOW = 0;  
+     public static final double stowedHookAngle = 0;  
  } 
 
  public static final double kClimberAbsoluteEncoderMinVoltage = 0.0;
