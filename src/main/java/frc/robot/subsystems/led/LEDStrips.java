@@ -2,13 +2,25 @@ package frc.robot.subsystems.led;
 
 import static edu.wpi.first.units.Units.Degree;
 
+import java.awt.List;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
+import org.opencv.core.Mat.Tuple3;
+
+import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color.RGBChannel;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,19 +52,57 @@ public class LEDStrips extends SubsystemBase {
         addressableLED.start();
     }
 
-    public Boolean secondaryColorEnabled = true;
-    Color colorPrimary = Color.;
-    Color colorSecondary;
+    public void runTurretLEDS(){
+        if (RobotState.isDisabled()){
+            runTurretLEDSDisabled();
+            Timer.delay(LEDConfig.kDisabledRunAnimationLength);
+        }
 
-    public void setTheme(Color primaryColor, Color secondaryColor){
-        colorPrimary = primaryColor;
-        if (secondaryColorEnabled){
-            colorSecondary = secondaryColor;
+    }
+
+    public void runTurretLEDSDisabled(){
+        
+    }
+
+    public Boolean secondaryColorEnabled = true;
+    Color turretColorPrimary = Color.fromHSV(234, 94, 100);
+    Color turretColorSecondary = Color.fromHSV(191, 91, 100);
+    Color hopperColorPrimary = Color.fromHSV(234, 94, 100);
+    Color hopperColorSecondary = Color.fromHSV(191, 91, 100);
+
+    public void setTheme(Color primaryColor, Color secondaryColor, AddressableLEDBufferView bufferView){
+        if (bufferView == turretBufferView){
+            turretColorPrimary = primaryColor;
+            if (secondaryColorEnabled){
+                turretColorSecondary = secondaryColor;
+            }
+            else{
+                turretColorSecondary = Color.fromHSV(0, 0, 0);
+            }
+        }
+        else if(bufferView == hopperBufferView){
+            hopperColorPrimary = primaryColor;
+            if (secondaryColorEnabled){
+                hopperColorSecondary = secondaryColor;
+            }
+            else{
+                hopperColorSecondary = Color.fromHSV(0, 0, 0);
+            }
+        }
+    }
+
+    public Double getRGBValue(Color color, String channel){
+        var value = 0.0;
+        if (channel == "r"){
+            value = color.red;
+        }
+        else if (channel == "g"){
+            value = color.green;
         }
         else{
-            colorSecondary = Color.fromHSV(0, 0, 0);
-            
+            value = color.blue;
         }
+        return value;
     }
 
     public void setHSV(AddressableLEDBufferView bufferView, int index, int h, int s, int v){
@@ -92,5 +142,26 @@ public class LEDStrips extends SubsystemBase {
         return 0;
     }
 
+    public void initTurretSendable(SendableBuilder builder){
+        super.initSendable(builder);
+        builder.setSmartDashboardType("Turret LED");
+        builder.addDoubleProperty("Primary Color R", () -> this.getRGBValue(turretColorPrimary, "r"), null);
+        builder.addDoubleProperty("Primary Color G", () -> this.getRGBValue(turretColorPrimary, "g"), null);
+        builder.addDoubleProperty("Primary Color B", () -> this.getRGBValue(turretColorPrimary, "b"), null);
+        builder.addDoubleProperty("Secondary Color R", () -> this.getRGBValue(turretColorSecondary, "r"), null);
+        builder.addDoubleProperty("Secondary Color G", () -> this.getRGBValue(turretColorSecondary, "g"), null);
+        builder.addDoubleProperty("Secondary Color B", () -> this.getRGBValue(turretColorSecondary, "b"), null);
+    }
+
+    public void initHopperSendable(SendableBuilder builder){
+        super.initSendable(builder);
+        builder.setSmartDashboardType("Hopper LED");
+        builder.addDoubleProperty("PrimaryColor R", () -> this.getRGBValue(hopperColorPrimary, "r"), null);
+        builder.addDoubleProperty("PrimaryColor G", () -> this.getRGBValue(hopperColorPrimary, "g"), null);
+        builder.addDoubleProperty("PrimaryColor B", () -> this.getRGBValue(hopperColorPrimary, "b"), null);
+        builder.addDoubleProperty("SecondaryColor R", () -> this.getRGBValue(hopperColorSecondary, "r"), null);
+        builder.addDoubleProperty("SecondaryColor G", () -> this.getRGBValue(hopperColorSecondary, "g"), null);
+        builder.addDoubleProperty("SecondaryColor B", () -> this.getRGBValue(hopperColorSecondary, "b"), null);
+    }
 
 }

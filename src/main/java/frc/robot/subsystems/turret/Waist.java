@@ -37,8 +37,6 @@ public class Waist extends SubsystemBase{
     private final PIDController pid;
     private final AbsoluteEncoder encoder;
 
-    private BooleanSupplier IsAtSetpoint;
-
     private double setpointRotationDegrees;
 
     public Waist() {
