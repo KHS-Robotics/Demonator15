@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.drive.SwerveDrive;
 
 public class Turret extends SubsystemBase{
     private final Hood hood = new Hood();
@@ -78,14 +77,6 @@ public class Turret extends SubsystemBase{
         return hubPosition;
     }
 
-    private double getAngleFromRobotToPosition(Translation2d toPose) {
-        return getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), toPose);
-    }
-
-    private double getAngleToHub(Translation2d fromPose) {
-        return getAngleToPosition(fromPose, getCurrentHubPosition());
-    }
-
     private double getAngleToPosition() {
         return getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), getCurrentHubPosition());
     }
@@ -131,9 +122,45 @@ public class Turret extends SubsystemBase{
         return theta;
     }
 
-    private Translation2d getRadialUnitVector() {
+
+        //var velocityX = RobotContainer.kNavx.getVelocityX();
+        //var velocityY = RobotContainer.kNavx.getVelocityY();
+        //use these variable when getting the robots radial
+
+        //use different things for the turret radial
+    private double getRadialVelocityForPhantom(double velocityX, double velocityY, Translation2d position) {
+        //getting the radial velocity from a phantom position we got from tangential velocity calcs to account for different radial distances
         //radial velocity is in reference to the velocity of the robot towards the hub
         // all velocity is in meters per second
+        Translation2d robotPosition = position;
+        var alliance = DriverStation.getAlliance();
+        Translation2d radialVector;
+        double rX;
+        double rY;
+        if ( alliance.get() == Alliance.Red) {
+            rX = TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionX - robotPosition.getX();
+            rY = TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionY - robotPosition.getY();
+        //if the alliance is null, it is auto set to blue variables
+        }else {
+            rX = TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionX - robotPosition.getX();
+            rY = TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionY - robotPosition.getY();
+        }
+        radialVector = new Translation2d(rX, rY);
+        //distance to hub
+        var radialVectorNorm = radialVector.getNorm();
+        Translation2d radialUnitVector;
+        if (radialVectorNorm != 0) {
+            radialUnitVector = new Translation2d(radialVector.getX() / radialVectorNorm, radialVector.getY() / radialVectorNorm);
+        }else {
+            radialUnitVector = new Translation2d(0,0);
+        }
+        double radVelocity = (velocityX * radialUnitVector.getX() + velocityY * radialUnitVector.getY());
+        return radVelocity;
+    }
+
+    private double getTangentialVelocity(double velocityX, double velocityY) {
+        //tangential velocity is in reference to velocity of the robot around the hub in le circle
+        // we just use the radial velocity code and then rotate the vector
         Translation2d robotPosition = RobotContainer.kSwerveDrive.getPose().getTranslation();
         var alliance = DriverStation.getAlliance();
         Translation2d radialVector;
@@ -156,62 +183,54 @@ public class Turret extends SubsystemBase{
         }else {
             radialUnitVector = new Translation2d(0,0);
         }
-        return radialUnitVector;
-    }
-
-        //var velocityX = RobotContainer.kNavx.getVelocityX();
-        //var velocityY = RobotContainer.kNavx.getVelocityY();
-        //use these variable when getting the robots radial
-
-        //use different things for the turret radial
-    private double getRadialVelocity(double velocityX, double velocityY) {
-        Translation2d radialUnitVector = getRadialUnitVector();
-        double radialVelocity = (velocityX * radialUnitVector.getX() + velocityY * radialUnitVector.getY());
-        return radialVelocity;
-    }
-
-    //private double getRadialVelocityForPhantom(double velocityX, double velocityY, Translation2d position) {
-    //getting the radial velocity from a phantom position we got from tangential velocity calcs to account for different radial distances
-    //}
-
-    private double getTangentialVelocity(double velocityX, double velocityY) {
-        //tangential velocity is in reference to velocity of the robot around the hub in le circle
-        // we just use the radial velocity code and then rotate the vector
-        Translation2d radialUnitVector = getRadialUnitVector();
         Translation2d tangentialUnitVector = radialUnitVector.rotateBy(Rotation2d.kCCW_90deg);
         double tagVelocity = (velocityX * tangentialUnitVector.getX() + velocityY * tangentialUnitVector.getY());
         return tagVelocity;
     }
-    
+
+    /**
+     * @return the linear velocity of the turret based on the rotation of the robot
+     */
+    private Translation2d getTurretRotationalToLinearVelocity() {
+        Rotation2d theta = new Rotation2d(Math.toRadians(RobotContainer.kNavx.getAngle() + 90 + TurretConfig.TurretFieldAndRobotInfo.kDegreeOffsetOfTurret));
+        var magnitude = RobotContainer.kNavx.getRate() * TurretConfig.TurretFieldAndRobotInfo.kTurretDistanceToNavX;
+        Translation2d RotationalVelocity = new Translation2d(magnitude, theta);
+        return RotationalVelocity;
+    }
+
+    /**
+    * @return the fake robot position for position calcs based on tangential velocity
+    */
     private Translation2d getPhantomRobotPosition() {
         //just using tangential velocity calcs
         double tangVelocity = getTangentialVelocity(RobotContainer.kNavx.getVelocityX(), RobotContainer.kNavx.getVelocityY());
         Rotation2d angleOfTang = new Rotation2d(getAngleToPosition() + (Math.PI / 2));
         double T = getDistanceToHub() / TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity;
-        double phantomYawDistance = T * tangVelocity;// + robotRotationalTangVelocity;
-        Translation2d phantomYaw = new Translation2d(phantomYawDistance, angleOfTang);
-        phantomYaw = phantomYaw.plus(RobotContainer.kSwerveDrive.getPose().getTranslation());
+        var rotationalVelocity = getTurretRotationalToLinearVelocity();
+        double robotRotationalTangVelocity = getTangentialVelocity(rotationalVelocity.getX(), rotationalVelocity.getY());
+        double phantomYawDistance = T * tangVelocity + robotRotationalTangVelocity;
+        Translation2d phantomYawVector = new Translation2d(phantomYawDistance, angleOfTang);
+        Translation2d phantomYawPosition = phantomYawVector.plus(RobotContainer.kSwerveDrive.getPose().getTranslation());
 
-        return phantomYaw;
+        return phantomYawPosition;
     }
 
     public Command aimWaist(Translation2d towards) {
         Translation2d phantomRobotPosition = getPhantomRobotPosition();
         //the adding of the yaw is to account for the rotation of the robot
-        double angle =  getAngleToPosition(phantomRobotPosition,towards) + RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
+        double angle =  getAngleToPosition(phantomRobotPosition,towards) - RobotContainer.kNavx.getAngle();
         //clamping the value because our turret only goes 240(?) degrees
-        angle = MathUtil.clamp(Math.toDegrees(angle) % 360, 0, 360) - 180;
+        angle = MathUtil.clamp(Math.toDegrees(angle) % 360, 0, 360);
         var cmd = waist.setDegreesCommand(angle + TurretConfig.WaistConfig.kWaistDegreesOffset);
         return cmd;
     }
 
     public Rotation2d getTestAimWaistCalcs(Translation2d towards) {
         Translation2d phantomRobotPosition = getPhantomRobotPosition();
-
         //the adding of the yaw is to account for the rotation of the robot
-        double angle =  getAngleToPosition(phantomRobotPosition,towards) + RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
+        double angle =  getAngleToPosition(phantomRobotPosition,towards) - RobotContainer.kNavx.getAngle();
         //clamping the value because our turret only goes 240(?) degrees
-        angle = MathUtil.clamp(Math.toDegrees(angle) % 360, 0, 360) - 180;
+        angle = MathUtil.clamp(Math.toDegrees(angle) % 360, 0, 360);
         Rotation2d angleRotation = new Rotation2d(angle + TurretConfig.WaistConfig.kWaistDegreesOffset);
         return angleRotation;
     }
@@ -221,29 +240,47 @@ public class Turret extends SubsystemBase{
     }
 
     public Command aimHood(Translation2d towards) {
-        double radialVelocity = getRadialVelocity(RobotContainer.kNavx.getVelocityX(), RobotContainer.kNavx.getVelocityY());
+        //linear calcs
+        Translation2d phantomRobotPosition = getPhantomRobotPosition();
+        double radialVelocity = getRadialVelocityForPhantom(RobotContainer.kNavx.getVelocityX(), RobotContainer.kNavx.getVelocityY(), phantomRobotPosition);
         Rotation2d angleOfRad = new Rotation2d(getAngleToPosition());
-        double T = getDistanceToHub() / TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity;
-        double phantomPitchDistance = T * radialVelocity;// + robotRotationalRadVelocity;
-        Translation2d phantomPitch = new Translation2d(phantomPitchDistance, angleOfRad);
-        phantomPitch = phantomPitch.plus(getPhantomRobotPosition());
+        double T = getDistanceToHub(phantomRobotPosition) / TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity;
+        //rotational calcs
+        var rotationalVelocity = getTurretRotationalToLinearVelocity();
+        double robotRotationalRadVelocity = getTangentialVelocity(rotationalVelocity.getX(), rotationalVelocity.getY());
 
-        double distanceToPoint = phantomPitch.getDistance(towards);
+        double phantomPitchDistance = T * radialVelocity + robotRotationalRadVelocity;
+        Translation2d phantomPitchVector = new Translation2d(phantomPitchDistance, angleOfRad);
+        Translation2d phantomPitchPosition = phantomPitchVector.plus(phantomRobotPosition);
+
+        double distanceToPoint = phantomPitchPosition.getDistance(towards);
         var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
         //add radial velocity calcs
         //clamp to the physical limits of our hood
-        angle = MathUtil.clamp(angle, 0.0, 45.0);
-        var cmd = hood.setAngleCommand(angle + TurretConfig.HoodConfig.kHoodDegreesOffset);
+        angle = MathUtil.clamp(angle, 0.0, 45.0) + TurretConfig.HoodConfig.kHoodDegreesOffset;
+        var cmd = hood.setAngleCommand(angle);
         return cmd;
     }
 
     public double getTestAimHoodCalcs(Translation2d towards) {
-        double distanceToPoint = RobotContainer.kSwerveDrive.getPose().getTranslation().getDistance(towards);
+        //linear calcs
+        Translation2d phantomRobotPosition = getPhantomRobotPosition();
+        double radialVelocity = getRadialVelocityForPhantom(RobotContainer.kNavx.getVelocityX(), RobotContainer.kNavx.getVelocityY(), phantomRobotPosition);
+        Rotation2d angleOfRad = new Rotation2d(getAngleToPosition());
+        double T = getDistanceToHub(phantomRobotPosition) / TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity;
+        //rotational calcs
+        var rotationalVelocity = getTurretRotationalToLinearVelocity();
+        double robotRotationalRadVelocity = getTangentialVelocity(rotationalVelocity.getX(), rotationalVelocity.getY());
+
+        double phantomPitchDistance = T * radialVelocity + robotRotationalRadVelocity;
+        Translation2d phantomPitchVector = new Translation2d(phantomPitchDistance, angleOfRad);
+        Translation2d phantomPitchPosition = phantomPitchVector.plus(phantomRobotPosition);
+
+        double distanceToPoint = phantomPitchPosition.getDistance(towards);
         var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
         //add radial velocity calcs
         //clamp to the physical limits of our hood
-        angle = MathUtil.clamp(angle, 0.0, 45.0);
-        angle += TurretConfig.HoodConfig.kHoodDegreesOffset;
+        angle = MathUtil.clamp(angle, 0.0, 45.0) + TurretConfig.HoodConfig.kHoodDegreesOffset;
         return angle;
     }
 
