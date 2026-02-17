@@ -43,10 +43,11 @@ public class GrabbyWheels extends SubsystemBase {
         SmartDashboard.putData(getName(), this);
         SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
     }
-    public void stop() {
+    
+  public void stop() {
         intakeState = IntakeState.IDLE;
         motor.stopMotor();
-    }
+  }
 
   public Command stopCommand() {
     var cmd = runOnce(this::stop);

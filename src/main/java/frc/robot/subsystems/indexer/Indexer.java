@@ -13,7 +13,7 @@ import frc.robot.RobotMap;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 
-class Indexer extends SubsystemBase {
+public class Indexer extends SubsystemBase {
   private IndexerState indexerState = IndexerState.IDLE;
   private final SparkMax motor;
 

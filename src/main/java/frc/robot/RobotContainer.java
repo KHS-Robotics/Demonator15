@@ -24,11 +24,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.cameras.CameraConfig.PhotonVisionConfig;
+import frc.robot.subsystems.climber.Elevator;
 import frc.robot.subsystems.cameras.CameraConfig.LimelightConfig;
 import frc.robot.subsystems.cameras.CameraConfig;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.drive.SwerveDrive;
+import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.Indexer.IndexerState;
+import frc.robot.subsystems.intake.Intake;
 // import frc.robot.subsystems.led.LEDStrip;
 import frc.robot.subsystems.turret.Turret;
 
@@ -85,6 +89,10 @@ public class RobotContainer {
 
   // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
+  public static final Turret kTurret = new Turret();
+  public static final Intake kIntake = new Intake();
+  public static final Indexer kIndexer = new Indexer();
+  public static final Elevator kClimber = new Elevator();
   //public static final Intake kIntake = new Intake()
   public static final Turret kTurret = new Turret();
   // Subsystems - Cameras
@@ -193,6 +201,26 @@ public class RobotContainer {
 
     //EXAMPLE:
     //NamedCommands.registerCommand("DeployIntake", kIntake.deploy());
+
+    // stop all
+    NamedCommands.registerCommand("STOP",
+        Commands.sequence(kSwerveDrive.stopCommand(), kIntake.stopCommand(), kClimber.stopCommand(), kTurret.stopCommand(), kIndexer.stopCommand())
+            .withName("StopAll"));
+
+    // Swerve Drive
+    NamedCommands.registerCommand("STOPSwerve", kSwerveDrive.stopCommand());
+
+    // Intake
+    NamedCommands.registerCommand("STOPIntake", kIntake.stopCommand());
+    NamedCommands.registerCommand("DeployDeployer", kIntake.deployDeployer());
+    NamedCommands.registerCommand("StowDeployer", kIntake.stowDeployer());
+    NamedCommands.registerCommand("AgitateDeployer", kIntake.agitateDeployer());
+    NamedCommands.registerCommand("IntakeFuel", kIntake.intakefuel());
+    NamedCommands.registerCommand("OutakeFuel", kIntake.outakefuel());
+    NamedCommands.registerCommand("STOPGrabbyWheels", kIntake.stopGrabbyWheelsCommand());
+
+    //climber
+    NamedCommands.registerCommand("STOPClimber", kClimber.stopCommand());
   }
 
   /** https://pathplanner.dev/pplib-custom-logging.html */

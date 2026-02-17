@@ -65,6 +65,7 @@ public class Turret extends SubsystemBase{
         return cmd;
     }
 
+<<<<<<< turret-aiming-code
     private Translation2d getCurrentHubPosition() {
         Translation2d hubPosition;
         var alliance = DriverStation.getAlliance();
@@ -303,6 +304,24 @@ public class Turret extends SubsystemBase{
         builder.setSafeState(this::stop);
         builder.addDoubleProperty("testHoodCalcs",() -> getTestAimHoodCalcs(getCurrentHubPosition()), null);
     }
+=======
+    public void stop() {
+        hood.stop();
+        waist.stop();
+        kicker.stop();
+        spitter.stop();
+    }
+
+    public Command stopCommand() {
+        var cmd = runOnce(this::stop);
+        cmd.addRequirements(hood, waist, kicker, spitter);
+        return cmd.withName("StopTurret");
+    }
+    //for getting the position and rotation (which we will probably want to do in hood and waist), use our humble kNavx
+    //kNavx.getVelocityX and VelocityY
+    //kNavx.getRotation2d
+    //find a way to get global position
+>>>>>>> main
 }
     //for getting the position and rotation (which we will probably want to do in hood and waist), use our humble kNavx
     //
