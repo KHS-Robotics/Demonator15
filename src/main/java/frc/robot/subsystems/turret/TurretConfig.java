@@ -11,7 +11,7 @@ public class TurretConfig {
         public static final double kHoodMinAngle = 0;
 
         //I think we will need a conversion for rotations of motor to how many degrees the hood will change
-        public static final double kRotationsToDegreesConversion = 0.0;
+        public static final double kRotationsToDegreesConversion = 3.791;
     }
 
 
