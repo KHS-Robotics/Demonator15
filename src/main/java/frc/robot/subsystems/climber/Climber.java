@@ -1,5 +1,7 @@
 package frc.robot.subsystems.climber;
 
+import javax.sound.midi.Sequence;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -70,6 +72,11 @@ public class Climber extends SubsystemBase{
         cmd.addRequirements(elevator);
         return cmd.withName("retractInnerHooks");
     }
+
+    //public Command goToL1(){
+    //var cmd = retractOutsideHooks().andThen(setClimberL1()).andThen(deployOutsideHooks());
+     //return cmd.withName("goToL1");
+    //}
 
     //we should have a prepare climb thing and an autoclimb, look into the elevator for how to do autoclimb
     

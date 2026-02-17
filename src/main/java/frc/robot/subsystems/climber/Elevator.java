@@ -82,9 +82,9 @@ public class Elevator extends SubsystemBase {
 
         setSetpointHeight(getHeightFromGroundInches());
 
-        outerServoLeft = new Servo(1);
-        outerServoRight = new Servo(2);
-        innerServo = new Servo(3);
+        outerServoLeft = new Servo(RobotMap.OUTER_SERVO_LEFT);
+        outerServoRight = new Servo(RobotMap.OUTER_SERVO_RIGHT);
+        innerServo = new Servo(RobotMap.INNER_SERVO);
     }
 
     public void periodic() {
@@ -232,12 +232,19 @@ public class Elevator extends SubsystemBase {
         var heightFromStowInches = (deltaHeightInches * relativeVoltage) / deltaVoltage;
         var heightFromGroundInches = heightFromStowInches + ElevatorSetpoints.STOW;
         return heightFromGroundInches;
+
     }
+
+    public double getHeightFromGroundInchesUsingRelativeEncoder() {
+    var heightFromStowInches = relativeEncoder.getPosition();
+    var heightFromGroundInches = heightFromStowInches + ElevatorSetpoints.STOW;
+    return heightFromGroundInches;
+  }
 
     public double getHeightFromGroundInches() {
         switch (heightMode) {
-            // case kRelative:
-            // return getHeightFromGroundInchesUsingRelativeEncoder();
+            case kRelative:
+            return getHeightFromGroundInchesUsingRelativeEncoder();
             case kAbsolute:
                 return getHeightFromGroundInchesUsingAbsoluteEncoder();
             default:
@@ -246,7 +253,7 @@ public class Elevator extends SubsystemBase {
                 return setpointHeightFromGroundInches;
         }
     }
-
+ 
     //  (*º-º*)
     //   /   \
 }
