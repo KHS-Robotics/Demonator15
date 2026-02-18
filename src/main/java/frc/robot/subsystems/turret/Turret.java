@@ -27,15 +27,9 @@ public class Turret extends SubsystemBase{
         RobotContainer.kField.getObject("waistAiming").setPose(
             RobotContainer.kSwerveDrive.getPose().getX(),
             RobotContainer.kSwerveDrive.getPose().getY(),
-            getTestAimWaistCalcs(getCurrentHubPosition())
+            getWaistFinalRotation(getCurrentHubPosition())
             );
     }
-
-    public Command stopCommand() {
-    var cmd = runOnce(this::stop);
-    cmd.addRequirements(hood, waist, spitter, kicker);
-    return cmd.withName("StopTurret");
-  }
 
     public void stop() {
         hood.stop();
@@ -44,28 +38,31 @@ public class Turret extends SubsystemBase{
         kicker.stop();
     }
 
-    public Command shootMomentarily() {
+    public Command stopCommand() {
+        var cmd = runOnce(this::stop);
+        cmd.addRequirements(hood, waist, kicker, spitter);
+        return cmd.withName("StopTurret");
+    }
+
+    public Command shoot() {
         var cmd = startEnd(spitter::start, spitter::stop);
-        cmd.addRequirements(spitter);
         return cmd;
     }
 
     public Command reload() {
         var cmd = startEnd(kicker::start, kicker::stop);
-        cmd.addRequirements(kicker);
         return cmd;
     }
 
     public Command shootContinuously() {
         var cmd = Commands.parallel(
-                shootMomentarily(),
+                shoot(),
                 reload()
             );
-        cmd.addRequirements(this);
+        cmd.addRequirements(kicker, spitter);
         return cmd;
     }
 
-<<<<<<< turret-aiming-code
     private Translation2d getCurrentHubPosition() {
         Translation2d hubPosition;
         var alliance = DriverStation.getAlliance();
@@ -193,7 +190,7 @@ public class Turret extends SubsystemBase{
      * @return the linear velocity of the turret based on the rotation of the robot
      */
     private Translation2d getTurretRotationalToLinearVelocity() {
-        Rotation2d theta = new Rotation2d(Math.toRadians(RobotContainer.kNavx.getAngle() + 90 + TurretConfig.TurretFieldAndRobotInfo.kDegreeOffsetOfTurret));
+        Rotation2d theta = new Rotation2d(Math.toRadians(RobotContainer.kSwerveDrive.getPose().getRotation().getDegrees() + 90 + TurretConfig.TurretFieldAndRobotInfo.kDegreeOffsetOfTurret));
         var magnitude = RobotContainer.kNavx.getRate() * TurretConfig.TurretFieldAndRobotInfo.kTurretDistanceToNavX;
         Translation2d RotationalVelocity = new Translation2d(magnitude, theta);
         return RotationalVelocity;
@@ -206,33 +203,34 @@ public class Turret extends SubsystemBase{
         //just using tangential velocity calcs
         double tangVelocity = getTangentialVelocity(RobotContainer.kNavx.getVelocityX(), RobotContainer.kNavx.getVelocityY());
         Rotation2d angleOfTang = new Rotation2d(getAngleToPosition() + (Math.PI / 2));
-        double T = getDistanceToHub() / TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity;
+        var pitchAngle = solvePitch(getDistanceToHub());
+        double T = getDistanceToHub() / (TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity * Math.cos(pitchAngle));
         var rotationalVelocity = getTurretRotationalToLinearVelocity();
         double robotRotationalTangVelocity = getTangentialVelocity(rotationalVelocity.getX(), rotationalVelocity.getY());
-        double phantomYawDistance = T * tangVelocity + robotRotationalTangVelocity;
+        double phantomYawDistance = T * (tangVelocity + robotRotationalTangVelocity);
         Translation2d phantomYawVector = new Translation2d(phantomYawDistance, angleOfTang);
+        //translation 2ds just happen to be a canvinient way to use a two variable variable, some translation2ds actually represent velocities
         Translation2d phantomYawPosition = phantomYawVector.plus(RobotContainer.kSwerveDrive.getPose().getTranslation());
 
         return phantomYawPosition;
     }
 
     public Command aimWaist(Translation2d towards) {
-        Translation2d phantomRobotPosition = getPhantomRobotPosition();
-        //the adding of the yaw is to account for the rotation of the robot
-        double angle =  getAngleToPosition(phantomRobotPosition,towards) - RobotContainer.kNavx.getAngle();
-        //clamping the value because our turret only goes 240(?) degrees
-        angle = MathUtil.clamp(Math.toDegrees(angle) % 360, 0, 360);
-        var cmd = waist.setDegreesCommand(angle + TurretConfig.WaistConfig.kWaistDegreesOffset);
+        
+        var angle = getWaistFinalRotation(towards).getDegrees();
+        var cmd = waist.setDegreesCommand(angle);
+        //+ TurretConfig.WaistConfig.kWaistDegreesOffset);
         return cmd;
     }
 
-    public Rotation2d getTestAimWaistCalcs(Translation2d towards) {
+    public Rotation2d getWaistFinalRotation(Translation2d towards) {
         Translation2d phantomRobotPosition = getPhantomRobotPosition();
         //the adding of the yaw is to account for the rotation of the robot
-        double angle =  getAngleToPosition(phantomRobotPosition,towards) - RobotContainer.kNavx.getAngle();
+        double angle =  getAngleToPosition(phantomRobotPosition, towards) - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
         //clamping the value because our turret only goes 240(?) degrees
-        angle = MathUtil.clamp(Math.toDegrees(angle) % 360, 0, 360);
-        Rotation2d angleRotation = new Rotation2d(angle + TurretConfig.WaistConfig.kWaistDegreesOffset);
+        angle = MathUtil.clamp(Math.toDegrees(angle) % 360, -120, 120);
+        Rotation2d angleRotation = new Rotation2d(angle);
+        //+ TurretConfig.WaistConfig.kWaistDegreesOffset);
         return angleRotation;
     }
 
@@ -240,34 +238,31 @@ public class Turret extends SubsystemBase{
         return aimWaist(getCurrentHubPosition());
     }
 
+    public Command aimWaistSimple(Translation2d towards) {
+        //the subtracting of the yaw is to account for the rotation of the robot
+        double angle =  getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), towards) - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
+        //clamping the value because our turret only goes 240(?) degrees
+        angle = MathUtil.clamp(Math.toDegrees(angle) % 360, -120, 120);
+        //+ TurretConfig.WaistConfig.kWaistDegreesOffset);
+        var cmd = waist.setDegreesCommand(angle);
+        return cmd;
+    }
+
+    public Command aimWaistSimple() {
+        return aimWaistSimple(getCurrentHubPosition());
+    }
+
     public Command aimHood(Translation2d towards) {
-        //linear calcs
-        Translation2d phantomRobotPosition = getPhantomRobotPosition();
-        double radialVelocity = getRadialVelocityForPhantom(RobotContainer.kNavx.getVelocityX(), RobotContainer.kNavx.getVelocityY(), phantomRobotPosition);
-        Rotation2d angleOfRad = new Rotation2d(getAngleToPosition());
-        double T = getDistanceToHub(phantomRobotPosition) / TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity;
-        //rotational calcs
-        var rotationalVelocity = getTurretRotationalToLinearVelocity();
-        double robotRotationalRadVelocity = getTangentialVelocity(rotationalVelocity.getX(), rotationalVelocity.getY());
-
-        double phantomPitchDistance = T * radialVelocity + robotRotationalRadVelocity;
-        Translation2d phantomPitchVector = new Translation2d(phantomPitchDistance, angleOfRad);
-        Translation2d phantomPitchPosition = phantomPitchVector.plus(phantomRobotPosition);
-
-        double distanceToPoint = phantomPitchPosition.getDistance(towards);
-        var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
-        //add radial velocity calcs
-        //clamp to the physical limits of our hood
-        angle = MathUtil.clamp(angle, 0.0, 45.0) + TurretConfig.HoodConfig.kHoodDegreesOffset;
+        double angle = getHoodAimFinalAngle(towards);
         var cmd = hood.setAngleCommand(angle);
         return cmd;
     }
 
-    public double getTestAimHoodCalcs(Translation2d towards) {
+    public double getHoodAimFinalAngle(Translation2d towards) {
         //linear calcs
         Translation2d phantomRobotPosition = getPhantomRobotPosition();
         double radialVelocity = getRadialVelocityForPhantom(RobotContainer.kNavx.getVelocityX(), RobotContainer.kNavx.getVelocityY(), phantomRobotPosition);
-        Rotation2d angleOfRad = new Rotation2d(getAngleToPosition());
+        Rotation2d angleOfRad = new Rotation2d(getAngleToPosition(phantomRobotPosition, towards));
         double T = getDistanceToHub(phantomRobotPosition) / TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity;
         //rotational calcs
         var rotationalVelocity = getTurretRotationalToLinearVelocity();
@@ -281,7 +276,8 @@ public class Turret extends SubsystemBase{
         var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
         //add radial velocity calcs
         //clamp to the physical limits of our hood
-        angle = MathUtil.clamp(angle, 0.0, 45.0) + TurretConfig.HoodConfig.kHoodDegreesOffset;
+        angle = MathUtil.clamp(angle, 0.0, 45.0); 
+        //this will be part of the relative / absolute hybrid incorporation   + TurretConfig.HoodConfig.kHoodDegreesOffset;
         return angle;
     }
 
@@ -289,7 +285,22 @@ public class Turret extends SubsystemBase{
         return aimHood(getCurrentHubPosition());
     }
 
-    public Command aimTowardsHub() {
+    public Command aimHoodSimple(Translation2d towards) {
+        double distanceToPoint = RobotContainer.kSwerveDrive.getPose().getTranslation().getDistance(towards);
+        var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
+        //add radial velocity calcs
+        //clamp to the physical limits of our hood
+        angle = MathUtil.clamp(angle, 0.0, 45.0); 
+        //this will be part of the relative / absolute hybrid incorporation   + TurretConfig.HoodConfig.kHoodDegreesOffset;
+        var cmd = hood.setAngleCommand(angle);
+        return cmd;
+    }
+
+    public Command aimHoodSimple() {
+        return aimHoodSimple(getCurrentHubPosition());
+    }
+
+    public Command aimTowardsHubWithVelocity() {
         var cmd = Commands.parallel(
             aimHood(), 
             aimWaist()
@@ -298,30 +309,39 @@ public class Turret extends SubsystemBase{
         return cmd;
     }
 
+    public Command aimTowardsHub() {
+        var cmd = Commands.parallel(
+            aimHoodSimple(),
+            aimWaistSimple()
+            );
+        cmd.addRequirements(hood,waist);
+        return cmd;
+    }
+
+    public Command aimAndShootTowardsHub() {
+        var cmd = Commands.parallel(
+            aimTowardsHub(),
+            shootContinuously()
+            );
+        cmd.addRequirements(this);
+        return cmd;
+    }
+
+    public Command aimAndShootTowardsHubWithVelocity() {
+        var cmd = Commands.parallel(
+            aimTowardsHubWithVelocity(),
+            shootContinuously()
+            );
+        cmd.addRequirements(this);
+        return cmd;
+    }
+
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
         builder.setSmartDashboardType(getName());
         builder.setSafeState(this::stop);
-        builder.addDoubleProperty("testHoodCalcs",() -> getTestAimHoodCalcs(getCurrentHubPosition()), null);
+        builder.addDoubleProperty("testHoodCalcs",() -> getHoodAimFinalAngle(getCurrentHubPosition()), null);
     }
-=======
-    public void stop() {
-        hood.stop();
-        waist.stop();
-        kicker.stop();
-        spitter.stop();
-    }
-
-    public Command stopCommand() {
-        var cmd = runOnce(this::stop);
-        cmd.addRequirements(hood, waist, kicker, spitter);
-        return cmd.withName("StopTurret");
-    }
-    //for getting the position and rotation (which we will probably want to do in hood and waist), use our humble kNavx
-    //kNavx.getVelocityX and VelocityY
-    //kNavx.getRotation2d
-    //find a way to get global position
->>>>>>> main
 }
     //for getting the position and rotation (which we will probably want to do in hood and waist), use our humble kNavx
     //
