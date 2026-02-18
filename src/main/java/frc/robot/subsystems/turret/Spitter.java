@@ -17,32 +17,24 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class Spitter extends SubsystemBase {
 
-  private final SparkMax leader,follower;
+  private final SparkMax motor;
 
   public Spitter() {
     super(Spitter.class.getSimpleName() + "/" + Spitter.class.getSimpleName());
 
-    var leaderConfig = new SparkMaxConfig()
+    var motorConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
         .inverted(true);
-    leader = new SparkMax(RobotMap.TURRET_SPITTER_LEADER_MOTOR_ID, MotorType.kBrushless);
-    leader.configure(leaderConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
-
-    var followerConfig = new SparkMaxConfig()
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(30)
-        .follow(RobotMap.TURRET_SPITTER_LEADER_ID, true);
-    follower= new SparkMax(RobotMap.TURRET_SPITTER_FOLLOWER_ID, MotorType.kBrushless);
-    follower.configure(followerConfig, ResetMode.kResetSafeParameters,
+    motor = new SparkMax(RobotMap.TURRET_SPITTER_LEADER_ID, MotorType.kBrushless);
+    motor.configure(motorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
     SmartDashboard.putData(getName(), this);
   }
 
   public void stop() {
-    leader.stopMotor();
+    motor.stopMotor();
   }
 
   public Command stopCommand() {
@@ -51,7 +43,7 @@ public class Spitter extends SubsystemBase {
   }
 
   public void start() {
-    leader.setVoltage(2.75);
+    motor.setVoltage(2.75);
   }
 
   public Command startCommand() {
