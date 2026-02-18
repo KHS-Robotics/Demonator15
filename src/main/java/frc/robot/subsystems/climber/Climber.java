@@ -31,10 +31,10 @@ public class Climber extends SubsystemBase{
         return cmd.withName("SetElevatorL3");
     }
 
-    public Command setClimberStow() {
+    public Command stowClimber() {
         var cmd = elevator.setHeightCommand(ClimberConfig.ElevatorSetpoints.STOW);
         cmd.addRequirements(elevator);
-        return cmd.withName("SetElevatorStow");
+        return cmd.withName("StowElevator");
     }
     
     public Command deployOutsideHooks() {
@@ -73,10 +73,30 @@ public class Climber extends SubsystemBase{
         return cmd.withName("retractInnerHooks");
     }
 
-    //public Command goToL1(){
-    //var cmd = retractOutsideHooks().andThen(setClimberL1()).andThen(deployOutsideHooks());
-     //return cmd.withName("goToL1");
-    //}
+    public void stop(){
+        elevator.stop();
+    }
+
+    public Command stopCommand(){
+        var cmd = runOnce(this::stop);
+        cmd.addRequirements(elevator);
+        return cmd.withName("StopClimber");
+    }
+
+    public Command climbL1(){
+        var cmd = retractOutsideHooks().andThen(setClimberL1()).andThen(deployOutsideHooks()).andThen(stowClimber());
+        return cmd.withName("ClimbL1");
+    }
+
+    public Command climbL2(){
+        var cmd = retractOutsideHooks().andThen(setClimberL2()).andThen(deployOutsideHooks()).andThen(stowClimber());
+        return cmd.withName("ClimbL2");
+    }
+
+    public Command climbL3(){
+        var cmd = retractOutsideHooks().andThen(setClimberL3()).andThen(deployOutsideHooks()).andThen(stowClimber()); //add boolean conditional once smartdashboard changes are merged. also change it when the climber actually exists
+        return cmd.withName("ClimbL3");
+    }
 
     //we should have a prepare climb thing and an autoclimb, look into the elevator for how to do autoclimb
     

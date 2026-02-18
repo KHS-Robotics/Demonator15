@@ -14,14 +14,14 @@ public final class SwerveDriveConfig {
       / SDS_L2_DRIVE_GEARING;
   public static final double kDriveEncoderVelocityConversionFactor = kDriveEncoderPositionConversionFactor / 60.0;
 
-  public static final Translation2d kFrontLeftModuleOffset = new Translation2d(Units.inchesToMeters(11.25),
-      Units.inchesToMeters(11.75));
-  public static final Translation2d kFrontRightModuleOffset = new Translation2d(Units.inchesToMeters(11.25),
-      Units.inchesToMeters(-11.75));
-  public static final Translation2d kRearLeftModuleOffset = new Translation2d(Units.inchesToMeters(-11.25),
-      Units.inchesToMeters(11.75));
-  public static final Translation2d kRearRightModuleOffset = new Translation2d(Units.inchesToMeters(-11.25),
-      Units.inchesToMeters(-11.75));
+  public static final Translation2d kFrontLeftModuleOffset = new Translation2d(Units.inchesToMeters(11.75),
+      Units.inchesToMeters(9.25));
+  public static final Translation2d kFrontRightModuleOffset = new Translation2d(Units.inchesToMeters(11.75),
+      Units.inchesToMeters(-9.25));
+  public static final Translation2d kRearLeftModuleOffset = new Translation2d(Units.inchesToMeters(-11.75),
+      Units.inchesToMeters(9.25));
+  public static final Translation2d kRearRightModuleOffset = new Translation2d(Units.inchesToMeters(-11.75),
+      Units.inchesToMeters(-9.25));
 
   // April Tags
   public static final double VISION_X_P = 1.25;

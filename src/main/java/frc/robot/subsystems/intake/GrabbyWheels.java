@@ -65,23 +65,23 @@ public class GrabbyWheels extends SubsystemBase {
   }
 
   public void outake() {
-    intakeState = IntakeState.OUTAKING;
+    intakeState = IntakeState.OUTTAKING;
     motor.setVoltage(-12);
   }
 
   public void outakeSlow() {
-    intakeState = IntakeState.OUTAKING;
+    intakeState = IntakeState.OUTTAKING;
     motor.setVoltage(-5);
   }
 
   public Command outakeCommand() {
     var cmd = runOnce(this::outake);
-    return cmd.withName("OutakeIntake");
+    return cmd.withName("Outtake");
   }
 
   public Command outakeSlowCommand() {
     var cmd = runOnce(this::outakeSlow);
-    return cmd.withName("OutakeIntakeSlow");
+    return cmd.withName("OuttakeSlow");
   }
 
   /** {@inheritDoc} */
@@ -97,7 +97,7 @@ public class GrabbyWheels extends SubsystemBase {
   public enum IntakeState {
     IDLE("Idle"),
     INTAKING("Intaking"),
-    OUTAKING("Outaking");
+    OUTTAKING("Outtaking");
 
     private final String state;
 

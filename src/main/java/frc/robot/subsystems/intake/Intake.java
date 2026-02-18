@@ -16,28 +16,28 @@ public class Intake extends SubsystemBase {
     public Command deployDeployer() {
         var cmd = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY);
         cmd.addRequirements(deployer);
-        return cmd.withName("SetDeployerStateDeploy");
+        return cmd.withName("DeployIntake");
     }
 
     public Command stowDeployer() {
         var cmd = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW);
         cmd.addRequirements(deployer);
-        return cmd.withName("SetDeployerStateStow");
+        return cmd.withName("StowIntake");
     }
 
     public Command agitateDeployer() {
         var cmd = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE);
         cmd.addRequirements(deployer);
-        return cmd.withName("SetDeployerStateAgitate");
+        return cmd.withName("AgitateIntake");
     }
 
-    public Command intakefuel() {
+    public Command intakeFuel() {
         var cmd = startEnd(grabbyWheels::intake, grabbyWheels::stop);
         cmd.addRequirements(grabbyWheels);
         return cmd.withName("IntakeFuel");
     }
 
-    public Command outakefuel() {
+    public Command outtakeFuel() {
         var cmd = startEnd(grabbyWheels::outake, grabbyWheels::stop);
         cmd.addRequirements(grabbyWheels);
         return cmd.withName("OutakeFuel");

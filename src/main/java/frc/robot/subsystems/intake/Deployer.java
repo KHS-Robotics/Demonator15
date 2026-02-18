@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -124,5 +125,12 @@ public class Deployer extends SubsystemBase {
     motor.stopMotor();
     pid.reset();
     setSetpointAngle(getAngle());
+  }
+
+  public void initSendable(SendableBuilder builder){
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.addBooleanProperty("IntakeAtTop", () -> this.isAtTop(), null);
   }
 }

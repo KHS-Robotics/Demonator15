@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.cameras.CameraConfig.PhotonVisionConfig;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.Elevator;
 import frc.robot.subsystems.cameras.CameraConfig.LimelightConfig;
 import frc.robot.subsystems.cameras.CameraConfig;
@@ -92,7 +93,7 @@ public class RobotContainer {
   public static final Turret kTurret = new Turret();
   public static final Intake kIntake = new Intake();
   public static final Indexer kIndexer = new Indexer();
-  public static final Elevator kClimber = new Elevator();
+  public static final Climber kClimber = new Climber();
   //public static final Intake kIntake = new Intake()
 
   // Subsystems - Cameras
@@ -170,7 +171,27 @@ public class RobotContainer {
 
   /** Binds commands to operator stick buttons. */
   private void configureOpertatorStickBindings() {
-    
+    //Intake
+    kOperatorStick.runIntake().whileTrue(kIntake.intakeFuel());
+    kOperatorStick.outtake().whileTrue(kIntake.outtakeFuel());
+
+    kOperatorStick.deployIntake().onTrue(kIntake.deployDeployer());
+    kOperatorStick.agitateIntake().onTrue(kIntake.agitateDeployer());
+    kOperatorStick.stowIntake().onTrue(kIntake.stowDeployer());
+
+
+    //Indexer
+    kOperatorStick.forwardIndex().whileTrue(kIndexer.forwardCommand());
+    kOperatorStick.reverseIndex().whileTrue(kIndexer.reverseCommand());
+
+
+    //Climber
+    kOperatorStick.autoClimb().onTrue(kClimber.climbL1());
+    kOperatorStick.stopClimber().onTrue(kClimber.stopCommand());
+
+
+    //Turret
+    kOperatorStick.autoShoot().whileTrue(kTurret.shootContinuously());
   }
 
   /** https://pathplanner.dev/home.html */
@@ -207,21 +228,42 @@ public class RobotContainer {
         Commands.sequence(kSwerveDrive.stopCommand(), kIntake.stopCommand(), kClimber.stopCommand(), kTurret.stopCommand(), kIndexer.stopCommand())
             .withName("StopAll"));
 
+
     // Swerve Drive
     NamedCommands.registerCommand("STOPSwerve", kSwerveDrive.stopCommand());
 
+
     // Intake
     NamedCommands.registerCommand("STOPIntake", kIntake.stopCommand());
-    NamedCommands.registerCommand("DeployDeployer", kIntake.deployDeployer());
-    NamedCommands.registerCommand("StowDeployer", kIntake.stowDeployer());
-    NamedCommands.registerCommand("AgitateDeployer", kIntake.agitateDeployer());
-    NamedCommands.registerCommand("IntakeFuel", kIntake.intakefuel());
-    NamedCommands.registerCommand("OutakeFuel", kIntake.outakefuel());
-    NamedCommands.registerCommand("STOPGrabbyWheels", kIntake.stopGrabbyWheelsCommand());
+
+    NamedCommands.registerCommand("DeployIntake", kIntake.deployDeployer());
+    NamedCommands.registerCommand("StowIntake", kIntake.stowDeployer());
+    NamedCommands.registerCommand("AgitateIntake", kIntake.agitateDeployer());
+
+    NamedCommands.registerCommand("RunIntake", kIntake.intakeFuel());
+    NamedCommands.registerCommand("stupid", kIntake.outtakeFuel());
+
+  
+    NamedCommands.registerCommand("STOPIntaking", kIntake.stopGrabbyWheelsCommand());
+
+
+    //indexer
+    NamedCommands.registerCommand("RunIndexer", kIndexer.forwardCommand());
+    
 
     //climber
     NamedCommands.registerCommand("STOPClimber", kClimber.stopCommand());
+
+    NamedCommands.registerCommand("ClimbL1", kClimber.climbL1());
+    //(climbing other levels is not necessary for auto)
+
+
+    // turret
+    NamedCommands.registerCommand("FireAutomatic", kTurret.shootContinuously());
+    NamedCommands.registerCommand("FireManual", kTurret.shootMomentarily());
+    NamedCommands.registerCommand("Reload", kTurret.reload());
   }
+
 
   /** https://pathplanner.dev/pplib-custom-logging.html */
   private void configurePathPlannerLogging() {
