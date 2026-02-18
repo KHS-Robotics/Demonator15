@@ -95,11 +95,10 @@ public class RobotContainer {
   public static final Indexer kIndexer = new Indexer();
   public static final Climber kClimber = new Climber();
   //public static final Intake kIntake = new Intake()
-
   // Subsystems - Cameras
   // photon
-  public static final DemonPhotonCamera kFrontRightPhotonCamera = new DemonPhotonCamera(
-       PhotonVisionConfig.PhotonCameraName, PhotonVisionConfig.RobotToPhotonCamera);
+  //public static final DemonPhotonCamera kFrontRightPhotonCamera = new DemonPhotonCamera(
+  //     PhotonVisionConfig.PhotonCameraName, PhotonVisionConfig.RobotToPhotonCamera);
   // limelight
   //public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
       //LimelightConfig.LimelightCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
