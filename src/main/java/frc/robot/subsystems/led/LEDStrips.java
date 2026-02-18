@@ -5,13 +5,19 @@ import static edu.wpi.first.units.Units.Degree;
 import java.awt.List;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
 import org.opencv.core.Mat.Tuple3;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.interpolation.Interpolator;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -21,6 +27,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color.RGBChannel;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,6 +37,8 @@ import frc.robot.RobotMap;
 public class LEDStrips extends SubsystemBase {
     private final BooleanSupplier IsAtSetpointAngle, IsAtSetpointDegrees;
     private final DoubleSupplier TurretDegrees;
+
+    int animationSelectedLED;
 
     AddressableLEDBufferView turretBufferView;
     AddressableLEDBufferView hopperBufferView;
@@ -55,13 +64,44 @@ public class LEDStrips extends SubsystemBase {
     public void runTurretLEDS(){
         if (RobotState.isDisabled()){
             runTurretLEDSDisabled();
-            Timer.delay(LEDConfig.kDisabledRunAnimationLength);
         }
 
     }
 
-    public void runTurretLEDSDisabled(){
-        
+    public void setToAllianceColor(){
+        var alliance = DriverStation.getAlliance();
+        if (alliance.get() == Alliance.Red){
+            setTheme(Color.fromHSV(0, 215, 255), Color.fromHSV(25, 215, 255), turretBufferView);
+            setTheme(Color.fromHSV(0, 215, 255), Color.fromHSV(25, 215, 255), hopperBufferView);
+        }
+        else{
+            setTheme(Color.fromHSV(115, 200, 255), Color.fromHSV(95, 230, 255), turretBufferView);
+            setTheme(Color.fromHSV(115, 200, 255), Color.fromHSV(95, 230, 255), hopperBufferView);
+        }
+        for (int i = 0; i < LEDConfig.kTurretLEDStripLength; i++){
+            turretBufferView.setRGB(i, rgbConversion(turretColorPrimary.red), rgbConversion(turretColorPrimary.green), rgbConversion(turretColorPrimary.blue));
+        }
+        for (int i = LEDConfig.kTurretLEDStripLength; i < LEDConfig.kHopperLEDStripLength; i++){
+            hopperBufferView.setRGB(i, rgbConversion(hopperColorPrimary.red), rgbConversion(hopperColorPrimary.green), rgbConversion(hopperColorPrimary.blue));
+        }
+    }
+
+
+    public void disabledAnimation(){
+        turretBufferView.setRGB(animationSelectedLED, rgbConversion(turretColorSecondary.red), rgbConversion(turretColorSecondary.green), rgbConversion(turretColorSecondary.blue));
+        for (int i = 0; i < LEDConfig.kTicksPerAnimationCycle; i++){
+                turretBufferView.setRGB(selectedRGB, rgbConversion(turretColorSecondary.red), rgbConversion(turretColorSecondary.green), rgbConversion(turretColorSecondary.blue));
+            }
+        }
+
+    public int animationProgress(int tick){
+        double doubleStripLength = LEDConfig.kTurretLEDStripLength;
+        long tickProgress = Math.round(doubleStripLength / LEDConfig.kTicksPerAnimationCycle * MathUtil.interpolate(0.0, doubleStripLength, Math.abs(1 / (tick - doubleStripLength / 2))));
+        return (int) tickProgress;
+    }
+
+    public int rgbConversion(double percent){
+        return (int) Math.round(255 * percent);
     }
 
     public Boolean secondaryColorEnabled = true;
