@@ -47,30 +47,28 @@ public final class RobotMap {
   public static final int INNER_SERVO = 3;
 
 //indexer motors
-  public static final int HOPPER_MOTOR_ID = -1;
+  public static final int HOPPER_MOTOR_ID = -2;
 
 //intake motors
-  public static final int INTAKE_DEPLOYER_LEADER_ID = -1;
-  public static final int INTAKE_DEPLOYER_FOLLOWER_ID = -1;
-  public static final int INTAKE_GRABBY_WHEELS_ID = -1;
+  public static final int INTAKE_DEPLOYER_LEADER_ID = -3;
+  public static final int INTAKE_DEPLOYER_FOLLOWER_ID = -4;
+  public static final int INTAKE_GRABBY_WHEELS_ID = -5;
 
 //turret motors
-  public static final int TURRET_AIMER_HOOD_ID = -1;
-  public static final int TURRET_AIMER_WAIST_ID = -1;
-  public static final int TURRET_SPITTER_LEADER_ID = -1;
-  public static final int TURRET_SPITTER_FOLLOWER_ID = -1;
-  public static final int TURRET_KICKER_MOTOR_ID = -1;
-  public static final int TURRET_SPITTER_LEADER_MOTOR_ID = -1;
+  public static final int TURRET_AIMER_HOOD_ID = 41;
+  public static final int TURRET_AIMER_WAIST_ID = 43;
+  public static final int TURRET_SPITTER_LEADER_ID = 42;
+  public static final int TURRET_KICKER_MOTOR_ID = 44;
   
 
 
 //LEDs over PWM
   public static final int LED_PORT = 0;
 
-//two climber motors - lead and follower
+//one climber motor - climber
 //eight swerve motors
 //one indexer motor - hopper
-//two deployer motors - deployer lead and deployer follower
+//one deployer motor - deployer
 //one grabby wheel motor - grabber
 //four wheel motors for the shooter:
 //indexer -> tower motor - belt
