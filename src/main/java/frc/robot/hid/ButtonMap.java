@@ -22,5 +22,5 @@ public class ButtonMap {
 
     //Turret
     public static final int AUTO_FIRE_BUTTON = 0;
-    public static final int SWITCH_AIMING_MODE = 0;
+    // public static final int SWITCH_AIMING_MODE = 0;
 }

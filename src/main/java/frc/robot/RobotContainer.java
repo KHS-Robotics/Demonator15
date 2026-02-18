@@ -191,6 +191,7 @@ public class RobotContainer {
 
     //Turret
     kOperatorStick.autoShoot().whileTrue(kTurret.shootContinuously());
+    // kOperatorStick.switchAimingMode().onTrue(kTurret.placeholder)
   }
 
   /** https://pathplanner.dev/home.html */
@@ -259,8 +260,11 @@ public class RobotContainer {
 
     // turret
     NamedCommands.registerCommand("FireAutomatic", kTurret.shootContinuously());
-    NamedCommands.registerCommand("FireManual", kTurret.shootMomentarily());
+    NamedCommands.registerCommand("FireManual", kTurret.shoot());
     NamedCommands.registerCommand("Reload", kTurret.reload());
+
+    NamedCommands.registerCommand("AutoAim", kTurret.aimTowardsHub());
+    NamedCommands.registerCommand("AutoAimAndShoot", kTurret.aimAndShootTowardsHub());
   }
 
 

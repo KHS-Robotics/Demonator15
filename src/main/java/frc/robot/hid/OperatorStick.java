@@ -58,7 +58,7 @@ public class OperatorStick extends Joystick {
     return new Trigger(() -> this.getRawButton(ButtonMap.AUTO_FIRE_BUTTON));
   }
 
-  public Trigger switchAimingMode(){
-    return new Trigger(() -> this.getRawButton(ButtonMap.SWITCH_AIMING_MODE));
-  }
+  // public Trigger switchAimingMode(){
+  //   return new Trigger(() -> this.getRawButton(ButtonMap.SWITCH_AIMING_MODE));
+  // }
 }

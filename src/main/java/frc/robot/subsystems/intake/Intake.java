@@ -48,7 +48,7 @@ public class Intake extends SubsystemBase {
         leftAcuator.set(0);
     }
 
-    public Command intakefuel() {
+    public Command intakeFuel() {
         var cmd = startEnd(grabbyWheels::intake, grabbyWheels::stop);
         cmd.addRequirements(grabbyWheels);
         return cmd.withName("IntakeFuel");
