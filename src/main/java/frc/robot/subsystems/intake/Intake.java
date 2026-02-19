@@ -3,66 +3,62 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.Servo;
-
-import frc.robot.RobotMap;
 
 public class Intake extends SubsystemBase {
     private final Deployer deployer = new Deployer();
+    private final Hopper hopper = new Hopper();
     private final GrabbyWheels grabbyWheels = new GrabbyWheels();
-    private final Servo rightAcuator, leftAcuator;
 
     public Intake() {
         SmartDashboard.putData(this);
+    }
 
-        rightAcuator = new Servo(RobotMap.RIGHT_SERVO);
-        leftAcuator = new Servo(RobotMap.LEFT_SERVO);
+    public Command fullyStow() {
+        // conditional collision logic for hopper+intake
+        var onHopperCurrentlyRetracted = hopper.deploy().andThen(deployer.stow()).andThen(hopper.retract());
+        var onHopperAlreadyDeployed = deployer.stow().andThen(hopper.retract());
+        var cmd = new ConditionalCommand(onHopperCurrentlyRetracted, onHopperAlreadyDeployed, hopper.isBlockingIntake());
+        return cmd.withName("StowDeployerAndHopper");
     }
 
     public Command deployDeployer() {
-        var cmd = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY);
-        cmd.addRequirements(deployer);
-        return cmd.withName("DeployIntake");
+        // conditional collision logic for hopper+intake
+        var onHopperCurrentlyRetracted = hopper.deploy().andThen(deployer.deploy());
+        var onHopperAlreadyDeployed = deployer.deploy();
+        var cmd = new ConditionalCommand(onHopperCurrentlyRetracted, onHopperAlreadyDeployed, hopper.isBlockingIntake());
+        return cmd.withName("DeployDeployer");
     }
 
     public Command stowDeployer() {
-        var cmd = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW);
-        cmd.addRequirements(deployer);
-        return cmd.withName("StowIntake");
+        // conditional collision logic for hopper+intake
+        var onHopperRetracted = hopper.deploy().andThen(deployer.stow());
+        var onHopperAlreadyDeployed = deployer.stow();
+        var cmd = new ConditionalCommand(onHopperRetracted, onHopperAlreadyDeployed, hopper.isBlockingIntake());
+        return cmd.withName("StowDeployer");
     }
 
     public Command agitateDeployer() {
-        var cmd = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE);
-        cmd.addRequirements(deployer);
-        return cmd.withName("AgitateIntake");
-    }
-
-    public void retractLinearAcuators() {
-        rightAcuator.set(0);
-        leftAcuator.set(0);
-    }
-
-    public void deployLinearAcuators(){
-        rightAcuator.set(0);
-        leftAcuator.set(0);
+        // conditional collision logic for hopper+intake
+        var onHopperRetracted = hopper.deploy().andThen(deployer.agitate());
+        var onHopperAlreadyDeployed = deployer.agitate();
+        var cmd = new ConditionalCommand(onHopperRetracted, onHopperAlreadyDeployed, hopper.isBlockingIntake());
+        return cmd.withName("AgitateDeployer");
     }
 
     public Command intakeFuel() {
         var cmd = startEnd(grabbyWheels::intake, grabbyWheels::stop);
-        cmd.addRequirements(grabbyWheels);
         return cmd.withName("IntakeFuel");
     }
 
     public Command outtakeFuel() {
         var cmd = startEnd(grabbyWheels::outake, grabbyWheels::stop);
-        cmd.addRequirements(grabbyWheels);
         return cmd.withName("OutakeFuel");
     }
 
     public Command stopCommand() {
         var cmd = runOnce(this::stop);
-        cmd.addRequirements(deployer, grabbyWheels);
         return cmd.withName("StopIntake");
     }
 

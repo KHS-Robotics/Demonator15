@@ -84,7 +84,7 @@ public class RobotContainer {
   // https://docs.wpilib.org/en/stable/docs/software/basic-programming/joystick.html
   public static final DemonCommandXboxController kDriverController = new DemonCommandXboxController(RobotMap.XBOX_PORT);
   public static final OperatorStick kOperatorStick = new OperatorStick(RobotMap.OPERATOR_STICK_PORT);
-  
+
   // Subsystems
   // https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html
 
@@ -94,18 +94,21 @@ public class RobotContainer {
   public static final Intake kIntake = new Intake();
   public static final Indexer kIndexer = new Indexer();
   public static final Climber kClimber = new Climber();
-  //public static final Intake kIntake = new Intake()
+  // public static final Intake kIntake = new Intake()
   // Subsystems - Cameras
   // photon
-  //public static final DemonPhotonCamera kFrontRightPhotonCamera = new DemonPhotonCamera(
-  //     PhotonVisionConfig.PhotonCameraName, PhotonVisionConfig.RobotToPhotonCamera);
+  // public static final DemonPhotonCamera kFrontRightPhotonCamera = new
+  // DemonPhotonCamera(
+  // PhotonVisionConfig.PhotonCameraName, PhotonVisionConfig.RobotToPhotonCamera);
   // limelight
-  //public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
-      //LimelightConfig.LimelightCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+  // public static final DemonLimelightCamera kRearLimelightCamera = new
+  // DemonLimelightCamera(
+  // LimelightConfig.LimelightCameraName, LimelightConfig.kPoseAlgorithm,
+  // kSwerveDrive::getPose, kNavx::getRate);
 
   // Subsystems - LED indicators
   // public static final LEDStrip kLedStrip = new LEDStrip(
-    
+
   // );
 
   /**
@@ -127,14 +130,16 @@ public class RobotContainer {
    */
   private void configureSubsystemDefaultCommands() {
     // control swerve drive with the xbox controller by default
-    kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> !kDriverController.robotRelative().getAsBoolean(),
-        DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
+    kSwerveDrive.setDefaultCommand(
+        kSwerveDrive.driveWithXboxController(kDriverController, () -> !kDriverController.robotRelative().getAsBoolean(),
+            DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
     // RearLimelightCamera - AprilTag updates for odometry
-  //   kRearLimelightCamera.setDefaultCommand(
-  //       kRearLimelightCamera
-  //           .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
-  //               estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
+    // kRearLimelightCamera.setDefaultCommand(
+    // kRearLimelightCamera
+    // .pollForPoseUpdates((estimate) ->
+    // kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
+    // estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
   }
 
   /**
@@ -163,14 +168,14 @@ public class RobotContainer {
 
     // For defense / to make the robot harder to move
     kDriverController.lockHeadingForDefense()
-      .whileTrue(kSwerveDrive.holdCurrentHeadingWhileDriving(kDriverController, () -> !kDriverController.robotRelative().getAsBoolean(),
-        DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
+        .whileTrue(kSwerveDrive.holdCurrentHeadingWhileDriving(kDriverController,
+            () -> !kDriverController.robotRelative().getAsBoolean(),
+            DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
   }
-
 
   /** Binds commands to operator stick buttons. */
   private void configureOpertatorStickBindings() {
-    //Intake
+    // Intake
     kOperatorStick.runIntake().whileTrue(kIntake.intakeFuel());
     kOperatorStick.outtake().whileTrue(kIntake.outtakeFuel());
 
@@ -178,18 +183,15 @@ public class RobotContainer {
     kOperatorStick.agitateIntake().onTrue(kIntake.agitateDeployer());
     kOperatorStick.stowIntake().onTrue(kIntake.stowDeployer());
 
-
-    //Indexer
+    // Indexer
     kOperatorStick.forwardIndex().whileTrue(kIndexer.forwardCommand());
     kOperatorStick.reverseIndex().whileTrue(kIndexer.reverseCommand());
 
+    // Climber
+    // kOperatorStick.autoClimb().onTrue(kClimber.climbL1());
+    // kOperatorStick.stopClimber().onTrue(kClimber.stopCommand());
 
-    //Climber
-    kOperatorStick.autoClimb().onTrue(kClimber.climbL1());
-    kOperatorStick.stopClimber().onTrue(kClimber.stopCommand());
-
-
-    //Turret
+    // Turret
     kOperatorStick.autoShoot().whileTrue(kTurret.shootContinuously());
     // kOperatorStick.switchAimingMode().onTrue(kTurret.placeholder)
   }
@@ -220,18 +222,18 @@ public class RobotContainer {
     // String names here must match what is used in the PathPlanner GUI in order to
     // work properly!
 
-    //EXAMPLE:
-    //NamedCommands.registerCommand("DeployIntake", kIntake.deploy());
+    // EXAMPLE:
+    // NamedCommands.registerCommand("DeployIntake", kIntake.deploy());
 
     // stop all
     NamedCommands.registerCommand("STOP",
-        Commands.sequence(kSwerveDrive.stopCommand(), kIntake.stopCommand(), kClimber.stopCommand(), kTurret.stopCommand(), kIndexer.stopCommand())
+        Commands
+            .sequence(kSwerveDrive.stopCommand(), kIntake.stopCommand(), kClimber.stopCommand(), kTurret.stopCommand(),
+                kIndexer.stopCommand())
             .withName("StopAll"));
-
 
     // Swerve Drive
     NamedCommands.registerCommand("STOPSwerve", kSwerveDrive.stopCommand());
-
 
     // Intake
     NamedCommands.registerCommand("STOPIntake", kIntake.stopCommand());
@@ -243,20 +245,16 @@ public class RobotContainer {
     NamedCommands.registerCommand("RunIntake", kIntake.intakeFuel());
     NamedCommands.registerCommand("stupid", kIntake.outtakeFuel());
 
-  
     NamedCommands.registerCommand("STOPIntaking", kIntake.stopGrabbyWheelsCommand());
 
-
-    //indexer
+    // indexer
     NamedCommands.registerCommand("RunIndexer", kIndexer.forwardCommand());
-    
 
-    //climber
+    // climber
     NamedCommands.registerCommand("STOPClimber", kClimber.stopCommand());
 
     NamedCommands.registerCommand("ClimbL1", kClimber.climbL1());
-    //(climbing other levels is not necessary for auto)
-
+    // (climbing other levels is not necessary for auto)
 
     // turret
     NamedCommands.registerCommand("FireAutomatic", kTurret.shootContinuously());
@@ -266,7 +264,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("AutoAim", kTurret.aimTowardsHub());
     NamedCommands.registerCommand("AutoAimAndShoot", kTurret.aimAndShootTowardsHub());
   }
-
 
   /** https://pathplanner.dev/pplib-custom-logging.html */
   private void configurePathPlannerLogging() {

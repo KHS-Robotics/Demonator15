@@ -4,8 +4,6 @@
 
 package frc.robot.hid;
 
-import java.util.function.BooleanSupplier;
-
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -13,52 +11,51 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * Thrustmaster T16000M
  */
 public class OperatorStick extends Joystick {
-  public BooleanSupplier IntakeAtTop;
   public OperatorStick(int port) {
     super(port);
   }
 
-  public Trigger runIntake(){
-    return new Trigger(() -> this.getRawButton(ButtonMap.INTAKE_BUTTON) && !IntakeAtTop.getAsBoolean());
+  public Trigger runIntake() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.INTAKE_BUTTON));
   }
 
-  public Trigger outtake(){
-    return new Trigger(() -> this.getRawButton(ButtonMap.OUTTAKE_BUTTON) && !IntakeAtTop.getAsBoolean());
+  public Trigger outtake() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.OUTTAKE_BUTTON));
   }
 
-  public Trigger stowIntake(){
+  public Trigger stowIntake() {
     return new Trigger(() -> this.getRawButton(ButtonMap.STOW_INTAKE_BUTTON));
   }
 
-  public Trigger agitateIntake(){
+  public Trigger agitateIntake() {
     return new Trigger(() -> this.getRawButton(ButtonMap.AGITATE_INTAKE_BUTTON));
   }
 
-  public Trigger deployIntake(){
+  public Trigger deployIntake() {
     return new Trigger(() -> this.getRawButton(ButtonMap.DEPLOY_INTAKE_BUTTON));
   }
 
-  public Trigger autoClimb(){
+  public Trigger autoClimb() {
     return new Trigger(() -> this.getRawButton(ButtonMap.CLIMB_BUTTON));
   }
 
-  public Trigger stopClimber(){
+  public Trigger stopClimber() {
     return new Trigger(() -> this.getRawButton(ButtonMap.STOP_CLIMBER_BUTTON));
   }
 
-  public Trigger forwardIndex(){
+  public Trigger forwardIndex() {
     return new Trigger(() -> this.getRawButton(ButtonMap.FORWARD_INDEX_BUTTON));
   }
 
-  public Trigger reverseIndex(){
+  public Trigger reverseIndex() {
     return new Trigger(() -> this.getRawButton(ButtonMap.REVERSE_INDEX_BUTTON));
   }
 
-  public Trigger autoShoot(){
+  public Trigger autoShoot() {
     return new Trigger(() -> this.getRawButton(ButtonMap.AUTO_FIRE_BUTTON));
   }
 
   // public Trigger switchAimingMode(){
-  //   return new Trigger(() -> this.getRawButton(ButtonMap.SWITCH_AIMING_MODE));
+  // return new Trigger(() -> this.getRawButton(ButtonMap.SWITCH_AIMING_MODE));
   // }
 }

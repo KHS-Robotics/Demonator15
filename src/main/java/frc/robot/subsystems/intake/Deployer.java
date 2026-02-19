@@ -28,47 +28,62 @@ import frc.robot.subsystems.intake.IntakeConfig.DeployerConfig;
 
 public class Deployer extends SubsystemBase {
 
-        private double setpointAngleDegrees;
-    // ^ There are two seperate motors for the intake pivot,
-    // might want to change right/left names to avoid confusion
-     private final AbsoluteEncoder encoder;
-    private final PIDController pid;
-    private final SparkLimitSwitch sensor;
-    private final SparkMax motor;
+  private double setpointAngleDegrees;
+  // ^ There are two seperate motors for the intake pivot,
+  // might want to change right/left names to avoid confusion
+  private final AbsoluteEncoder encoder;
+  private final PIDController pid;
+  private final SparkLimitSwitch sensor;
+  private final SparkMax motor;
 
-    public Deployer() {
+  public Deployer() {
 
-        super(Deployer.class.getSimpleName() + "/" + Deployer.class.getSimpleName());
-        var encoderConfig = new AbsoluteEncoderConfig()
-                .inverted(true);
+    super(Deployer.class.getSimpleName() + "/" + Deployer.class.getSimpleName());
+    var encoderConfig = new AbsoluteEncoderConfig()
+        .inverted(true);
 
-        var limitSwitchConfig = new LimitSwitchConfig()
-                .forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor);
+    var limitSwitchConfig = new LimitSwitchConfig()
+        .forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor);
 
-        var leaderConfig = new SparkMaxConfig()
-                .idleMode(IdleMode.kBrake)
-                .smartCurrentLimit(30)
-                .follow(RobotMap.INTAKE_DEPLOYER_LEADER_ID, true)
-                .apply(encoderConfig)
-                .apply(limitSwitchConfig);
-        motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
-        motor.configure(leaderConfig, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+    var leaderConfig = new SparkMaxConfig()
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(30)
+        .follow(RobotMap.INTAKE_DEPLOYER_LEADER_ID, true)
+        .apply(encoderConfig)
+        .apply(limitSwitchConfig);
+    motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
+    motor.configure(leaderConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
-        encoder = motor.getAbsoluteEncoder();
-        sensor = motor.getForwardLimitSwitch();
+    encoder = motor.getAbsoluteEncoder();
+    sensor = motor.getForwardLimitSwitch();
 
-        pid = new PIDController(DeployerConfig.kDeployerP, DeployerConfig.kDeployerI, DeployerConfig.kDeployerD);
-        pid.setIZone(7);
+    pid = new PIDController(DeployerConfig.kDeployerP, DeployerConfig.kDeployerI, DeployerConfig.kDeployerD);
+    pid.setIZone(7);
 
-        SmartDashboard.putData(getName(), this);
-        SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
+    SmartDashboard.putData(getName(), this);
+    SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
 
-        }
+  }
 
-        public void periodic() {
+  public void periodic() {
     setMotorOutputForSetpoint();
     updateSetpointsForDisabledMode();
+  }
+
+  public Command stow() {
+    var cmd = setAngleCommand(IntakeConfig.DeployerSetpoints.STOW);
+    return cmd;
+  }
+
+  public Command deploy() {
+    var cmd = setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY);
+    return cmd;
+  }
+
+  public Command agitate() {
+    var cmd = setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE);
+    return cmd;
   }
 
   public Command setAngleCommand(double angleDegrees) {
@@ -98,7 +113,7 @@ public class Deployer extends SubsystemBase {
     return (error < 2);
   }
 
-  //if the deployer is at the same spot as the the limitswitch
+  // if the deployer is at the same spot as the the limitswitch
   public boolean isAtTop() {
     return sensor.isPressed();
   }
@@ -127,7 +142,7 @@ public class Deployer extends SubsystemBase {
     setSetpointAngle(getAngle());
   }
 
-  public void initSendable(SendableBuilder builder){
+  public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
