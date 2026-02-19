@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,6 +16,26 @@ public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
 
   public Robot() {
+    // silence disconnected joystick warnings when not FMS attached
+    DriverStation.silenceJoystickConnectionWarning(true);
+
+    // for debugging when not FMS attached
+    CommandScheduler.getInstance().onCommandInitialize((cmd) -> {
+      if (!DriverStation.isFMSAttached()) {
+        System.out.println(cmd.getName() + " started.");
+      }
+    });
+    CommandScheduler.getInstance().onCommandInterrupt((cmd) -> {
+      if (!DriverStation.isFMSAttached()) {
+        System.out.println(cmd.getName() + " interrupted.");
+      }
+    });
+    CommandScheduler.getInstance().onCommandFinish((cmd) -> {
+      if (!DriverStation.isFMSAttached()) {
+        System.out.println(cmd.getName() + " ended.");
+      }
+    });
+
     m_robotContainer = new RobotContainer();
   }
 

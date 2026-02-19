@@ -40,13 +40,13 @@ public class SwerveModule extends SubsystemBase {
   public final String name;
   public final double offsetAngle;
 
-  private final SparkMax driveMotor;
-  private final RelativeEncoder driveEncoder;
-  private final SparkClosedLoopController drivePID;
+  private SparkMax driveMotor;
+  private RelativeEncoder driveEncoder;
+  private SparkClosedLoopController drivePID;
   private final SimpleMotorFeedforward driveFeedForward;
 
   private final CANcoder pivotEncoder;
-  private final SparkMax pivotMotor;
+  private SparkMax pivotMotor;
   private final PIDController pivotPID;
 
   private boolean isCurrentlyFlippedForShorterPath;
@@ -83,19 +83,19 @@ public class SwerveModule extends SubsystemBase {
         .inverted(reversed)
         .apply(driveEncoderConfig)
         .apply(driveClosedLoopConfig);
-    driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
-    driveMotor.configure(driveMotorConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
-    drivePID = driveMotor.getClosedLoopController();
+    //driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
+    //driveMotor.configure(driveMotorConfig, ResetMode.kResetSafeParameters,
+        //PersistMode.kPersistParameters);
+    //drivePID = driveMotor.getClosedLoopController();
     driveFeedForward = new SimpleMotorFeedforward(drivekS, drivekV, drivekA);
-    driveEncoder = driveMotor.getEncoder();
+    //driveEncoder = driveMotor.getEncoder();
 
     var pivotMotorConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30);
-    pivotMotor = new SparkMax(pivotMotorChannel, MotorType.kBrushless);
-    pivotMotor.configure(pivotMotorConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
+    //pivotMotor = new SparkMax(pivotMotorChannel, MotorType.kBrushless);
+    //pivotMotor.configure(pivotMotorConfig, ResetMode.kResetSafeParameters,
+        //PersistMode.kPersistParameters);
 
     pivotEncoder = new CANcoder(pivotEncoderId);
     pivotPID = new PIDController(pivotP, pivotI, pivotD);
@@ -131,11 +131,11 @@ public class SwerveModule extends SubsystemBase {
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-    builder.addDoubleProperty("Speed", () -> getState().speedMetersPerSecond, null);
-    builder.addDoubleProperty("Angle", () -> getState().angle.getDegrees(), null);
-    builder.addBooleanProperty("IsOptimizingAngle", () -> isCurrentlyFlippedForShorterPath, null);
-    builder.addDoubleProperty("OffsetAngle", () -> offsetAngle, null);
-  }
+  //   builder.addDoubleProperty("Speed", () -> getState().speedMetersPerSecond, null);
+  //   builder.addDoubleProperty("Angle", () -> getState().angle.getDegrees(), null);
+  //   builder.addBooleanProperty("IsOptimizingAngle", () -> isCurrentlyFlippedForShorterPath, null);
+  //   builder.addDoubleProperty("OffsetAngle", () -> offsetAngle, null);
+    }
 
   /** {@inheritDoc} */
   @Override
@@ -148,7 +148,8 @@ public class SwerveModule extends SubsystemBase {
    * @return the current drive speed and pivot angle of the module
    */
   public SwerveModuleState getState() {
-    return new SwerveModuleState(driveEncoder.getVelocity(), Rotation2d.fromDegrees(getAngle()));
+    //return new SwerveModuleState(driveEncoder.getVelocity(), Rotation2d.fromDegrees(getAngle()));
+    return new SwerveModuleState(0,Rotation2d.fromDegrees(0));
   }
 
   /**
@@ -157,7 +158,8 @@ public class SwerveModule extends SubsystemBase {
    * @return the current drive distance traveled and pivot angle of the module
    */
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(driveEncoder.getPosition(), Rotation2d.fromDegrees(getAngle()));
+    //return new SwerveModulePosition(driveEncoder.getPosition(), Rotation2d.fromDegrees(getAngle()));
+    return new SwerveModulePosition(0,Rotation2d.fromDegrees(0));
   }
 
   /**

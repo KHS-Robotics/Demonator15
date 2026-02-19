@@ -45,8 +45,8 @@ public final class RobotMap {
   public static final int OUTER_SERVO_LEFT = 1;
   public static final int OUTER_SERVO_RIGHT = 2;
   public static final int INNER_SERVO = 3;
-  public static final int RIGHT_SERVO = -1;
-  public static final int LEFT_SERVO = -1;
+  public static final int RIGHT_SERVO = 4;
+  public static final int LEFT_SERVO = 5;
 
 //indexer motors
   public static final int HOPPER_MOTOR_ID = -2;

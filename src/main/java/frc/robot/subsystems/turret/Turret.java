@@ -55,18 +55,16 @@ public class Turret extends SubsystemBase{
     }
 
     public Command shootContinuously() {
-        var cmd = Commands.parallel(
-                shoot(),
-                reload()
-            );
-        cmd.addRequirements(kicker, spitter);
+        var startSpitter = spitter.startCommand();
+        var startKicker = kicker.startCommand();
+        var cmd = startSpitter.alongWith(startKicker);
         return cmd;
     }
 
     private Translation2d getCurrentHubPosition() {
         Translation2d hubPosition;
         var alliance = DriverStation.getAlliance();
-        if ( alliance.get() == Alliance.Red) {
+        if ( alliance.isPresent() && alliance.get() == Alliance.Red) {
             hubPosition = TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionOnField;
         //if the alliance is null, it is auto set to blue variables
         }else {
@@ -135,7 +133,7 @@ public class Turret extends SubsystemBase{
         Translation2d radialVector;
         double rX;
         double rY;
-        if ( alliance.get() == Alliance.Red) {
+        if (  alliance.isPresent() && alliance.get() == Alliance.Red) {
             rX = TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionX - robotPosition.getX();
             rY = TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionY - robotPosition.getY();
         //if the alliance is null, it is auto set to blue variables
@@ -164,7 +162,7 @@ public class Turret extends SubsystemBase{
         Translation2d radialVector;
         double rX;
         double rY;
-        if ( alliance.get() == Alliance.Red) {
+        if (  alliance.isPresent() && alliance.get() == Alliance.Red) {
             rX = TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionX - robotPosition.getX();
             rY = TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionY - robotPosition.getY();
         //if the alliance is null, it is auto set to blue variables
@@ -301,38 +299,40 @@ public class Turret extends SubsystemBase{
     }
 
     public Command aimTowardsHubWithVelocity() {
-        var cmd = Commands.parallel(
-            aimHood(), 
-            aimWaist()
-            );
-        cmd.addRequirements(hood, waist);
+        var aimWaist = aimHood();
+        var aimHood = aimWaist();
+        var cmd = aimWaist.alongWith(aimHood);
         return cmd;
     }
 
     public Command aimTowardsHub() {
-        var cmd = Commands.parallel(
-            aimHoodSimple(),
-            aimWaistSimple()
-            );
-        cmd.addRequirements(hood,waist);
+        var aimWaist = aimHoodSimple();
+        var aimHood = aimWaistSimple();
+        var cmd = aimWaist.alongWith(aimHood);
         return cmd;
     }
 
     public Command aimAndShootTowardsHub() {
-        var cmd = Commands.parallel(
-            aimTowardsHub(),
-            shootContinuously()
-            );
-        cmd.addRequirements(this);
+        var aim = aimTowardsHubWithVelocity();
+        var shoot = shootContinuously();
+        var cmd = aim.alongWith(shoot);
         return cmd;
     }
 
     public Command aimAndShootTowardsHubWithVelocity() {
-        var cmd = Commands.parallel(
-            aimTowardsHubWithVelocity(),
-            shootContinuously()
-            );
-        cmd.addRequirements(this);
+        var aim = aimTowardsHubWithVelocity();
+        var shoot = shootContinuously();
+        var cmd = aim.alongWith(shoot);
+        return cmd;
+    }
+
+    public Command goToSetHoodAngle() {
+        var cmd = hood.setAngleCommand(20);
+        return cmd;
+    }
+    
+    public Command goToSetWaistAngle() {
+        var cmd = waist.setDegreesCommand(90);
         return cmd;
     }
 
