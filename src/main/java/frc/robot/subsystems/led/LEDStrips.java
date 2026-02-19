@@ -2,23 +2,14 @@ package frc.robot.subsystems.led;
 
 import static edu.wpi.first.units.Units.Degree;
 
-import java.awt.List;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
-import org.opencv.core.Mat.Tuple3;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.interpolation.Interpolator;
-import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -26,7 +17,6 @@ import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color.RGBChannel;
@@ -38,7 +28,14 @@ public class LEDStrips extends SubsystemBase {
     private final BooleanSupplier IsAtSetpointAngle, IsAtSetpointDegrees;
     private final DoubleSupplier TurretDegrees;
 
-    int animationSelectedLED;
+    private int currentAnimationProgress = 0;
+    private final Color RED = Color.fromHSV(0, 215, 255);
+    private final Color BLUE = Color.fromHSV(115, 200, 255);
+
+    private Color primaryColor;
+    private Color secondaryColor;
+
+    private final int ticksPerSecond = 20;
 
     AddressableLEDBufferView turretBufferView;
     AddressableLEDBufferView hopperBufferView;
@@ -57,92 +54,92 @@ public class LEDStrips extends SubsystemBase {
         turretBufferView = addressableLEDBuffer.createView(0, LEDConfig.kTurretLEDStripLength);
         hopperBufferView = addressableLEDBuffer.createView(LEDConfig.kTurretLEDStripLength + 1, LEDConfig.kTotalLEDStripLength);
 
+        Thread runLeds = new Thread(() -> {
+      long lastTime = System.nanoTime();
+      double delta = 0;
+      while (!Thread.interrupted()) {
+        double ns = 1000000000 / (double) ticksPerSecond;
+        long now = System.nanoTime();
+        delta += (now - lastTime) / ns;
+        lastTime = now;
+        if (delta >= 1) {
+          runLEDS();
+          delta--;
+        }
+      }
+    });
+    //shoutout jack for the crazy nanotime stuff i yoinked
+
         addressableLED.setData(addressableLEDBuffer);
         addressableLED.start();
+
+        runLeds.start();
+    }
+
+    public void runLEDS(){
+        runTurretLEDS();
     }
 
     public void runTurretLEDS(){
-        if (RobotState.isDisabled()){
-            runTurretLEDSDisabled();
-        }
-
+       if (RobotState.isEnabled()){
+        runTurretLEDSEnabled();
+       }
+       else{
+        runTurretLEDSDisabled();
+       }
     }
 
-    public void setToAllianceColor(){
+    public void runTurretLEDSDisabled(){
+        setAllToColor(Color.fromHSV(0, 0, 0), turretBufferView);
+        if (currentAnimationProgress >= LEDConfig.kTurretLEDStripLength){
+            currentAnimationProgress = 0;
+        }
         var alliance = DriverStation.getAlliance();
-        if (alliance.get() == Alliance.Red){
-            setTheme(Color.fromHSV(0, 215, 255), Color.fromHSV(25, 215, 255), turretBufferView);
-            setTheme(Color.fromHSV(0, 215, 255), Color.fromHSV(25, 215, 255), hopperBufferView);
+        if (alliance.isPresent()){
+            Alliance coolAlliance = alliance.orElse(Alliance.Blue);
+            if (coolAlliance == Alliance.Red){
+                turretBufferView.setLED(currentAnimationProgress, RED);
+            }
+            else{
+                turretBufferView.setLED(currentAnimationProgress, BLUE);
+            }
         }
-        else{
-            setTheme(Color.fromHSV(115, 200, 255), Color.fromHSV(95, 230, 255), turretBufferView);
-            setTheme(Color.fromHSV(115, 200, 255), Color.fromHSV(95, 230, 255), hopperBufferView);
+            currentAnimationProgress += animationProgress();
         }
+
+    public void runTurretLEDSEnabled(){
         for (int i = 0; i < LEDConfig.kTurretLEDStripLength; i++){
-            turretBufferView.setRGB(i, rgbConversion(turretColorPrimary.red), rgbConversion(turretColorPrimary.green), rgbConversion(turretColorPrimary.blue));
-        }
-        for (int i = LEDConfig.kTurretLEDStripLength; i < LEDConfig.kHopperLEDStripLength; i++){
-            hopperBufferView.setRGB(i, rgbConversion(hopperColorPrimary.red), rgbConversion(hopperColorPrimary.green), rgbConversion(hopperColorPrimary.blue));
-        }
-    }
-
-
-    public void disabledAnimation(){
-        turretBufferView.setRGB(animationSelectedLED, rgbConversion(turretColorSecondary.red), rgbConversion(turretColorSecondary.green), rgbConversion(turretColorSecondary.blue));
-        for (int i = 0; i < LEDConfig.kTicksPerAnimationCycle; i++){
-                turretBufferView.setRGB(selectedRGB, rgbConversion(turretColorSecondary.red), rgbConversion(turretColorSecondary.green), rgbConversion(turretColorSecondary.blue));
-            }
-        }
-
-    public int animationProgress(int tick){
-        double doubleStripLength = LEDConfig.kTurretLEDStripLength;
-        long tickProgress = Math.round(doubleStripLength / LEDConfig.kTicksPerAnimationCycle * MathUtil.interpolate(0.0, doubleStripLength, Math.abs(1 / (tick - doubleStripLength / 2))));
-        return (int) tickProgress;
-    }
-
-    public int rgbConversion(double percent){
-        return (int) Math.round(255 * percent);
-    }
-
-    public Boolean secondaryColorEnabled = true;
-    Color turretColorPrimary = Color.fromHSV(234, 94, 100);
-    Color turretColorSecondary = Color.fromHSV(191, 91, 100);
-    Color hopperColorPrimary = Color.fromHSV(234, 94, 100);
-    Color hopperColorSecondary = Color.fromHSV(191, 91, 100);
-
-    public void setTheme(Color primaryColor, Color secondaryColor, AddressableLEDBufferView bufferView){
-        if (bufferView == turretBufferView){
-            turretColorPrimary = primaryColor;
-            if (secondaryColorEnabled){
-                turretColorSecondary = secondaryColor;
+            if (i <= traceTurretAngle()){
+                turretBufferView.setLED(i, secondaryColor);
             }
             else{
-                turretColorSecondary = Color.fromHSV(0, 0, 0);
+                turretBufferView.setLED(i, primaryColor);
             }
-        }
-        else if(bufferView == hopperBufferView){
-            hopperColorPrimary = primaryColor;
-            if (secondaryColorEnabled){
-                hopperColorSecondary = secondaryColor;
-            }
-            else{
-                hopperColorSecondary = Color.fromHSV(0, 0, 0);
-            }
+
         }
     }
 
-    public Double getRGBValue(Color color, String channel){
+    public int animationProgress(){
+        int halfStripLength = (int) Math.round(LEDConfig.kTurretLEDStripLength / 2);
+        int averageProgressPerTick = (int) Math.round(halfStripLength / LEDConfig.kTicksToHalfpointAnimationCycle);
+        double weigh = 2 * (1 / Math.abs(halfStripLength - currentAnimationProgress));
+        int tickProgress = (int) Math.round(averageProgressPerTick * weigh);
+        return tickProgress;
+    }
+
+
+    public int getRGBValue(Color color, String channel){
         var value = 0.0;
         if (channel == "r"){
-            value = color.red;
+            value = color.red * 255;
         }
         else if (channel == "g"){
-            value = color.green;
+            value = color.green * 255;
         }
         else{
-            value = color.blue;
+            value = color.blue * 255;
         }
-        return value;
+        return (int) value;
     }
 
     public void setHSV(AddressableLEDBufferView bufferView, int index, int h, int s, int v){
@@ -182,26 +179,20 @@ public class LEDStrips extends SubsystemBase {
         return 0;
     }
 
+    public void setAllToColor(Color color, AddressableLEDBufferView bufferView){
+        for (int i = 0; i < bufferView.getLength(); i++){
+            bufferView.setLED(i, color);
+        }
+    }
+
     public void initTurretSendable(SendableBuilder builder){
         super.initSendable(builder);
         builder.setSmartDashboardType("Turret LED");
-        builder.addDoubleProperty("Primary Color R", () -> this.getRGBValue(turretColorPrimary, "r"), null);
-        builder.addDoubleProperty("Primary Color G", () -> this.getRGBValue(turretColorPrimary, "g"), null);
-        builder.addDoubleProperty("Primary Color B", () -> this.getRGBValue(turretColorPrimary, "b"), null);
-        builder.addDoubleProperty("Secondary Color R", () -> this.getRGBValue(turretColorSecondary, "r"), null);
-        builder.addDoubleProperty("Secondary Color G", () -> this.getRGBValue(turretColorSecondary, "g"), null);
-        builder.addDoubleProperty("Secondary Color B", () -> this.getRGBValue(turretColorSecondary, "b"), null);
     }
 
     public void initHopperSendable(SendableBuilder builder){
         super.initSendable(builder);
         builder.setSmartDashboardType("Hopper LED");
-        builder.addDoubleProperty("PrimaryColor R", () -> this.getRGBValue(hopperColorPrimary, "r"), null);
-        builder.addDoubleProperty("PrimaryColor G", () -> this.getRGBValue(hopperColorPrimary, "g"), null);
-        builder.addDoubleProperty("PrimaryColor B", () -> this.getRGBValue(hopperColorPrimary, "b"), null);
-        builder.addDoubleProperty("SecondaryColor R", () -> this.getRGBValue(hopperColorSecondary, "r"), null);
-        builder.addDoubleProperty("SecondaryColor G", () -> this.getRGBValue(hopperColorSecondary, "g"), null);
-        builder.addDoubleProperty("SecondaryColor B", () -> this.getRGBValue(hopperColorSecondary, "b"), null);
     }
 
 }

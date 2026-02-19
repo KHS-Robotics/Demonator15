@@ -8,6 +8,6 @@ public class LEDConfig {
     public static final int kHopperLEDStripLength = 0;
     public static final int kTotalLEDStripLength = 0;
 
-    public static final float kDisabledRunAnimationLength = 1;
-    public static final long kTicksPerAnimationCycle = Math.round(kDisabledRunAnimationLength / Units.millisecondsToSeconds(20));
+    public static final float kDisabledRunAnimationLength = 2;
+    public static final int kTicksToHalfpointAnimationCycle = (int) Math.round((kDisabledRunAnimationLength / Units.millisecondsToSeconds(50)) / 2);
 }
