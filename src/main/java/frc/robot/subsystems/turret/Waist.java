@@ -103,6 +103,8 @@ public class Waist extends SubsystemBase {
     super.initSendable(builder);
     builder.setSafeState(this::stop);
     builder.setActuator(true);
+    builder.addDoubleProperty("Setpoint-Degrees", () -> setpointRotationDegrees, (setpoint) -> setSetpointDegrees(setpoint));
+    builder.addBooleanProperty("IsAtSetpoint", () -> this.isAtSetpoint(), null);
     builder.addBooleanProperty("Hub-HasImpossibleShot", () -> hasImpossibleShot, null);
     builder.addDoubleProperty("Hub-TurretRobotRelativeAngle", () -> robotRelativeAngleForHub, null);
     builder.addDoubleProperty("Hub-TurretFieldRelativeAngle", () -> fieldRelativeAngleForHub, null);
