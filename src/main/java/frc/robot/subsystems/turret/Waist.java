@@ -249,6 +249,23 @@ public class Waist extends SubsystemBase {
     return relativeEncoder.getPosition();
   }
 
+  // TODO: uncomment and implement once the absolute encoder is configured with a conversion factor
+  // public void calibrateRelativeEncoder() {
+  //   var abs = absoluteEncoder.getPosition();
+  //   var rel = toRelativeAngle(abs);
+  //   relativeEncoder.setPosition(rel);
+  // }
+
+  // public Command calibrateRelativeEncoderCmd() {
+  //   var cmd = this.runOnce(this::calibrateRelativeEncoder);
+  //   return cmd.withName("CalibrateRelativeEncoderCmd");
+  // }
+
+  private double toRelativeAngle(double absoluteEncReading) {
+    // TODO: convert the absolute encoder reading to the correct relative encoder reading
+    return 0;
+  }
+
   public void setSetpointDegrees(double setpointDegrees) {
     double clamped = MathUtil.clamp(setpointDegrees, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
     setpointRotationDegrees = clamped;
