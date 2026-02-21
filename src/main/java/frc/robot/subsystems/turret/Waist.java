@@ -1,5 +1,6 @@
 package frc.robot.subsystems.turret;
 
+import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -35,7 +36,7 @@ import com.revrobotics.ResetMode;
 public class Waist extends SubsystemBase {
   private final SparkMax motor;
   private final SparkClosedLoopController pid;
-  private final AbsoluteEncoder absoluteEncoder;
+  private final SparkAnalogSensor absoluteEncoder;
   private final RelativeEncoder relativeEncoder;
 
   private double setpointRotationDegrees;
@@ -75,7 +76,7 @@ public class Waist extends SubsystemBase {
     motor.configure(waistConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
-   absoluteEncoder = motor.getAbsoluteEncoder();
+   absoluteEncoder = motor.getAnalog();
 
     relativeEncoder = motor.getEncoder();
 

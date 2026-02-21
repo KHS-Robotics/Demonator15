@@ -40,7 +40,7 @@ public class Belt extends SubsystemBase{
 
 
     public void start() {
-        motor.setVoltage(2.75);
+        motor.setVoltage(12);
     }
 
     public Command startCommand() {

@@ -11,11 +11,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.FeedForwardConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -24,7 +26,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class Spitter extends SubsystemBase {
 
-  private final SparkMax motor;
+  private final SparkFlex motor;
   private final SparkClosedLoopController pid;
   private final RelativeEncoder relativeEncoder;
 
@@ -42,14 +44,14 @@ public class Spitter extends SubsystemBase {
     .positionConversionFactor(1)
     .velocityConversionFactor(1);
 
-    var motorConfig = new SparkMaxConfig()
+    var motorConfig = new SparkFlexConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(40, 20)
         .inverted(false)
         .idleMode(IdleMode.kCoast)
         .apply(pidConfig)
         .apply(encoderConfig);
-    motor = new SparkMax(RobotMap.TURRET_SPITTER_LEADER_ID, MotorType.kBrushless);
+    motor = new SparkFlex(RobotMap.TURRET_SPITTER_LEADER_ID, MotorType.kBrushless);
     motor.configure(motorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
