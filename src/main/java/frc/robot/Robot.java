@@ -50,7 +50,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     // Update the robot's position and heading on the Dashboard GUI
-    RobotContainer.kField.setRobotPose(RobotContainer.kSwerveDrive.getPose());
+    // RobotContainer.kField.setRobotPose(RobotContainer.kSwerveDrive.getPose());
 
     // Joystick connection info
     SmartDashboard.putBoolean("Joysticks/Xbox Controller", RobotContainer.kDriverController.isConnected());

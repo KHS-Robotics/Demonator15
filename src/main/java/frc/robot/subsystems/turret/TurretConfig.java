@@ -1,6 +1,8 @@
 package frc.robot.subsystems.turret;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class TurretConfig {
 
@@ -32,13 +34,13 @@ public class TurretConfig {
 
     protected final class TurretFieldAndRobotInfo {
         //in meters
-        public static final double kRedHubPositionX = 0.0;
-        public static final double kRedHubPositionY = 0.0;
+        public static final double kRedHubPositionX = 11.91;
+        public static final double kRedHubPositionY = 4.05;
         public static final Translation2d kRedHubPositionOnField = new Translation2d(kRedHubPositionX, kRedHubPositionY);
 
         //in meters
-        public static final double kBlueHubPositionX = 0.0;
-        public static final double kBlueHubPositionY = 0.0;
+        public static final double kBlueHubPositionX = 4.61;
+        public static final double kBlueHubPositionY = 4.05;
         public static final Translation2d kBlueHubPositionOnField = new Translation2d(kBlueHubPositionX, kBlueHubPositionY);
 
         public static final double kGravity = 9.8;
@@ -50,6 +52,17 @@ public class TurretConfig {
         public static final double kTurretDistanceToNavX = 0;
         //in meters, at ground level
         public static final double kHeightBetweenShooterAndHub = 1.8;
+
+        public static Translation2d getCurrentHubPosition() {
+            Translation2d hubPosition;
+            var alliance = DriverStation.getAlliance();
+            if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+                hubPosition = TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionOnField;
+            } else {
+                hubPosition = TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionOnField;
+            }
+            return hubPosition;
+        }
     }
 
 

@@ -8,27 +8,28 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotContainer;
 
-public class Turret extends SubsystemBase{
+public class Turret extends SubsystemBase {
     private final Hood hood = new Hood();
     private final Waist waist = new Waist();
     private final Kicker kicker = new Kicker();
     private final Spitter spitter = new Spitter();
 
     public Turret() {
+        waist.setDefaultCommand(waist.defaultAimWaistToHub());
+
         SmartDashboard.putData(this);
     }
 
     public void periodic() {
-        RobotContainer.kField.getObject("waistAiming").setPose(
-            RobotContainer.kSwerveDrive.getPose().getX(),
-            RobotContainer.kSwerveDrive.getPose().getY(),
-            getWaistFinalRotation(getCurrentHubPosition())
-            );
+        // RobotContainer.kField.getObject("waistAiming").setPose(
+        //     RobotContainer.kSwerveDrive.getPose().getX(),
+        //     RobotContainer.kSwerveDrive.getPose().getY(),
+        //     getWaistFinalRotation(getCurrentHubPosition())
+        // );
     }
 
     public void stop() {
@@ -61,20 +62,8 @@ public class Turret extends SubsystemBase{
         return cmd;
     }
 
-    private Translation2d getCurrentHubPosition() {
-        Translation2d hubPosition;
-        var alliance = DriverStation.getAlliance();
-        if ( alliance.isPresent() && alliance.get() == Alliance.Red) {
-            hubPosition = TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionOnField;
-        //if the alliance is null, it is auto set to blue variables
-        }else {
-            hubPosition = TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionOnField;
-        }
-        return hubPosition;
-    }
-
     private double getAngleToPosition() {
-        return getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), getCurrentHubPosition());
+        return getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition());
     }
 
     private double getAngleToPosition(Translation2d fromPose, Translation2d toPose) {
@@ -87,7 +76,7 @@ public class Turret extends SubsystemBase{
 
 
     private double getDistanceToHub(Translation2d pose) {
-        double distanceToHub = pose.getDistance(getCurrentHubPosition());
+        double distanceToHub = pose.getDistance(TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition());
         return distanceToHub;
     }
 
@@ -233,7 +222,7 @@ public class Turret extends SubsystemBase{
     }
 
     public Command aimWaist() {
-        return aimWaist(getCurrentHubPosition());
+        return aimWaist(TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition());
     }
 
     public Command aimWaistSimple(Translation2d towards) {
@@ -247,7 +236,7 @@ public class Turret extends SubsystemBase{
     }
 
     public Command aimWaistSimple() {
-        return aimWaistSimple(getCurrentHubPosition());
+        return aimWaistSimple(TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition());
     }
 
     public Command aimHood(Translation2d towards) {
@@ -280,7 +269,7 @@ public class Turret extends SubsystemBase{
     }
 
     public Command aimHood() {
-        return aimHood(getCurrentHubPosition());
+        return aimHood(TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition());
     }
 
     public Command aimHoodSimple(Translation2d towards) {
@@ -295,7 +284,7 @@ public class Turret extends SubsystemBase{
     }
 
     public Command aimHoodSimple() {
-        return aimHoodSimple(getCurrentHubPosition());
+        return aimHoodSimple(TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition());
     }
 
     public Command aimTowardsHubWithVelocity() {
@@ -340,7 +329,7 @@ public class Turret extends SubsystemBase{
         super.initSendable(builder);
         builder.setSmartDashboardType(getName());
         builder.setSafeState(this::stop);
-        builder.addDoubleProperty("testHoodCalcs",() -> getHoodAimFinalAngle(getCurrentHubPosition()), null);
+        builder.addDoubleProperty("testHoodCalcs",() -> getHoodAimFinalAngle(TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition()), null);
     }
 }
     //for getting the position and rotation (which we will probably want to do in hood and waist), use our humble kNavx
