@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 
 public class Turret extends SubsystemBase{
+    private final Belt belt = new Belt();
     private final Hood hood = new Hood();
     private final Waist waist = new Waist();
     private final Kicker kicker = new Kicker();
@@ -36,11 +37,12 @@ public class Turret extends SubsystemBase{
         waist.stop();
         spitter.stop();
         kicker.stop();
+        belt.stop();
     }
 
     public Command stopCommand() {
         var cmd = runOnce(this::stop);
-        cmd.addRequirements(hood, waist, kicker, spitter);
+        cmd.addRequirements(hood, waist, kicker, spitter, belt);
         return cmd.withName("StopTurret");
     }
 
@@ -49,15 +51,23 @@ public class Turret extends SubsystemBase{
         return cmd;
     }
 
-    public Command reload() {
+    public Command kick() {
         var cmd = startEnd(kicker::start, kicker::stop);
+        return cmd;
+    }
+
+    public Command reload() {
+        var startKicker = kicker.startCommand();
+        var startBelt = belt.startCommand();
+        var cmd = startKicker.alongWith(startBelt);
         return cmd;
     }
 
     public Command shootContinuously() {
         var startSpitter = spitter.startCommand();
         var startKicker = kicker.startCommand();
-        var cmd = startSpitter.alongWith(startKicker);
+        var startBelt = belt.startCommand();
+        var cmd = startSpitter.alongWith(startKicker).alongWith(startBelt);
         return cmd;
     }
 
