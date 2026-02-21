@@ -13,19 +13,19 @@ import frc.robot.RobotMap;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 
-class Indexer extends SubsystemBase {
+public class Indexer extends SubsystemBase {
   private IndexerState indexerState = IndexerState.IDLE;
   private final SparkMax motor;
 
   public Indexer() {
     super(Indexer.class.getSimpleName() + "/" + Indexer.class.getSimpleName());
 
-    var hopperConfig = new SparkMaxConfig()
+    var indexerConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
         .inverted(true);
     motor = new SparkMax(RobotMap.HOPPER_MOTOR_ID, MotorType.kBrushless);
-    motor.configure(hopperConfig, ResetMode.kResetSafeParameters,
+    motor.configure(indexerConfig, ResetMode.kResetSafeParameters,
      PersistMode.kPersistParameters);
 
   }

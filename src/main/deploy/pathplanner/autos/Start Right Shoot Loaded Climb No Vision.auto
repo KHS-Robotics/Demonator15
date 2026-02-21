@@ -23,7 +23,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
+                  "name": null
                 }
               }
             ]
@@ -32,7 +32,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Climb L1"
+            "name": null
           }
         }
       ]

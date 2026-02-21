@@ -38,34 +38,40 @@ public final class RobotMap {
   public static final int REAR_LEFT_PIVOT_ENCODER = 32;
   public static final int REAR_RIGHT_PIVOT_ENCODER = 42;
 
-//climber motors
+//climber 
   public static final int CLIMBER_ID = -1;
 
+//servos
+  public static final int OUTER_SERVO_LEFT = 1;
+  public static final int OUTER_SERVO_RIGHT = 2;
+  public static final int INNER_SERVO = 3;
+  public static final int RIGHT_SERVO = 4;
+  public static final int LEFT_SERVO = 5;
+
 //indexer motors
-  public static final int HOPPER_MOTOR_ID = -1;
+  public static final int HOPPER_MOTOR_ID = -2;
 
 //intake motors
-  public static final int INTAKE_DEPLOYER_LEADER_ID = -1;
-  public static final int INTAKE_DEPLOYER_FOLLOWER_ID = -1;
-  public static final int INTAKE_GRABBY_WHEELS_ID = -1;
+  public static final int INTAKE_DEPLOYER_LEADER_ID = -3;
+  public static final int INTAKE_DEPLOYER_FOLLOWER_ID = -4;
+  public static final int INTAKE_GRABBY_WHEELS_ID = -5;
 
 //turret motors
-  public static final int TURRET_AIMER_HOOD_ID = -1;
-  public static final int TURRET_AIMER_WAIST_ID = -1;
-  public static final int TURRET_SPITTER_LEADER_ID = -1;
-  public static final int TURRET_SPITTER_FOLLOWER_ID = -1;
-  public static final int TURRET_KICKER_MOTOR_ID = -1;
-  public static final int TURRET_SPITTER_LEADER_MOTOR_ID = -1;
+  public static final int TURRET_AIMER_HOOD_ID = 41;
+  public static final int TURRET_AIMER_WAIST_ID = 43;
+  public static final int TURRET_SPITTER_LEADER_ID = 42;
+  public static final int TURRET_KICKER_MOTOR_ID = 44;
+  public static final int TURRET_BELT_MOTOR_ID = 45;
   
 
 
 //LED strips
   public static final int LED_PORT = 0;
 
-//two climber motors - lead and follower
+//one climber motor - climber
 //eight swerve motors
 //one indexer motor - hopper
-//two deployer motors - deployer lead and deployer follower
+//one deployer motor - deployer
 //one grabby wheel motor - grabber
 //four wheel motors for the shooter:
 //indexer -> tower motor - belt

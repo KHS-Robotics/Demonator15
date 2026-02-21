@@ -6,11 +6,11 @@ import com.revrobotics.ResetMode;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
-import com.revrobotics.spark.config.EncoderConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -34,7 +34,7 @@ public class Deployer extends SubsystemBase {
      private final AbsoluteEncoder encoder;
     private final PIDController pid;
     private final SparkLimitSwitch sensor;
-    private final SparkMax leader, follower;
+    private final SparkMax motor;
 
     public Deployer() {
 
@@ -45,27 +45,18 @@ public class Deployer extends SubsystemBase {
         var limitSwitchConfig = new LimitSwitchConfig()
                 .forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor);
 
-        var deployerLeaderConfig = new SparkMaxConfig()
-                .idleMode(IdleMode.kBrake)
-                .smartCurrentLimit(30)
-                .inverted(false)
-                .apply(limitSwitchConfig)
-                .apply(encoderConfig);
-        leader = new SparkMax(RobotMap.INTAKE_DEPLOYER_LEADER_ID, MotorType.kBrushless);
-        leader.configure(deployerLeaderConfig, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
-
-        var followerConfig = new SparkMaxConfig()
+        var leaderConfig = new SparkMaxConfig()
                 .idleMode(IdleMode.kBrake)
                 .smartCurrentLimit(30)
                 .follow(RobotMap.INTAKE_DEPLOYER_LEADER_ID, true)
-                .apply(encoderConfig);
-        follower = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
-        follower.configure(followerConfig, ResetMode.kResetSafeParameters,
+                .apply(encoderConfig)
+                .apply(limitSwitchConfig);
+        motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
+        motor.configure(leaderConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        encoder = leader.getAbsoluteEncoder();
-        sensor = leader.getForwardLimitSwitch();
+        encoder = motor.getAbsoluteEncoder();
+        sensor = motor.getForwardLimitSwitch();
 
         pid = new PIDController(DeployerConfig.kDeployerP, DeployerConfig.kDeployerI, DeployerConfig.kDeployerD);
         pid.setIZone(7);
@@ -107,7 +98,8 @@ public class Deployer extends SubsystemBase {
     return (error < 2);
   }
 
-  public boolean hasCoral() {
+  //if the deployer is at the same spot as the the limitswitch
+  public boolean isAtTop() {
     return sensor.isPressed();
   }
 
@@ -119,7 +111,7 @@ public class Deployer extends SubsystemBase {
 
     var output = pidOutput + ffGravity;
     output = MathUtil.clamp(output, -3, 4);
-    leader.setVoltage(output);
+    motor.setVoltage(output);
   }
 
   /** Updates the setpoint to the current position. */
@@ -130,8 +122,15 @@ public class Deployer extends SubsystemBase {
   }
 
   public void stop() {
-    leader.stopMotor();
+    motor.stopMotor();
     pid.reset();
     setSetpointAngle(getAngle());
+  }
+
+  public void initSendable(SendableBuilder builder){
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.addBooleanProperty("IntakeAtTop", () -> this.isAtTop(), null);
   }
 }
