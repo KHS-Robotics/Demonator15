@@ -8,14 +8,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class TurretConfig {
-
-    /** Turret center offset from robot center. Used by Waist and Hood for aim math. */
-    public static Transform2d getTurretOffset() {
-        return new Transform2d(
-                Units.inchesToMeters(WaistConfig.kTurretOffsetXInches),
-                Units.inchesToMeters(WaistConfig.kTurretOffsetYInches),
-                Rotation2d.kZero);
-    }
+    /** Turret center offset from robot center (X = forward, Y = left). */
+    public static final double kTurretOffsetX = Units.inchesToMeters(0);
+    public static final double kTurretOffsetY = Units.inchesToMeters(0);
+    public static final Transform2d kTurretOffset = new Transform2d(
+            kTurretOffsetX,
+            kTurretOffsetY,
+            Rotation2d.kZero);
 
     protected final class HoodConfig {
         public static final double kHoodP = 0.02;
@@ -86,10 +85,6 @@ public class TurretConfig {
         public static final double kAimerWaistP = 0.01;
         public static final double kAimerWaistI = 0.000075;
         public static final double kAimerWaistD = 0.05;
-
-        /** Turret center offset from robot center, in inches (X = forward, Y = left). */
-        public static final double kTurretOffsetXInches = 0;
-        public static final double kTurretOffsetYInches = 0;
 
         /**
          * Scale on robot velocity when compensating for motion (launch = desired - scale * robot).

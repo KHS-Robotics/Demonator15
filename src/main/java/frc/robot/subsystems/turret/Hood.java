@@ -123,7 +123,7 @@ public class Hood extends SubsystemBase {
   /** Current distance to hub → ballistic angle (degrees), clamped to hood limits. Uses turret position (same ref as waist). */
   public double getAngleForHub() {
     Pose2d robotPose = RobotContainer.kSwerveDrive.getPose();
-    Translation2d turretPos = robotPose.plus(TurretConfig.getTurretOffset()).getTranslation();
+    Translation2d turretPos = robotPose.plus(TurretConfig.kTurretOffset).getTranslation();
     double distance = turretPos.getDistance(TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition());
     return getAngleForDistance(distance);
   }

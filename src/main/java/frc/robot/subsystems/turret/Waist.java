@@ -114,7 +114,7 @@ public class Waist extends SubsystemBase {
   /** Robot velocity at turret toward hub (m/s). + toward hub, − away. Same source as while-moving aim. */
   public static double getRobotRadialVelocityTowardHubMetersPerSecond() {
     Pose2d robotPose = RobotContainer.kSwerveDrive.getPose();
-    Transform2d turretOffset = TurretConfig.getTurretOffset();
+    Transform2d turretOffset = TurretConfig.kTurretOffset;
     Pose2d turretPose = robotPose.plus(turretOffset);
     Translation2d toHub = TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition().minus(turretPose.getTranslation());
     double dist = toHub.getNorm();
@@ -164,7 +164,7 @@ public class Waist extends SubsystemBase {
   public Command defaultAimWaistToHub() {
     var cmd = this.runEnd(() -> {
       Pose2d robotPose = RobotContainer.kSwerveDrive.getPose();
-      Pose2d turretPose = robotPose.plus(TurretConfig.getTurretOffset());
+      Pose2d turretPose = robotPose.plus(TurretConfig.kTurretOffset);
 
       var target = TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition();
       // Vector from turret to hub
@@ -180,7 +180,7 @@ public class Waist extends SubsystemBase {
   public Command defaultAimWaistToHubWhileMoving(DoubleSupplier hoodAngleDegrees) {
     var cmd = this.runEnd(() -> {
       Pose2d robotPose = RobotContainer.kSwerveDrive.getPose();
-      Transform2d turretOffset = TurretConfig.getTurretOffset();
+      Transform2d turretOffset = TurretConfig.kTurretOffset;
       Pose2d turretPose = robotPose.plus(turretOffset);
 
       var target = TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition();
