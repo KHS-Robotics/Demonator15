@@ -78,6 +78,7 @@ public class Waist extends SubsystemBase {
     var waistConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30, 10)
+        // CCW positive
         .inverted(false)
         .idleMode(IdleMode.kBrake)
         .apply(relativeEncoderConfig)
