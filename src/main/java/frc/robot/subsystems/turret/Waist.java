@@ -149,7 +149,8 @@ public class Waist extends SubsystemBase {
     setSetpointDegrees(targetAngleForWaist);
 
     // Field widget: show turret pose and aim direction
-    var turretFieldRelativePose = new Pose2d(turretPose.getX(), turretPose.getY(), fieldRelativeAngle);
+    var hub = TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition();
+    var turretFieldRelativePose = new Pose2d(hub.getX(), hub.getY(), fieldRelativeAngle);
     RobotContainer.kField.getObject("Turret").setPose(turretFieldRelativePose);
   }
 
