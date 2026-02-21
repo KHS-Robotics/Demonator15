@@ -16,10 +16,13 @@ public class Turret extends SubsystemBase {
     private final Hood hood = new Hood();
     private final Waist waist = new Waist();
     private final Kicker kicker = new Kicker();
+    private final Feeder feeder = new Feeder();
     private final Spitter spitter = new Spitter();
 
     public Turret() {
         waist.setDefaultCommand(waist.defaultAimWaistToHub());
+        hood.setDefaultCommand(hood.defaultAimHoodToHub());
+        spitter.setDefaultCommand(spitter.defaultRunFlywheel());
 
         SmartDashboard.putData(this);
     }
@@ -37,11 +40,12 @@ public class Turret extends SubsystemBase {
         waist.stop();
         spitter.stop();
         kicker.stop();
+        feeder.stop();
     }
 
     public Command stopCommand() {
         var cmd = runOnce(this::stop);
-        cmd.addRequirements(hood, waist, kicker, spitter);
+        cmd.addRequirements(hood, waist, kicker, feeder, spitter);
         return cmd.withName("StopTurret");
     }
 
@@ -50,8 +54,13 @@ public class Turret extends SubsystemBase {
         return cmd;
     }
 
-    public Command reload() {
+    public Command kick() {
         var cmd = startEnd(kicker::start, kicker::stop);
+        return cmd;
+    }
+
+    public Command feed() {
+        var cmd = startEnd(feeder::start, feeder::stop);
         return cmd;
     }
 
@@ -272,19 +281,14 @@ public class Turret extends SubsystemBase {
         return aimHood(TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition());
     }
 
+    /** One-shot: set hood angle for given target (delegates to Hood). */
     public Command aimHoodSimple(Translation2d towards) {
         double distanceToPoint = RobotContainer.kSwerveDrive.getPose().getTranslation().getDistance(towards);
-        var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
-        //add radial velocity calcs
-        //clamp to the physical limits of our hood
-        angle = MathUtil.clamp(angle, 0.0, 45.0); 
-        //this will be part of the relative / absolute hybrid incorporation   + TurretConfig.HoodConfig.kHoodDegreesOffset;
-        var cmd = hood.setAngleCommand(angle);
-        return cmd;
+        return hood.setAngleCommand(hood.getAngleForDistance(distanceToPoint));
     }
 
     public Command aimHoodSimple() {
-        return aimHoodSimple(TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition());
+        return hood.setAngleCommand(hood.getAngleForHub());
     }
 
     public Command aimTowardsHubWithVelocity() {

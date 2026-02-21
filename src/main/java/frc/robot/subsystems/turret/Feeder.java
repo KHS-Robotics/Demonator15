@@ -14,17 +14,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 
-public class Kicker extends SubsystemBase { 
+public class Feeder extends SubsystemBase {
     private final SparkMax motor;
 
-    public Kicker() {
-        super(Kicker.class.getSimpleName() + "/" + Kicker.class.getSimpleName());
+    public Feeder() {
+        super(Feeder.class.getSimpleName() + "/" + Feeder.class.getSimpleName());
 
         var motorConfig = new SparkMaxConfig()
                 .idleMode(IdleMode.kBrake)
                 .smartCurrentLimit(30)
                 .inverted(true);
-        motor = new SparkMax(RobotMap.TURRET_KICKER_MOTOR_ID, MotorType.kBrushless);
+        motor = new SparkMax(RobotMap.TURRET_FEEDER_MOTOR_ID, MotorType.kBrushless);
         motor.configure(motorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
@@ -37,7 +37,7 @@ public class Kicker extends SubsystemBase {
 
     public Command stopCommand() {
         var cmd = runOnce(this::stop);
-        return cmd.withName("StopKicker");
+        return cmd.withName("StopFeeder");
     }
 
     public void start() {
@@ -46,11 +46,6 @@ public class Kicker extends SubsystemBase {
 
     public Command startCommand() {
         var cmd = runOnce(this::start);
-        return cmd.withName("StartKicker");
+        return cmd.withName("StartFeeder");
     }
-
 }
-
-// indexer to tower motor <- put the belt into indexer
-
-// pre-shooter motor

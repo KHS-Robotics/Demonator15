@@ -79,7 +79,11 @@ public class Spitter extends SubsystemBase {
   public Command startCommand() {
     var cmd = this.run(() -> this.start()).until(this::isAtSetpoint);
     return cmd.withName("StartSpitter");
+  }
 
+  /** Default: run flywheel at 6000 RPM all match; interrupted by stopCommand(). */
+  public Command defaultRunFlywheel() {
+    return runEnd(this::start, this::stop).withName("DefaultSpitter");
   }
 }
 // two shooter motors

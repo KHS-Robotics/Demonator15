@@ -2,13 +2,14 @@ package frc.robot.subsystems.turret;
 
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.RobotState;
@@ -21,6 +22,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.turret.TurretConfig.HoodConfig;
 
@@ -77,6 +79,55 @@ public class Hood extends SubsystemBase {
 
     pid = motor.getClosedLoopController();
   }
+  /**
+   * Newton's method: find launch angle (rad) so ballistic trajectory hits target
+   * at given horizontal distance (d), with gravity g, speed v, height diff h.
+   * High initial guess (88°) so we get the lob solution.
+   */
+  private double solvePitch(double distance) {
+    //uses newtons method to itterate until it finds a zero (or something close enough) of the original physics function
+    //the original function shows where the angle needs to be to hit a set point, in this case the hub
+    //the function has two answers (where x = 0) that give us an angle that hits the hub, we take the higher one by calculating using a higher guess for the angle
+    double theta = Math.toRadians(88);
+    double g = TurretConfig.TurretFieldAndRobotInfo.kGravity;
+    double d = distance;
+    double v = TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity;
+    double h = TurretConfig.TurretFieldAndRobotInfo.kHeightBetweenShooterAndHub;
+    for (int i = 0; i < 20; i++) {
+      double func = d * Math.tan(theta) - (g * d * d) / (2 * (v * Math.cos(theta)) * (v * Math.cos(theta))) - h;
+      if (Math.abs(func) < 0.001) {
+        return theta;
+      }
+      double derivative = (d * (1 / Math.cos(theta)) * (1 / Math.cos(theta))
+          - (4 * g * d * d * (v * Math.cos(theta)) * v * Math.sin(theta))
+              / ((2 * (v * Math.cos(theta)) * (v * Math.cos(theta))) * (2 * (v * Math.cos(theta)) * (v * Math.cos(theta)))));
+      double step = func / derivative;
+      theta = theta - step;
+    }
+    return theta;
+  }
+
+  /** Given horizontal distance (m), return hood angle (degrees), clamped to limits. */
+  public double getAngleForDistance(double distanceMeters) {
+    // Avoid d=0 so solvePitch derivative is non-zero (prevents div-by-zero / NaN)
+    distanceMeters = Math.max(distanceMeters, 0.5);
+    double angleDeg = 90 - Math.toDegrees(solvePitch(distanceMeters));
+    return MathUtil.clamp(angleDeg, TurretConfig.HoodConfig.kMinSoftLimit, TurretConfig.HoodConfig.kMaxSoftLimit);
+  }
+
+  /** Current distance to hub → ballistic angle (degrees), clamped to hood limits. */
+  public double getAngleForHub() {
+    Translation2d robotPos = RobotContainer.kSwerveDrive.getPose().getTranslation();
+    double distance = robotPos.getDistance(TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition());
+    return getAngleForDistance(distance);
+  }
+
+  /** Default: continuously aim hood at hub using current distance (simple ballistic, no phantom). */
+  public Command defaultAimHoodToHub() {
+    var cmd = this.runEnd(() -> setSetpointAngle(getAngleForHub()), this::stop);
+    return cmd.withName("DefaultHoodAimToHub");
+  }
+
   // use angler as base
 
   public Command setAngleCommand(double angleDegrees) {
@@ -96,8 +147,8 @@ public class Hood extends SubsystemBase {
   }
 
   public void setSetpointAngle(double setpointDegrees) {
-    // only reset for new setpoints
     setpointAngleDegrees = setpointDegrees;
+    pid.setSetpoint(setpointDegrees, ControlType.kPosition);
   }
 
   public boolean isAtSetpoint() {

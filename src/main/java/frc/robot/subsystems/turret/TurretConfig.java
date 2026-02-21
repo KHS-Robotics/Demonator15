@@ -70,7 +70,17 @@ public class TurretConfig {
         public static final double kAimerWaistP = 0.01;
         public static final double kAimerWaistI = 0.000075;
         public static final double kAimerWaistD = 0.05;
-        
+
+        /** Turret center offset from robot center, in inches (X = forward, Y = left). */
+        public static final double kTurretOffsetXInches = 0;
+        public static final double kTurretOffsetYInches = 0;
+
+        /**
+         * Scale on robot velocity when compensating for motion (launch = desired - scale * robot).
+         * 1.0 = full compensation. Tune down (e.g. 0.9) if over-correcting, up if under-correcting.
+         */
+        public static final double kVelocityCompScale = 1.0;
+
         public static final double kWaistDegreesOffset = 0;
 
         public static final double kWaistEncoderPositionConversionFactor = 14.21;

@@ -92,7 +92,7 @@ public class RobotContainer {
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   public static final Turret kTurret = new Turret();
   //public static final Intake kIntake = new Intake();
-  //public static final Indexer kIndexer = new Indexer();
+  public static final Indexer kIndexer = new Indexer();
   //public static final Climber kClimber = new Climber();
   //public static final Intake kIntake = new Intake()
   // Subsystems - Cameras
@@ -156,7 +156,9 @@ public class RobotContainer {
     // // useful during driver practice to reset for field oriented driving direction
     // // or a rare odd scenario on the field during a match
     // kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading());
-    kDriverController.a().onTrue(kTurret.goToSetHoodAngle().alongWith(kTurret.goToSetWaistAngle()).alongWith(kTurret.shoot()));
+
+    // TESTING - start feeder and kicker
+    kDriverController.a().onTrue(kTurret.feed().alongWith(kTurret.kick()));
 
     // // give driver ability to limit speeds for when elevator is high up to
     // // help prevent tipping over - useful for slight alignment adjustments too
@@ -262,7 +264,7 @@ public class RobotContainer {
     // turret
     NamedCommands.registerCommand("FireAutomatic", kTurret.shootContinuously());
     NamedCommands.registerCommand("FireManual", kTurret.shoot());
-    NamedCommands.registerCommand("Reload", kTurret.reload());
+    NamedCommands.registerCommand("Reload", kTurret.kick());
 
     NamedCommands.registerCommand("AutoAim", kTurret.aimTowardsHub());
     NamedCommands.registerCommand("AutoAimAndShoot", kTurret.aimAndShootTowardsHub());

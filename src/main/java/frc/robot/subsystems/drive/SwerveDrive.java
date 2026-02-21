@@ -350,6 +350,16 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
+   * Gets the robot's current speed.
+   * 
+   * @param centerPoint the center point of the robot
+   * @return the robot's current speed
+   */
+  public ChassisSpeeds getChassisSpeeds(Translation2d centerPoint) {
+    return kSwerveKinematics.toChassisSpeeds(getSwerveModuleStates(), centerPoint);
+  }
+
+  /**
    * Sets the module states based on the desired robot speed.
    * 
    * @param chassisSpeeds the desired robot speed

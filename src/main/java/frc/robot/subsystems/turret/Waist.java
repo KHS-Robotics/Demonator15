@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -106,61 +107,106 @@ public class Waist extends SubsystemBase {
     builder.addDoubleProperty("Hub-TurretFieldRelativeAngle", () -> fieldRelativeAngleForHub, null);
   }
 
+  private static Transform2d getTurretOffset() {
+    return new Transform2d(
+        Units.inchesToMeters(TurretConfig.WaistConfig.kTurretOffsetXInches),
+        Units.inchesToMeters(TurretConfig.WaistConfig.kTurretOffsetYInches),
+        Rotation2d.fromDegrees(0));
+  }
+
+  /**
+   * Applies a field-relative aim angle: converts to robot-relative, checks
+   * limits, clamps, sets waist setpoint, and updates GUI.
+   */
+  private void applyWaistAimToFieldAngle(Pose2d robotPose, Pose2d turretPose, Rotation2d fieldRelativeAngle) {
+    Rotation2d robotRelativeAngle = fieldRelativeAngle.minus(robotPose.getRotation());
+
+    // R106: turret can't point outside min/max
+    hasImpossibleShot = false;
+    if (robotRelativeAngle.getDegrees() < TurretConfig.WaistConfig.kMinSoftLimit) {
+      hasImpossibleShot = true;
+    }
+    if (robotRelativeAngle.getDegrees() > TurretConfig.WaistConfig.kMaxSoftLimit) {
+      hasImpossibleShot = true;
+    }
+
+    robotRelativeAngleForHub = robotRelativeAngle.getDegrees();
+    fieldRelativeAngleForHub = fieldRelativeAngle.getDegrees();
+    var targetAngleForWaist = MathUtil.clamp(robotRelativeAngleForHub, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
+
+    setSetpointDegrees(targetAngleForWaist);
+
+    // Field widget: show turret pose and aim direction
+    var turretFieldRelativePose = new Pose2d(turretPose.getX(), turretPose.getY(), fieldRelativeAngle);
+    RobotContainer.kField.getObject("Turret").setPose(turretFieldRelativePose);
+  }
+
   /**
    * REF:
    * https://www.chiefdelphi.com/t/turret-tracking-hub-using-odometry/512844/7
-   * 
-   * @param target the target to aim at (eg hardcoded red or blue Hub positions
-   *               depending on your current alliance)
+   * Aims waist at hub (stationary robot). For shooting while moving, use
+   * defaultAimWaistToHubWhileMoving().
    */
   public Command defaultAimWaistToHub() {
     var cmd = this.runEnd(() -> {
-      // Get robot pose with turret offset
       Pose2d robotPose = RobotContainer.kSwerveDrive.getPose();
-      // Apply turret offset to robot pose
-      // TODO: save turret X+Y offsets wrt to center of robot to TurretConfig
-      Transform2d turretOffset = new Transform2d(
-          Units.inchesToMeters(0), // x offset of turret
-          Units.inchesToMeters(0), // y offset of turret
-          Rotation2d.fromDegrees(0));
-      Pose2d turretPose = robotPose.plus(turretOffset);
+      Pose2d turretPose = robotPose.plus(getTurretOffset());
 
-      // Calculate vector to target
       var target = TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition();
+      // Vector from turret to hub
       double dY = target.getY() - turretPose.getY();
       double dX = target.getX() - turretPose.getX();
-
-      // Calculate field-relative angle to target
       Rotation2d fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(dY, dX));
 
-      // Convert to robot-relative angle
-      Rotation2d robotRelativeAngle = fieldRelativeAngle.minus(robotPose.getRotation());
-
-      // Robot turret has min/max limits due to potential R106 violations (see game manual)
-      hasImpossibleShot = false;
-      if (robotRelativeAngle.getDegrees() < TurretConfig.WaistConfig.kMinSoftLimit) {
-        hasImpossibleShot = true;
-      }
-      if (robotRelativeAngle.getDegrees() > TurretConfig.WaistConfig.kMaxSoftLimit) {
-        hasImpossibleShot = true;
-      }
-
-      // we care about robotRelativeAngle for the turret...
-      // but also save fieldRelativeAngle for sanity's sake+debugging
-      robotRelativeAngleForHub = robotRelativeAngle.getDegrees();
-      fieldRelativeAngleForHub = fieldRelativeAngle.getDegrees();
-
-      // Clamp target angle to min/max values although
-      var targetAngleForWaist = MathUtil.clamp(robotRelativeAngleForHub, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
-
-      // Command the turret using clamped robot relative angle
-      setSetpointDegrees(targetAngleForWaist);
-
-      // Update GUI
-      var turretFieldRelativePose = new Pose2d(turretPose.getX(), turretPose.getY(), fieldRelativeAngle);
-      RobotContainer.kField.getObject("Turret").setPose(turretFieldRelativePose);
+      applyWaistAimToFieldAngle(robotPose, turretPose, fieldRelativeAngle);
     }, this::stop);
     return cmd.withName("DefaultWaistAimToHub");
+  }
+
+  /**
+   * Same as defaultAimWaistToHub but compensates for robot velocity (translation
+   * and rotation): launch_velocity = desired_fuel_velocity - robot_velocity; aim
+   * along launch_velocity. Use when shooting while moving.
+   */
+  public Command defaultAimWaistToHubWhileMoving() {
+    var cmd = this.runEnd(() -> {
+      Pose2d robotPose = RobotContainer.kSwerveDrive.getPose();
+      Transform2d turretOffset = getTurretOffset();
+      Pose2d turretPose = robotPose.plus(turretOffset);
+
+      var target = TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition();
+
+      // Desired note velocity (field): direction to hub, magnitude = shooter speed
+      Translation2d toHub = target.minus(turretPose.getTranslation());
+      double distToHub = toHub.getNorm();
+      if (distToHub < 1e-6) {
+        toHub = new Translation2d(1, 0);
+        distToHub = 1;
+      }
+      Translation2d desiredFuelVelocityField = toHub.times(TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity / distToHub);
+
+      // Robot velocity at turret (field frame); centerPoint so omega is included if offset
+      Translation2d turretCenterInRobot = new Translation2d(turretOffset.getX(), turretOffset.getY());
+      ChassisSpeeds robotRelativeSpeeds = RobotContainer.kSwerveDrive.getChassisSpeeds(turretCenterInRobot);
+      Translation2d robotVelocityField = new Translation2d(
+          robotRelativeSpeeds.vxMetersPerSecond,
+          robotRelativeSpeeds.vyMetersPerSecond).rotateBy(robotPose.getRotation());
+
+      // Launch = desired - scale*robot; scale tunable if over/under-correcting (1.0 = full comp)
+      Translation2d launchVelocityField = desiredFuelVelocityField.minus(
+          robotVelocityField.times(TurretConfig.WaistConfig.kVelocityCompScale));
+      double launchNorm = launchVelocityField.getNorm();
+      Rotation2d fieldRelativeAngle;
+      if (launchNorm < 1e-6) {
+        // Fallback: aim at hub when launch vector negligible (e.g. stationary)
+        fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(toHub.getY(), toHub.getX()));
+      } else {
+        fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(launchVelocityField.getY(), launchVelocityField.getX()));
+      }
+
+      applyWaistAimToFieldAngle(robotPose, turretPose, fieldRelativeAngle);
+    }, this::stop);
+    return cmd.withName("DefaultWaistAimToHubWhileMoving");
   }
 
   public Command setDegreesCommand(double angleDegrees) {
