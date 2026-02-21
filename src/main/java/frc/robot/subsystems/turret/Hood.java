@@ -111,6 +111,7 @@ public class Hood extends SubsystemBase {
   public double getAngleForDistance(double distanceMeters) {
     // Avoid d=0 so solvePitch derivative is non-zero (prevents div-by-zero / NaN)
     distanceMeters = Math.max(distanceMeters, 0.5);
+    // solvePitch = launch angle from horizontal (0=horizontal, 90°=up); hood convention: 0°=up, 90°=horizontal
     double angleDeg = 90 - Math.toDegrees(solvePitch(distanceMeters));
     return MathUtil.clamp(angleDeg, TurretConfig.HoodConfig.kMinSoftLimit, TurretConfig.HoodConfig.kMaxSoftLimit);
   }
@@ -140,6 +141,10 @@ public class Hood extends SubsystemBase {
     return cmd.withName("StopHood");
   }
 
+  /**
+   * Current hood angle (degrees). Convention: 0° = barrel up, 90° = horizontal.
+   * Zero encoder and/or conversion factor so that this matches the physical hood.
+   */
   public double getAngle() {
     return relativeEncoder.getPosition();
   }

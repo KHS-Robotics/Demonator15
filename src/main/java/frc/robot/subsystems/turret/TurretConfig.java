@@ -45,7 +45,12 @@ public class TurretConfig {
 
         public static final double kGravity = 9.8;
 
-        public static final double kShooterVelocity = 9;
+        /**
+         * Exit speed of the fuel (m/s). 4" wheel @ 6000 RPM ≈ 32 m/s max (no slip).
+         * Tune while STATIONARY first: shots short or hood too flat → increase; shots long or hood too steep → decrease.
+         * Get this right before tuning while-moving (kVelocityCompScale).
+         */
+        public static final double kShooterVelocity = 22;
 
         //offset between navX zero and turret zero
         public static final double kDegreeOffsetOfTurret = 0;

@@ -179,9 +179,9 @@ public class Waist extends SubsystemBase {
         toHub = new Translation2d(1, 0);
         distToHub = 1;
       }
-      // Desired horizontal speed = exit speed * cos(hood); only horizontal component affects yaw
+      // Hood 0° = barrel up, 90° = horizontal; horizontal component = v*sin(hood)
       double horizontalSpeed = TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity
-          * Math.cos(Math.toRadians(hoodAngleDegrees.getAsDouble()));
+          * Math.sin(Math.toRadians(hoodAngleDegrees.getAsDouble()));
       Translation2d desiredFuelVelocityField = toHub.times(horizontalSpeed / distToHub);
 
       // Robot velocity at turret (field frame); centerPoint so omega is included if offset
