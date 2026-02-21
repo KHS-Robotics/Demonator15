@@ -47,12 +47,17 @@ public class Turret extends SubsystemBase{
     }
 
     public Command shoot() {
-        var cmd = startEnd(spitter::start, spitter::stop);
+        var cmd = spitter.startEnd(spitter::start, spitter::stop);
         return cmd;
     }
 
     public Command kick() {
-        var cmd = startEnd(kicker::start, kicker::stop);
+        var cmd = kicker.startEnd(kicker::start, kicker::stop);
+        return cmd;
+    }
+
+    public Command feed() {
+        var cmd = belt.startEnd(belt::start, belt::stop);
         return cmd;
     }
 
@@ -342,7 +347,7 @@ public class Turret extends SubsystemBase{
     }
     
     public Command goToSetWaistAngle() {
-        var cmd = waist.setDegreesCommand(90);
+        var cmd = waist.setDegreesCommand(0);
         return cmd;
     }
 

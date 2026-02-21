@@ -12,13 +12,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
-import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -93,6 +90,7 @@ public class Spitter extends SubsystemBase {
   public void initSendable(SendableBuilder builder) {
       super.initSendable(builder);
       builder.addDoubleProperty("Speed", () -> getVelocity(), null);
+      builder.addDoubleProperty("Error", () -> Math.abs(getVelocity() - 6000), null);
   }
 }
 // two shooter motors

@@ -156,7 +156,8 @@ public class RobotContainer {
     // // useful during driver practice to reset for field oriented driving direction
     // // or a rare odd scenario on the field during a match
     // kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading());
-    kDriverController.a().onTrue(kTurret.goToSetHoodAngle().alongWith(kTurret.goToSetWaistAngle()).alongWith(kTurret.shootContinuously()));
+    // kDriverController.a().onTrue(kTurret.goToSetWaistAngle().alongWith(kTurret.shootContinuously()));
+    kDriverController.a().onTrue(kTurret.goToSetWaistAngle().alongWith(kTurret.kick().alongWith(kTurret.feed())).alongWith(kTurret.shoot()));
 
     // // give driver ability to limit speeds for when elevator is high up to
     // // help prevent tipping over - useful for slight alignment adjustments too
