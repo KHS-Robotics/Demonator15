@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import java.util.function.DoubleSupplier;
@@ -109,13 +108,6 @@ public class Waist extends SubsystemBase {
     builder.addDoubleProperty("Hub-TurretFieldRelativeAngle", () -> fieldRelativeAngleForHub, null);
   }
 
-  private static Transform2d getTurretOffset() {
-    return new Transform2d(
-        Units.inchesToMeters(TurretConfig.WaistConfig.kTurretOffsetXInches),
-        Units.inchesToMeters(TurretConfig.WaistConfig.kTurretOffsetYInches),
-        Rotation2d.fromDegrees(0));
-  }
-
   /**
    * Applies a field-relative aim angle: converts to robot-relative, checks
    * limits, clamps, sets waist setpoint, and updates GUI.
@@ -152,7 +144,7 @@ public class Waist extends SubsystemBase {
   public Command defaultAimWaistToHub() {
     var cmd = this.runEnd(() -> {
       Pose2d robotPose = RobotContainer.kSwerveDrive.getPose();
-      Pose2d turretPose = robotPose.plus(getTurretOffset());
+      Pose2d turretPose = robotPose.plus(TurretConfig.getTurretOffset());
 
       var target = TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition();
       // Vector from turret to hub
@@ -168,7 +160,7 @@ public class Waist extends SubsystemBase {
   public Command defaultAimWaistToHubWhileMoving(DoubleSupplier hoodAngleDegrees) {
     var cmd = this.runEnd(() -> {
       Pose2d robotPose = RobotContainer.kSwerveDrive.getPose();
-      Transform2d turretOffset = getTurretOffset();
+      Transform2d turretOffset = TurretConfig.getTurretOffset();
       Pose2d turretPose = robotPose.plus(turretOffset);
 
       var target = TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition();
@@ -182,6 +174,13 @@ public class Waist extends SubsystemBase {
       // Hood 0° = barrel up, 90° = horizontal; horizontal component = v*sin(hood)
       double horizontalSpeed = TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity
           * Math.sin(Math.toRadians(hoodAngleDegrees.getAsDouble()));
+      // No real shot when hood is (near) straight up — avoid desired=0 and aiming backward
+      final double kMinHorizontalSpeedForVelocityComp = 0.5;
+      if (horizontalSpeed < kMinHorizontalSpeedForVelocityComp) {
+        Rotation2d fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(toHub.getY(), toHub.getX()));
+        applyWaistAimToFieldAngle(robotPose, turretPose, fieldRelativeAngle);
+        return;
+      }
       Translation2d desiredFuelVelocityField = toHub.times(horizontalSpeed / distToHub);
 
       // Robot velocity at turret (field frame); centerPoint so omega is included if offset
@@ -201,6 +200,12 @@ public class Waist extends SubsystemBase {
         fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(toHub.getY(), toHub.getX()));
       } else {
         fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(launchVelocityField.getY(), launchVelocityField.getX()));
+        // If driving very fast toward hub, launch can point away — don't aim backward
+        Translation2d unitToHub = toHub.times(1.0 / distToHub);
+        double dot = launchVelocityField.getX() * unitToHub.getX() + launchVelocityField.getY() * unitToHub.getY();
+        if (dot < 0) {
+          fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(toHub.getY(), toHub.getX()));
+        }
       }
 
       applyWaistAimToFieldAngle(robotPose, turretPose, fieldRelativeAngle);

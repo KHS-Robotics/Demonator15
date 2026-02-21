@@ -1,10 +1,21 @@
 package frc.robot.subsystems.turret;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class TurretConfig {
+
+    /** Turret center offset from robot center. Used by Waist and Hood for aim math. */
+    public static Transform2d getTurretOffset() {
+        return new Transform2d(
+                Units.inchesToMeters(WaistConfig.kTurretOffsetXInches),
+                Units.inchesToMeters(WaistConfig.kTurretOffsetYInches),
+                Rotation2d.kZero);
+    }
 
     protected final class HoodConfig {
         public static final double kHoodP = 0.02;

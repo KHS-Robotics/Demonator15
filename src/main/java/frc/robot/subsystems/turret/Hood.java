@@ -9,8 +9,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -116,10 +116,11 @@ public class Hood extends SubsystemBase {
     return MathUtil.clamp(angleDeg, TurretConfig.HoodConfig.kMinSoftLimit, TurretConfig.HoodConfig.kMaxSoftLimit);
   }
 
-  /** Current distance to hub → ballistic angle (degrees), clamped to hood limits. */
+  /** Current distance to hub → ballistic angle (degrees), clamped to hood limits. Uses turret position (same ref as waist). */
   public double getAngleForHub() {
-    Translation2d robotPos = RobotContainer.kSwerveDrive.getPose().getTranslation();
-    double distance = robotPos.getDistance(TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition());
+    Pose2d robotPose = RobotContainer.kSwerveDrive.getPose();
+    Translation2d turretPos = robotPose.plus(TurretConfig.getTurretOffset()).getTranslation();
+    double distance = turretPos.getDistance(TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition());
     return getAngleForDistance(distance);
   }
 
