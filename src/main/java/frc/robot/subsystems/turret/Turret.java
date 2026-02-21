@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotContainer;
@@ -50,6 +51,13 @@ public class Turret extends SubsystemBase {
         return cmd.withName("StopTurret");
     }
 
+    public Command reload() {
+        var cmd = Commands.parallel(kicker.startCommand(), feeder.startCommand())
+            .andThen(Commands.idle(kicker, feeder))
+            .andThen(kicker.stopCommand().alongWith(feeder.stopCommand()));
+        return cmd.withName("TurretReloadCmd");
+    }
+
     public Command shoot() {
         var cmd = startEnd(spitter::start, spitter::stop);
         return cmd;
@@ -57,11 +65,6 @@ public class Turret extends SubsystemBase {
 
     public Command kick() {
         var cmd = startEnd(kicker::start, kicker::stop);
-        return cmd;
-    }
-
-    public Command feed() {
-        var cmd = startEnd(feeder::start, feeder::stop);
         return cmd;
     }
 

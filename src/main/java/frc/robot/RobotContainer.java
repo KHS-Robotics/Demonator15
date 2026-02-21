@@ -158,7 +158,7 @@ public class RobotContainer {
     // kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading());
 
     // TESTING - start feeder and kicker
-    kDriverController.a().onTrue(kTurret.feed().alongWith(kTurret.kick()));
+    kDriverController.a().onTrue(kTurret.reload());
 
     // // give driver ability to limit speeds for when elevator is high up to
     // // help prevent tipping over - useful for slight alignment adjustments too

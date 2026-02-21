@@ -14,7 +14,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
-import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -22,6 +21,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 
 public class Spitter extends SubsystemBase {
+  public static final int kMaxRpm = 6000;
 
   private final SparkMax motor;
   private final SparkClosedLoopController pid;
@@ -69,11 +69,11 @@ public class Spitter extends SubsystemBase {
   }
 
   public void start() {
-    pid.setSetpoint(6000, ControlType.kVelocity);
+    pid.setSetpoint(kMaxRpm, ControlType.kVelocity);
   }
 
   public boolean isAtSetpoint() {
-    return Math.abs(relativeEncoder.getVelocity() - 6000) < 50;
+    return Math.abs(relativeEncoder.getVelocity() - kMaxRpm) < 50;
   }
 
   public Command startCommand() {
@@ -81,7 +81,7 @@ public class Spitter extends SubsystemBase {
     return cmd.withName("StartSpitter");
   }
 
-  /** Default: run flywheel at 6000 RPM all match; interrupted by stopCommand(). */
+  /** Default: run flywheel at max RPM all match */
   public Command defaultRunFlywheel() {
     return runEnd(this::start, this::stop).withName("DefaultSpitter");
   }
