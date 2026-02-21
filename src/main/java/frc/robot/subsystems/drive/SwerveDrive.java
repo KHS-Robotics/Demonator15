@@ -350,13 +350,17 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
-   * Gets the robot's current speed.
-   * 
-   * @param centerPoint the center point of the robot
-   * @return the robot's current speed
+   * Gets the robot's current chassis speeds at a point (e.g. turret) in robot frame.
+   * Uses rigid-body motion: v_point = v_center + omega × r (r from center to point).
+   *
+   * @param pointInRobotFrame point relative to robot center (e.g. turret offset), in meters
+   * @return chassis speeds at that point (vx, vy in m/s, omega unchanged)
    */
-  public ChassisSpeeds getChassisSpeeds(Translation2d centerPoint) {
-    return kSwerveKinematics.toChassisSpeeds(getSwerveModuleStates(), centerPoint);
+  public ChassisSpeeds getChassisSpeedsAt(Translation2d pointInRobotFrame) {
+    ChassisSpeeds atCenter = kSwerveKinematics.toChassisSpeeds(getSwerveModuleStates());
+    double vxAtPoint = atCenter.vxMetersPerSecond - atCenter.omegaRadiansPerSecond * pointInRobotFrame.getY();
+    double vyAtPoint = atCenter.vyMetersPerSecond + atCenter.omegaRadiansPerSecond * pointInRobotFrame.getX();
+    return new ChassisSpeeds(vxAtPoint, vyAtPoint, atCenter.omegaRadiansPerSecond);
   }
 
   /**

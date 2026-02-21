@@ -187,7 +187,7 @@ public class Waist extends SubsystemBase {
 
       // Robot velocity at turret (field frame); centerPoint so omega is included if offset
       Translation2d turretCenterInRobot = new Translation2d(turretOffset.getX(), turretOffset.getY());
-      ChassisSpeeds robotRelativeSpeeds = RobotContainer.kSwerveDrive.getChassisSpeeds(turretCenterInRobot);
+      ChassisSpeeds robotRelativeSpeeds = RobotContainer.kSwerveDrive.getChassisSpeedsAt(turretCenterInRobot);
       Translation2d robotVelocityField = new Translation2d(
           robotRelativeSpeeds.vxMetersPerSecond,
           robotRelativeSpeeds.vyMetersPerSecond).rotateBy(robotPose.getRotation());
