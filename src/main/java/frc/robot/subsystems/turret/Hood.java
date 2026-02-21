@@ -128,7 +128,7 @@ public class Hood extends SubsystemBase {
     return getAngleForDistance(distance);
   }
 
-  /** Default: continuously aim hood at hub using current distance (simple ballistic, no phantom). */
+  /** Default: continuously aim hood at hub using current distance (using ballistics). */
   public Command defaultAimHoodToHub() {
     var cmd = this.runEnd(() -> setSetpointAngle(getAngleForHub()), this::stop);
     return cmd.withName("DefaultHoodAimToHub");
