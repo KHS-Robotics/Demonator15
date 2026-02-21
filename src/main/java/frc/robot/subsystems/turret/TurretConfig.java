@@ -77,7 +77,7 @@ public class TurretConfig {
 
         /**
          * Scale on robot velocity when compensating for motion (launch = desired - scale * robot).
-         * 1.0 = full compensation. Tune down (e.g. 0.9) if over-correcting, up if under-correcting.
+         * 1.0 = full compensation. Tune down (e.g. 0.9) if over-correcting, up if under-correcting (e.g. 1.1).
          */
         public static final double kVelocityCompScale = 1.0;
 

@@ -141,9 +141,7 @@ public class Hood extends SubsystemBase {
   }
 
   public double getAngle() {
-    // 0 is flouiat
-    var angle = Units.rotationsToDegrees(relativeEncoder.getPosition()) * HoodConfig.kRotationsToDegreesConversion;
-    return angle;
+    return relativeEncoder.getPosition();
   }
 
   public void setSetpointAngle(double setpointDegrees) {

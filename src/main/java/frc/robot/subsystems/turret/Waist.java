@@ -14,6 +14,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
@@ -163,12 +165,7 @@ public class Waist extends SubsystemBase {
     return cmd.withName("DefaultWaistAimToHub");
   }
 
-  /**
-   * Same as defaultAimWaistToHub but compensates for robot velocity (translation
-   * and rotation): launch_velocity = desired_fuel_velocity - robot_velocity; aim
-   * along launch_velocity. Use when shooting while moving.
-   */
-  public Command defaultAimWaistToHubWhileMoving() {
+  public Command defaultAimWaistToHubWhileMoving(DoubleSupplier hoodAngleDegrees) {
     var cmd = this.runEnd(() -> {
       Pose2d robotPose = RobotContainer.kSwerveDrive.getPose();
       Transform2d turretOffset = getTurretOffset();
@@ -176,14 +173,16 @@ public class Waist extends SubsystemBase {
 
       var target = TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition();
 
-      // Desired note velocity (field): direction to hub, magnitude = shooter speed
       Translation2d toHub = target.minus(turretPose.getTranslation());
       double distToHub = toHub.getNorm();
       if (distToHub < 1e-6) {
         toHub = new Translation2d(1, 0);
         distToHub = 1;
       }
-      Translation2d desiredFuelVelocityField = toHub.times(TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity / distToHub);
+      // Desired horizontal speed = exit speed * cos(hood); only horizontal component affects yaw
+      double horizontalSpeed = TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity
+          * Math.cos(Math.toRadians(hoodAngleDegrees.getAsDouble()));
+      Translation2d desiredFuelVelocityField = toHub.times(horizontalSpeed / distToHub);
 
       // Robot velocity at turret (field frame); centerPoint so omega is included if offset
       Translation2d turretCenterInRobot = new Translation2d(turretOffset.getX(), turretOffset.getY());
@@ -222,8 +221,7 @@ public class Waist extends SubsystemBase {
 
   public double getDegrees() {
     // 0 should be perpendicular with the back
-    var angle = Units.rotationsToDegrees(relativeEncoder.getPosition()) * HoodConfig.kRotationsToDegreesConversion;
-    return angle;
+    return relativeEncoder.getPosition();
   }
 
   public void setSetpointDegrees(double setpointDegrees) {

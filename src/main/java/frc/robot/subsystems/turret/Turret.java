@@ -21,6 +21,7 @@ public class Turret extends SubsystemBase {
 
     public Turret() {
         waist.setDefaultCommand(waist.defaultAimWaistToHub());
+        // waist.setDefaultCommand(waist.defaultAimWaistToHubWhileMoving(() -> hood.getAngle()));
         hood.setDefaultCommand(hood.defaultAimHoodToHub());
         spitter.setDefaultCommand(spitter.defaultRunFlywheel());
 
