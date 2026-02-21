@@ -225,9 +225,9 @@ public class Waist extends SubsystemBase {
   }
 
   public void setSetpointDegrees(double setpointDegrees) {
-    // only reset for new setpoints
-    setpointRotationDegrees = MathUtil.clamp(setpointDegrees, -180.0, 180.0);
-    pid.setSetpoint(setpointDegrees, ControlType.kPosition);
+    double clamped = MathUtil.clamp(setpointDegrees, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
+    setpointRotationDegrees = clamped;
+    pid.setSetpoint(clamped, ControlType.kPosition);
   }
 
   public boolean isAtSetpoint() {

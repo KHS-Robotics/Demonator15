@@ -145,8 +145,9 @@ public class Hood extends SubsystemBase {
   }
 
   public void setSetpointAngle(double setpointDegrees) {
-    setpointAngleDegrees = setpointDegrees;
-    pid.setSetpoint(setpointDegrees, ControlType.kPosition);
+    double clamped = MathUtil.clamp(setpointDegrees, TurretConfig.HoodConfig.kMinSoftLimit, TurretConfig.HoodConfig.kMaxSoftLimit);
+    setpointAngleDegrees = clamped;
+    pid.setSetpoint(clamped, ControlType.kPosition);
   }
 
   public boolean isAtSetpoint() {
