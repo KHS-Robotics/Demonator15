@@ -108,6 +108,22 @@ public class Waist extends SubsystemBase {
     builder.addDoubleProperty("Hub-TurretFieldRelativeAngle", () -> fieldRelativeAngleForHub, null);
   }
 
+  /** Robot velocity at turret toward hub (m/s). + toward hub, − away. Same source as while-moving aim. */
+  public static double getRobotRadialVelocityTowardHubMetersPerSecond() {
+    Pose2d robotPose = RobotContainer.kSwerveDrive.getPose();
+    Transform2d turretOffset = TurretConfig.getTurretOffset();
+    Pose2d turretPose = robotPose.plus(turretOffset);
+    Translation2d toHub = TurretConfig.TurretFieldAndRobotInfo.getCurrentHubPosition().minus(turretPose.getTranslation());
+    double dist = toHub.getNorm();
+    if (dist < 1e-6) return 0;
+    Translation2d unitToHub = toHub.times(1.0 / dist);
+    ChassisSpeeds atTurret = RobotContainer.kSwerveDrive.getChassisSpeedsAt(
+        new Translation2d(turretOffset.getX(), turretOffset.getY()));
+    Translation2d robotVelField = new Translation2d(atTurret.vxMetersPerSecond, atTurret.vyMetersPerSecond)
+        .rotateBy(robotPose.getRotation());
+    return robotVelField.getX() * unitToHub.getX() + robotVelField.getY() * unitToHub.getY();
+  }
+
   /**
    * Applies a field-relative aim angle: converts to robot-relative, checks
    * limits, clamps, sets waist setpoint, and updates GUI.

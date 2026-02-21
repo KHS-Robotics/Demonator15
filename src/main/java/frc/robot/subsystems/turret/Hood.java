@@ -79,10 +79,14 @@ public class Hood extends SubsystemBase {
 
     pid = motor.getClosedLoopController();
   }
+
   /**
    * Newton's method: find launch angle (rad) so ballistic trajectory hits target
    * at given horizontal distance (d), with gravity g, speed v, height diff h.
    * High initial guess (88°) so we get the lob solution.
+   * 
+   * TODO: take into account the velocity of the robot (turret velocity) towards the hub
+   * @see {@link Waist#getRobotRadialVelocityTowardHubMetersPerSecond()}
    */
   private double solvePitch(double distance) {
     //uses newtons method to itterate until it finds a zero (or something close enough) of the original physics function
