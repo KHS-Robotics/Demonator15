@@ -4,6 +4,7 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import frc.robot.RobotMap;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -80,6 +81,16 @@ public class Spitter extends SubsystemBase {
     var cmd = this.run(() -> this.start()).until(this::isAtSetpoint);
     return cmd.withName("StartSpitter");
 
+  }
+
+  public double getVelocity(){
+    return relativeEncoder.getVelocity();
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+      super.initSendable(builder);
+      builder.addDoubleProperty("Speed", () -> getVelocity(), null);
   }
 }
 // two shooter motors

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -34,7 +35,7 @@ import com.revrobotics.ResetMode;
 public class Waist extends SubsystemBase {
   private final SparkMax motor;
   private final SparkClosedLoopController pid;
-  // private final AbsoluteEncoder absoluteEncoder;
+  private final AbsoluteEncoder absoluteEncoder;
   private final RelativeEncoder relativeEncoder;
 
   private double setpointRotationDegrees;
@@ -45,8 +46,8 @@ public class Waist extends SubsystemBase {
         .positionConversionFactor(TurretConfig.WaistConfig.kWaistEncoderPositionConversionFactor)
         .velocityConversionFactor(TurretConfig.WaistConfig.kWaistEncoderVelocityConversionFactor);
 
-    // var absoluteEncoderConfig = new AbsoluteEncoderConfig()
-    // .inverted(true);
+    var absoluteEncoderConfig = new AbsoluteEncoderConfig()
+        .inverted(true);
 
     var softLimitConfig = new SoftLimitConfig()
         .forwardSoftLimit(TurretConfig.WaistConfig.kMaxSoftLimit)
@@ -67,18 +68,19 @@ public class Waist extends SubsystemBase {
         .idleMode(IdleMode.kBrake)
         .apply(relativeEncoderConfig)
         .apply(pidConfig)
-        .apply(softLimitConfig);
-    // .apply(absoluteEncoderConfig);
+        .apply(softLimitConfig)
+        .apply(absoluteEncoderConfig);
 
     motor = new SparkMax(RobotMap.TURRET_AIMER_WAIST_ID, MotorType.kBrushless);
     motor.configure(waistConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
-    // absoluteEncoder = motor.getAbsoluteEncoder();
+   absoluteEncoder = motor.getAbsoluteEncoder();
 
     relativeEncoder = motor.getEncoder();
 
     pid = motor.getClosedLoopController();
+    SmartDashboard.putData(this);
 
   }
 
@@ -94,9 +96,11 @@ public class Waist extends SubsystemBase {
   }
 
   public double getDegrees() {
-    // 0 should be perpendicular with the back
-    var angle = Units.rotationsToDegrees(relativeEncoder.getPosition()) * HoodConfig.kRotationsToDegreesConversion;
-    return angle;
+    return relativeEncoder.getPosition();
+  }
+
+  public double getAbsoluteReading(){
+    return absoluteEncoder.getPosition();
   }
 
   public void setSetpointDegrees(double setpointDegrees) {
@@ -123,6 +127,13 @@ public class Waist extends SubsystemBase {
 
   public void periodic() {
     updateSetpointsForDisabledMode();
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+      super.initSendable(builder);
+      builder.addDoubleProperty("Angle", () -> getDegrees(), null);
+      builder.addDoubleProperty("AngleAbsolute", () -> this.getAbsoluteReading(), null);
   }
 
 }
