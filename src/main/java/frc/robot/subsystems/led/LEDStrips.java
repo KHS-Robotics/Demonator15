@@ -96,7 +96,7 @@ public class LEDStrips extends SubsystemBase {
         }
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()){
-            Alliance coolAlliance = alliance.orElse(Alliance.Blue);
+            Alliance coolAlliance = alliance.orElse(Alliance.Red);
             if (coolAlliance == Alliance.Red){
                 turretBufferView.setLED(currentAnimationProgress, RED);
             }
@@ -105,7 +105,15 @@ public class LEDStrips extends SubsystemBase {
             }
         }
             currentAnimationProgress += animationProgress();
-        }
+    }
+
+    public int animationProgress(){
+        int halfStripLength = (int) Math.round(LEDConfig.kTurretLEDStripLength / 2);
+        int averageProgressPerTick = (int) Math.round(halfStripLength / LEDConfig.kTicksToHalfpointAnimationCycle);
+        double weigh = 2 * (1 / Math.abs(halfStripLength - currentAnimationProgress));
+        int tickProgress = (int) Math.round(averageProgressPerTick * weigh);
+        return tickProgress;
+    }
 
     public void runTurretLEDSEnabled(){
         for (int i = 0; i < LEDConfig.kTurretLEDStripLength; i++){
@@ -118,15 +126,6 @@ public class LEDStrips extends SubsystemBase {
 
         }
     }
-
-    public int animationProgress(){
-        int halfStripLength = (int) Math.round(LEDConfig.kTurretLEDStripLength / 2);
-        int averageProgressPerTick = (int) Math.round(halfStripLength / LEDConfig.kTicksToHalfpointAnimationCycle);
-        double weigh = 2 * (1 / Math.abs(halfStripLength - currentAnimationProgress));
-        int tickProgress = (int) Math.round(averageProgressPerTick * weigh);
-        return tickProgress;
-    }
-
 
     public int getRGBValue(Color color, String channel){
         var value = 0.0;
