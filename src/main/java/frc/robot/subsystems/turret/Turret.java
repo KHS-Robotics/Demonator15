@@ -144,6 +144,9 @@ public class Turret extends SubsystemBase{
         //radial velocity is in reference to the velocity of the robot towards the hub
         // all velocity is in meters per second
         Translation2d robotPosition = position;
+        var vx = RobotContainer.kSwerveDrive.getChassisSpeeds().vxMetersPerSecond;
+        var vy = RobotContainer.kSwerveDrive.getChassisSpeeds().vyMetersPerSecond;
+
         var alliance = DriverStation.getAlliance();
         Translation2d radialVector;
         double rX;
@@ -204,7 +207,7 @@ public class Turret extends SubsystemBase{
      */
     private Translation2d getTurretRotationalToLinearVelocity() {
         Rotation2d theta = new Rotation2d(Math.toRadians(RobotContainer.kSwerveDrive.getPose().getRotation().getDegrees() + 90 + TurretConfig.TurretFieldAndRobotInfo.kDegreeOffsetOfTurret));
-        var magnitude = RobotContainer.kNavx.getRate() * TurretConfig.TurretFieldAndRobotInfo.kTurretDistanceToNavX;
+        var magnitude = new Rotation2d(RobotContainer.kSwerveDrive.getChassisSpeeds().omegaRadiansPerSecond).getDegrees() * TurretConfig.TurretFieldAndRobotInfo.kTurretDistanceToNavX;
         Translation2d RotationalVelocity = new Translation2d(magnitude, theta);
         return RotationalVelocity;
     }
@@ -214,7 +217,7 @@ public class Turret extends SubsystemBase{
     */
     private Translation2d getPhantomRobotPosition() {
         //just using tangential velocity calcs
-        double tangVelocity = getTangentialVelocity(RobotContainer.kNavx.getVelocityX(), RobotContainer.kNavx.getVelocityY());
+        double tangVelocity = getTangentialVelocity(RobotContainer.kSwerveDrive.getChassisSpeeds().vxMetersPerSecond, RobotContainer.kSwerveDrive.getChassisSpeeds().vyMetersPerSecond);
         Rotation2d angleOfTang = new Rotation2d(getAngleToPosition() + (Math.PI / 2));
         var pitchAngle = solvePitch(getDistanceToHub());
         double T = getDistanceToHub() / (TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity * Math.cos(pitchAngle));
@@ -228,15 +231,17 @@ public class Turret extends SubsystemBase{
         return phantomYawPosition;
     }
 
-    public Command aimWaist(Translation2d towards) {
+    private double aimWaistAngle(Translation2d towards) {
         
         var angle = getWaistFinalRotation(towards).getDegrees();
-        var cmd = waist.setDegreesCommand(angle);
-        //+ TurretConfig.WaistConfig.kWaistDegreesOffset);
-        return cmd;
+        return angle;
+    }
+    
+    private double aimWaistAngle() {
+        return aimWaistAngle(getCurrentHubPosition());
     }
 
-    public Rotation2d getWaistFinalRotation(Translation2d towards) {
+    private Rotation2d getWaistFinalRotation(Translation2d towards) {
         Translation2d phantomRobotPosition = getPhantomRobotPosition();
         //the adding of the yaw is to account for the rotation of the robot
         double angle =  getAngleToPosition(phantomRobotPosition, towards) - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
@@ -247,34 +252,10 @@ public class Turret extends SubsystemBase{
         return angleRotation;
     }
 
-    public Command aimWaist() {
-        return aimWaist(getCurrentHubPosition());
-    }
-
-    public Command aimWaistSimple(Translation2d towards) {
-        //the subtracting of the yaw is to account for the rotation of the robot
-        double angle =  getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), towards) - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
-        //clamping the value because our turret only goes 240(?) degrees
-        angle = MathUtil.clamp(Math.toDegrees(angle) % 360, -120, 120);
-        //+ TurretConfig.WaistConfig.kWaistDegreesOffset);
-        var cmd = waist.setDegreesCommand(angle);
-        return cmd;
-    }
-
-    public Command aimWaistSimple() {
-        return aimWaistSimple(getCurrentHubPosition());
-    }
-
-    public Command aimHood(Translation2d towards) {
-        double angle = getHoodAimFinalAngle(towards);
-        var cmd = hood.setAngleCommand(angle);
-        return cmd;
-    }
-
-    public double getHoodAimFinalAngle(Translation2d towards) {
+    private double getHoodAimFinalAngle(Translation2d towards) {
         //linear calcs
         Translation2d phantomRobotPosition = getPhantomRobotPosition();
-        double radialVelocity = getRadialVelocityForPhantom(RobotContainer.kNavx.getVelocityX(), RobotContainer.kNavx.getVelocityY(), phantomRobotPosition);
+        double radialVelocity = getRadialVelocityForPhantom(RobotContainer.kSwerveDrive.getChassisSpeeds().vxMetersPerSecond, RobotContainer.kSwerveDrive.getChassisSpeeds().vyMetersPerSecond, phantomRobotPosition);
         Rotation2d angleOfRad = new Rotation2d(getAngleToPosition(phantomRobotPosition, towards));
         double T = getDistanceToHub(phantomRobotPosition) / TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity;
         //rotational calcs
@@ -294,50 +275,47 @@ public class Turret extends SubsystemBase{
         return angle;
     }
 
-    public Command aimHood() {
-        return aimHood(getCurrentHubPosition());
+    
+    private double aimHoodAngle(Translation2d towards) {
+        double angle = getHoodAimFinalAngle(towards);
+        return angle;
     }
 
-    public Command aimHoodSimple(Translation2d towards) {
-        double distanceToPoint = RobotContainer.kSwerveDrive.getPose().getTranslation().getDistance(towards);
-        var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
-        //add radial velocity calcs
-        //clamp to the physical limits of our hood
-        angle = MathUtil.clamp(angle, 0.0, 45.0); 
-        //this will be part of the relative / absolute hybrid incorporation   + TurretConfig.HoodConfig.kHoodDegreesOffset;
-        var cmd = hood.setAngleCommand(angle);
-        return cmd;
-    }
-
-    public Command aimHoodSimple() {
-        return aimHoodSimple(getCurrentHubPosition());
+    private double aimHoodAngle() {
+        return aimHoodAngle(getCurrentHubPosition());
     }
 
     public Command aimTowardsHubWithVelocity() {
-        var aimWaist = aimHood();
-        var aimHood = aimWaist();
+        var aimWaist = hood.setAngleCommand(aimWaistAngle());
+        var aimHood = waist.setDegreesCommand(aimHoodAngle());
         var cmd = aimWaist.alongWith(aimHood);
         return cmd;
     }
 
     public Command aimTowardsHub() {
-        var aimWaist = aimHoodSimple();
-        var aimHood = aimWaistSimple();
+        var aimWaist = hood.aimHoodSimple(getCurrentHubPosition());
+        var aimHood = waist.aimWaistSimple(getCurrentHubPosition());
         var cmd = aimWaist.alongWith(aimHood);
         return cmd;
     }
 
     public Command aimAndShootTowardsHub() {
-        var aim = aimTowardsHubWithVelocity();
-        var shoot = shootContinuously();
-        var cmd = aim.alongWith(shoot);
+        var aimWaist = hood.aimHoodSimple(getCurrentHubPosition());
+        var aimHood = waist.aimWaistSimple(getCurrentHubPosition());
+        var startSpitter = spitter.startCommand();
+        var startKicker = kicker.startCommand();
+        var startBelt = belt.startCommand();
+        var cmd = aimWaist.alongWith(aimHood.alongWith(startBelt).alongWith(startKicker).alongWith(startSpitter));
         return cmd;
     }
 
     public Command aimAndShootTowardsHubWithVelocity() {
-        var aim = aimTowardsHubWithVelocity();
-        var shoot = shootContinuously();
-        var cmd = aim.alongWith(shoot);
+        var aimWaist = hood.setAngleCommand(aimWaistAngle());
+        var aimHood = waist.setDegreesCommand(aimHoodAngle());
+        var startSpitter = spitter.startCommand();
+        var startKicker = kicker.startCommand();
+        var startBelt = belt.startCommand();
+        var cmd = aimWaist.alongWith(aimHood.alongWith(startBelt).alongWith(startKicker).alongWith(startSpitter));
         return cmd;
     }
 

@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -23,6 +24,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.turret.TurretConfig.HoodConfig;
 import frc.robot.subsystems.turret.TurretConfig.WaistConfig;
@@ -57,9 +60,10 @@ public class Waist extends SubsystemBase {
         .reverseSoftLimitEnabled(true);
 
     var pidConfig = new ClosedLoopConfig()
-        .pid(TurretConfig.WaistConfig.kAimerWaistP, TurretConfig.WaistConfig.kAimerWaistI, TurretConfig.WaistConfig.kAimerWaistD)
-          .maxOutput(0.35)
-          .minOutput(-0.35)
+        .pid(TurretConfig.WaistConfig.kAimerWaistP, TurretConfig.WaistConfig.kAimerWaistI,
+            TurretConfig.WaistConfig.kAimerWaistD)
+        .maxOutput(0.35)
+        .minOutput(-0.35)
         .iZone(10);
 
     var waistConfig = new SparkMaxConfig()
@@ -76,7 +80,7 @@ public class Waist extends SubsystemBase {
     motor.configure(waistConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
-   absoluteEncoder = motor.getAnalog();
+    absoluteEncoder = motor.getAnalog();
 
     relativeEncoder = motor.getEncoder();
 
@@ -100,19 +104,39 @@ public class Waist extends SubsystemBase {
     return relativeEncoder.getPosition();
   }
 
-  public double getAbsoluteReading(){
+  public double getAbsoluteReading() {
     return absoluteEncoder.getPosition();
   }
 
   public void setSetpointDegrees(double setpointDegrees) {
     // only reset for new setpoints
-    setpointRotationDegrees = MathUtil.clamp(setpointDegrees, -180.0, 180.0);
+    setpointRotationDegrees = MathUtil.clamp(setpointDegrees, TurretConfig.WaistConfig.kMinSoftLimit,
+        TurretConfig.WaistConfig.kMinSoftLimit);
     pid.setSetpoint(setpointDegrees, ControlType.kPosition);
   }
 
   public boolean isAtSetpoint() {
     var error = Math.abs(setpointRotationDegrees - getDegrees());
     return (error < 1);
+  }
+
+  private double getAngleToPosition(Translation2d fromPose, Translation2d toPose) {
+    double yDistanceTo = toPose.getY() - fromPose.getY();
+    double xDistanceTo = toPose.getX() - fromPose.getX();
+
+    var angleToHub = Math.atan2(yDistanceTo, xDistanceTo);
+    return angleToHub;
+  }
+
+  public Command aimWaistSimple(Translation2d towards) {
+    // the subtracting of the yaw is to account for the rotation of the robot
+    double angle = getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), towards)
+        - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
+    // clamping the value because our turret only goes 240(?) degrees
+    angle = MathUtil.clamp(Math.toDegrees(angle) % 360, -120, 120);
+    // + TurretConfig.WaistConfig.kWaistDegreesOffset);
+    var cmd = setDegreesCommand(angle);
+    return cmd;
   }
 
   private void updateSetpointsForDisabledMode() {
@@ -132,9 +156,9 @@ public class Waist extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-      super.initSendable(builder);
-      builder.addDoubleProperty("Angle", () -> getDegrees(), null);
-      builder.addDoubleProperty("AngleAbsolute", () -> this.getAbsoluteReading(), null);
+    super.initSendable(builder);
+    builder.addDoubleProperty("Angle", () -> getDegrees(), null);
+    builder.addDoubleProperty("AngleAbsolute", () -> this.getAbsoluteReading(), null);
   }
 
 }
