@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotContainer;
@@ -144,8 +143,6 @@ public class Turret extends SubsystemBase{
         //radial velocity is in reference to the velocity of the robot towards the hub
         // all velocity is in meters per second
         Translation2d robotPosition = position;
-        var vx = RobotContainer.kSwerveDrive.getChassisSpeeds().vxMetersPerSecond;
-        var vy = RobotContainer.kSwerveDrive.getChassisSpeeds().vyMetersPerSecond;
 
         var alliance = DriverStation.getAlliance();
         Translation2d radialVector;
