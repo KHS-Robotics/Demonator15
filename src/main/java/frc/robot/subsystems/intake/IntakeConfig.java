@@ -20,4 +20,10 @@ public class IntakeConfig {
         public static final double kDeployerEncoderVelocityConversionFactor = 0;
     }
 
+    protected final class HopperSetPoints{
+        public static final double HOPPERRETRACT = 0;
+        public static final double HOPPERDEPLOY = 0;
+        public static final double HOPPERSTOW = 0;
+    }
+
 }

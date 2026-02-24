@@ -82,9 +82,9 @@ public class Elevator extends SubsystemBase {
 
         setSetpointHeight(getHeightFromGroundInches());
 
-        outerServoLeft = new Servo(RobotMap.OUTER_SERVO_LEFT);
-        outerServoRight = new Servo(RobotMap.OUTER_SERVO_RIGHT);
-        innerServo = new Servo(RobotMap.INNER_SERVO);
+        outerServoLeft = new Servo(RobotMap.CLIMBER_OUTER_SERVO_LEFT);
+        outerServoRight = new Servo(RobotMap.CLIMBER_OUTER_SERVO_RIGHT);
+        innerServo = new Servo(RobotMap.CLIMBER_INNER_SERVO);
     }
 
     public void periodic() {
@@ -193,7 +193,7 @@ public class Elevator extends SubsystemBase {
     }
 
     private void setMotorOutputForSetpoint() {
-        var pidOutput = pid.calculate(getHeightFromGroundInches(), setpointHeightFromGroundInches);
+        var pidOutput = pid.calculate(getHeightFromGroundInches(), setpointHeightFromGroundInches); 
         var output = pidOutput + ClimberMotorConfig.kClimberKG;
 
         if (motorIsAtSetpoint() && heightMode == ClimberHeightMode.kAbsolute) {
