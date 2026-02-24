@@ -155,7 +155,7 @@ public class Hood extends SubsystemBase {
     double distanceToPoint = RobotContainer.kSwerveDrive.getPose().getTranslation().getDistance(towards);
     var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
     // clamp to the physical limits of our hood
-    angle = MathUtil.clamp(angle, 0.0, 45.0);
+    angle = MathUtil.clamp(angle, TurretConfig.HoodConfig.kMinSoftLimit, TurretConfig.HoodConfig.kMaxSoftLimit);
     // this will be part of the relative / absolute hybrid incorporation +
     // TurretConfig.HoodConfig.kHoodDegreesOffset;
     var cmd = setAngleCommand(angle);
@@ -166,7 +166,7 @@ public class Hood extends SubsystemBase {
     double distanceToPoint = RobotContainer.kSwerveDrive.getPose().getTranslation().getDistance(towards);
     var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
     // clamp to the physical limits of our hood
-    angle = MathUtil.clamp(angle, 0.0, 45.0);
+    angle = MathUtil.clamp(angle, TurretConfig.HoodConfig.kMinSoftLimit, TurretConfig.HoodConfig.kMaxSoftLimit);
     // this will be part of the relative / absolute hybrid incorporation +
     // TurretConfig.HoodConfig.kHoodDegreesOffset;
     return angle;

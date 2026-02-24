@@ -267,7 +267,7 @@ public class Turret extends SubsystemBase{
         double angle =  getAngleToPosition(phantomRobotPosition, towards) - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
         //clamping the value because our turret only goes 240(?) degrees
         angle = Math.toDegrees(angle) % 360;
-        angle = MathUtil.clamp(angle, -120, 120);
+        angle = MathUtil.clamp(angle, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
         Rotation2d angleRotation = new Rotation2d(angle);
         //+ TurretConfig.WaistConfig.kWaistDegreesOffset);
         return angleRotation;
@@ -294,7 +294,7 @@ public class Turret extends SubsystemBase{
         var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
         //add radial velocity calcs
         //clamp to the physical limits of our hood
-        angle = MathUtil.clamp(angle, 0.0, 45.0); 
+        angle = MathUtil.clamp(angle, TurretConfig.HoodConfig.kMinSoftLimit, TurretConfig.HoodConfig.kMaxSoftLimit); 
         //this will be part of the relative / absolute hybrid incorporation   + TurretConfig.HoodConfig.kHoodDegreesOffset;
         return angle;
     }

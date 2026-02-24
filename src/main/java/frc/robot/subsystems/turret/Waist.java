@@ -135,7 +135,7 @@ public class Waist extends SubsystemBase {
         - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
     // clamping the value because our turret only goes 240(?) degrees
     angle = Math.toDegrees(angle) % 360;
-    angle = MathUtil.clamp(angle, -120, 120);
+    angle = MathUtil.clamp(angle, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
     // + TurretConfig.WaistConfig.kWaistDegreesOffset);
     var cmd = setDegreesCommand(angle);
     return cmd;
@@ -147,7 +147,7 @@ public class Waist extends SubsystemBase {
         - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
     // clamping the value because our turret only goes 240(?) degrees
     angle = Math.toDegrees(angle) % 360;
-    angle = MathUtil.clamp(angle, -120, 120);
+    angle = MathUtil.clamp(angle, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
     var finalAngle = new Rotation2d(Math.toRadians(angle));
     // + TurretConfig.WaistConfig.kWaistDegreesOffset);
     return finalAngle;
@@ -159,7 +159,7 @@ public class Waist extends SubsystemBase {
         - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
     // clamping the value because our turret only goes 240(?) degrees
     angle = Math.toDegrees(angle) % 360;
-    angle = MathUtil.clamp(angle, -120, 120);
+    angle = MathUtil.clamp(angle, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
     var finalAngle = new Rotation2d(Math.toRadians(angle + RobotContainer.kSwerveDrive.getPose().getRotation().getDegrees()));
     // + TurretConfig.WaistConfig.kWaistDegreesOffset);
     return finalAngle;
