@@ -162,6 +162,16 @@ public class Hood extends SubsystemBase {
     return cmd;
   }
 
+  public double aimHoodSimpleAngle(Translation2d towards) {
+    double distanceToPoint = RobotContainer.kSwerveDrive.getPose().getTranslation().getDistance(towards);
+    var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
+    // clamp to the physical limits of our hood
+    angle = MathUtil.clamp(angle, 0.0, 45.0);
+    // this will be part of the relative / absolute hybrid incorporation +
+    // TurretConfig.HoodConfig.kHoodDegreesOffset;
+    return angle;
+  }
+
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);

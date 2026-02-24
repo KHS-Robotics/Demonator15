@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -133,10 +134,35 @@ public class Waist extends SubsystemBase {
     double angle = getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), towards)
         - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
     // clamping the value because our turret only goes 240(?) degrees
-    angle = MathUtil.clamp(Math.toDegrees(angle) % 360, -120, 120);
+    angle = Math.toDegrees(angle) % 360;
+    angle = MathUtil.clamp(angle, -120, 120);
     // + TurretConfig.WaistConfig.kWaistDegreesOffset);
     var cmd = setDegreesCommand(angle);
     return cmd;
+  }
+
+  public Rotation2d aimWaistSimpleAngle(Translation2d towards) {
+    // the subtracting of the yaw is to account for the rotation of the robot
+    double angle = getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), towards)
+        - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
+    // clamping the value because our turret only goes 240(?) degrees
+    angle = Math.toDegrees(angle) % 360;
+    angle = MathUtil.clamp(angle, -120, 120);
+    var finalAngle = new Rotation2d(Math.toRadians(angle));
+    // + TurretConfig.WaistConfig.kWaistDegreesOffset);
+    return finalAngle;
+  }
+
+  public Rotation2d aimWaistSimpleAngleFieldRelative(Translation2d towards) {
+    // the subtracting of the yaw is to account for the rotation of the robot
+    double angle = getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), towards)
+        - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
+    // clamping the value because our turret only goes 240(?) degrees
+    angle = Math.toDegrees(angle) % 360;
+    angle = MathUtil.clamp(angle, -120, 120);
+    var finalAngle = new Rotation2d(Math.toRadians(angle + RobotContainer.kSwerveDrive.getPose().getRotation().getDegrees()));
+    // + TurretConfig.WaistConfig.kWaistDegreesOffset);
+    return finalAngle;
   }
 
   private void updateSetpointsForDisabledMode() {
