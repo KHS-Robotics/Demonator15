@@ -36,8 +36,8 @@ public class Intake extends SubsystemBase {
     }
 
     public Command stowDeployer() {
-        var hopperCurrentlyRetracted = hopper.deployHopperCommand().andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW));
-        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW);
+        var hopperCurrentlyRetracted = hopper.deployHopperCommand().andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW).andThen(hopper.retractHopperCommand()));
+        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW).andThen(hopper.retractHopperCommand());
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
         return cmd.withName("SetDeployerStateStow");
