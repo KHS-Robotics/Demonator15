@@ -45,24 +45,24 @@ public class Turret extends SubsystemBase{
 
     public Command shoot() {
         var cmd = spitter.startEnd(spitter::start, spitter::stop);
-        return cmd;
+        return cmd.withName("ShootFuel");
     }
 
     public Command kick() {
         var cmd = kicker.startEnd(kicker::start, kicker::stop);
-        return cmd;
+        return cmd.withName("KickFuel");
     }
 
     public Command feed() {
         var cmd = belt.startEnd(belt::start, belt::stop);
-        return cmd;
+        return cmd.withName("FeedFuel");
     }
 
     public Command reload() {
         var startKicker = kicker.startCommand();
         var startBelt = belt.startCommand();
         var cmd = startKicker.alongWith(startBelt);
-        return cmd;
+        return cmd.withName("ReloadFuel");
     }
 
     public Command shootContinuously() {
@@ -70,7 +70,7 @@ public class Turret extends SubsystemBase{
         var startKicker = kicker.startCommand();
         var startBelt = belt.startCommand();
         var cmd = startSpitter.alongWith(startKicker).alongWith(startBelt);
-        return cmd;
+        return cmd.withName("ShootFuel");
     }
 
     private Translation2d getCurrentHubPosition() {
@@ -308,14 +308,14 @@ public class Turret extends SubsystemBase{
         var aimWaist = hood.setAngleCommand(getDesiredWaistAngle());
         var aimHood = waist.setDegreesCommand(getDesiredHoodAngle());
         var cmd = aimWaist.alongWith(aimHood);
-        return cmd;
+        return cmd.withName("TurretAimTowardsHubWithVelocity");
     }
 
     public Command aimTowardsHub() {
         var aimWaist = hood.aimHoodSimple(getCurrentHubPosition());
         var aimHood = waist.aimWaistSimple(getCurrentHubPosition());
         var cmd = aimWaist.alongWith(aimHood);
-        return cmd;
+        return cmd.withName("TurretAimTowardsHub");
     }
 
     public Command aimAndShootTowardsHub() {
@@ -325,7 +325,7 @@ public class Turret extends SubsystemBase{
         var startKicker = kicker.startCommand();
         var startBelt = belt.startCommand();
         var cmd = aimWaist.alongWith(aimHood).alongWith(startBelt).alongWith(startKicker).alongWith(startSpitter);
-        return cmd;
+        return cmd.withName("TurretAimAndShootTowardsHub");
     }
 
     public Command aimAndShootTowardsHubWithVelocity() {
@@ -335,17 +335,17 @@ public class Turret extends SubsystemBase{
         var startKicker = kicker.startCommand();
         var startBelt = belt.startCommand();
         var cmd = aimWaist.alongWith(aimHood).alongWith(startBelt).alongWith(startKicker).alongWith(startSpitter);
-        return cmd;
+        return cmd.withName("TurretAimAndShootTowardsHubWithVelocity");
     }
 
     public Command goToSetHoodAngle() {
         var cmd = hood.setAngleCommand(20);
-        return cmd;
+        return cmd.withName("GoToHoodAngle");
     }
     
     public Command goToSetWaistAngle() {
         var cmd = waist.setDegreesCommand(0);
-        return cmd;
+        return cmd.withName("GoToWaistAngle");
     }
 
     public void initSendable(SendableBuilder builder) {
