@@ -21,9 +21,21 @@ public class IntakeConfig {
     }
 
     protected final class HopperSetPoints{
-        public static final double HOPPERRETRACT = 0;
-        public static final double HOPPERDEPLOY = 0;
-        public static final double HOPPERSTOW = 0;
+        public static final double DEPLOY = 0;
+        public static final double STOW = 0;
+    }
+
+    protected final class HopperConfig{
+        public static final double kDeployerP = 0;
+        public static final double kDeployerI = 0;
+        public static final double kDeployerD = 0;
+
+        public static final double kHopperEncoderPositionConversionFactor = 1;
+        public static final double kHopperEncodervelocityConversionFactor = 1;
+
+        //extension in rotations, 
+        public static final double kStowedExtension = 0.0;
+        public static final double kExtendedExtension = 0.0;
     }
 
 }

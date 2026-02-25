@@ -46,10 +46,6 @@ public final class RobotMap {
   public static final int CLIMBER_OUTER_SERVO_RIGHT = 2;
   public static final int CLIMBER_INNER_SERVO = 3;
   
-//intake servos
-  public static final int DEPLOYER_RIGHT_SERVO = -1;
-  public static final int DEPLOYER_LEFT_SERVO = -1;
-
 //indexer motors
   public static final int HOPPER_MOTOR_ID = -2;
 
@@ -57,6 +53,7 @@ public final class RobotMap {
   public static final int INTAKE_DEPLOYER_LEADER_ID = -3;
   public static final int INTAKE_DEPLOYER_FOLLOWER_ID = -4;
   public static final int INTAKE_GRABBY_WHEELS_ID = -5;
+  public static final int HOPPER_EXTENDER_ID = -6;
 
 //turret motors
   public static final int TURRET_AIMER_HOOD_ID = 41;
