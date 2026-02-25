@@ -41,12 +41,14 @@ public final class RobotMap {
 //climber 
   public static final int CLIMBER_ID = -1;
 
-//servos
-  public static final int OUTER_SERVO_LEFT = 1;
-  public static final int OUTER_SERVO_RIGHT = 2;
-  public static final int INNER_SERVO = 3;
-  public static final int RIGHT_SERVO = 4;
-  public static final int LEFT_SERVO = 5;
+//climber servos
+  public static final int CLIMBER_OUTER_SERVO_LEFT = 1;
+  public static final int CLIMBER_OUTER_SERVO_RIGHT = 2;
+  public static final int CLIMBER_INNER_SERVO = 3;
+  
+//intake servos
+  public static final int DEPLOYER_RIGHT_SERVO = -1;
+  public static final int DEPLOYER_LEFT_SERVO = -1;
 
 //indexer motors
   public static final int HOPPER_MOTOR_ID = -2;

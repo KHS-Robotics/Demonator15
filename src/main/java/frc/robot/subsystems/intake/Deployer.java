@@ -1,5 +1,8 @@
 package frc.robot.subsystems.intake;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -12,6 +15,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -20,53 +24,53 @@ import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.config.LimitSwitchConfig;
 
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.intake.IntakeConfig.DeployerConfig;
 
+
 public class Deployer extends SubsystemBase {
+  private double setpointAngleDegrees;
+  // ^ There are two seperate motors for the intake pivot,
+  // might want to change right/left names to avoid confusion
+  private final AbsoluteEncoder encoder;
+  private final PIDController pid;
+  private final SparkLimitSwitch sensor;
+  private final SparkMax motor;
 
-        private double setpointAngleDegrees;
-    // ^ There are two seperate motors for the intake pivot,
-    // might want to change right/left names to avoid confusion
-     private final AbsoluteEncoder encoder;
-    private final PIDController pid;
-    private final SparkLimitSwitch sensor;
-    private final SparkMax motor;
+  public Deployer() {
+    
+    super(Deployer.class.getSimpleName() + "/" + Deployer.class.getSimpleName());
+    var encoderConfig = new AbsoluteEncoderConfig()
+        .inverted(true);
 
-    public Deployer() {
+    var limitSwitchConfig = new LimitSwitchConfig()
+        .forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor);
 
-        super(Deployer.class.getSimpleName() + "/" + Deployer.class.getSimpleName());
-        var encoderConfig = new AbsoluteEncoderConfig()
-                .inverted(true);
+    var leaderConfig = new SparkMaxConfig()
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(30)
+        .follow(RobotMap.INTAKE_DEPLOYER_LEADER_ID, true)
+        .apply(encoderConfig)
+        .apply(limitSwitchConfig);
+    motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
+    motor.configure(leaderConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
-        var limitSwitchConfig = new LimitSwitchConfig()
-                .forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor);
+    encoder = motor.getAbsoluteEncoder();
+    sensor = motor.getForwardLimitSwitch();
 
-        var leaderConfig = new SparkMaxConfig()
-                .idleMode(IdleMode.kBrake)
-                .smartCurrentLimit(30)
-                .follow(RobotMap.INTAKE_DEPLOYER_LEADER_ID, true)
-                .apply(encoderConfig)
-                .apply(limitSwitchConfig);
-        motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
-        motor.configure(leaderConfig, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+    pid = new PIDController(DeployerConfig.kDeployerP, DeployerConfig.kDeployerI, DeployerConfig.kDeployerD);
+    pid.setIZone(7);
 
-        encoder = motor.getAbsoluteEncoder();
-        sensor = motor.getForwardLimitSwitch();
+    SmartDashboard.putData(getName(), this);
+    SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
+  }
 
-        pid = new PIDController(DeployerConfig.kDeployerP, DeployerConfig.kDeployerI, DeployerConfig.kDeployerD);
-        pid.setIZone(7);
-
-        SmartDashboard.putData(getName(), this);
-        SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
-
-        }
-
-        public void periodic() {
+  public void periodic() {
     setMotorOutputForSetpoint();
     updateSetpointsForDisabledMode();
   }
@@ -98,7 +102,7 @@ public class Deployer extends SubsystemBase {
     return (error < 2);
   }
 
-  //if the deployer is at the same spot as the the limitswitch
+  // if the deployer is at the same spot as the the limitswitch
   public boolean isAtTop() {
     return sensor.isPressed();
   }
@@ -111,7 +115,7 @@ public class Deployer extends SubsystemBase {
 
     var output = pidOutput + ffGravity;
     output = MathUtil.clamp(output, -3, 4);
-    motor.setVoltage(output);
+    motor.setVoltage(output); 
   }
 
   /** Updates the setpoint to the current position. */
@@ -127,10 +131,4 @@ public class Deployer extends SubsystemBase {
     setSetpointAngle(getAngle());
   }
 
-  public void initSendable(SendableBuilder builder){
-    super.initSendable(builder);
-    builder.setSmartDashboardType(getName());
-    builder.setSafeState(this::stop);
-    builder.addBooleanProperty("IntakeAtTop", () -> this.isAtTop(), null);
-  }
 }
