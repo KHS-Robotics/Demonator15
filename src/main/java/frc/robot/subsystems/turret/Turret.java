@@ -24,18 +24,6 @@ public class Turret extends SubsystemBase{
     }
 
     public void periodic() {
-        //confirmed with sim, these work
-        RobotContainer.kField.getObject("waistAimAngleRobotRelative").setPose(
-            getCurrentHubPosition().getX(),
-            getCurrentHubPosition().getY() + 1,
-            waist.aimWaistSimpleAngle(getCurrentHubPosition())
-            );
-        RobotContainer.kField.getObject("waistAimAngleFieldRelative").setPose(
-            getCurrentHubPosition().getX(),
-            getCurrentHubPosition().getY() - 1,
-            waist.aimWaistSimpleAngleFieldRelative(getCurrentHubPosition())
-            );
-
         //waist.setDefaultCommand(waist.setDegreesCommand(getDesiredWaistAngle()));
         //hood.setDefaultCommand(hood.setAngleCommand(getDesiredHoodAngle()));
         //spitter.setDefaultCommand(spitter.startCommand());
@@ -364,7 +352,7 @@ public class Turret extends SubsystemBase{
         super.initSendable(builder);
         builder.setSmartDashboardType(getName());
         builder.setSafeState(this::stop);
-        builder.addDoubleProperty("testHoodCalcs",() -> hood.aimHoodSimpleAngle(getCurrentHubPosition()), null);
+        //builder.addDoubleProperty("testHoodCalcs",() -> hood.aimHoodSimpleAngle(getCurrentHubPosition()), null);
     }
 }
     //for getting the position and rotation (which we will probably want to do in hood and waist), use our humble kNavx

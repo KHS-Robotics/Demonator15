@@ -141,30 +141,6 @@ public class Waist extends SubsystemBase {
     return cmd;
   }
 
-  public Rotation2d aimWaistSimpleAngle(Translation2d towards) {
-    // the subtracting of the yaw is to account for the rotation of the robot
-    double angle = getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), towards)
-        - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
-    // clamping the value because our turret only goes 240(?) degrees
-    angle = Math.toDegrees(angle) % 360;
-    angle = MathUtil.clamp(angle, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
-    var finalAngle = new Rotation2d(Math.toRadians(angle));
-    // + TurretConfig.WaistConfig.kWaistDegreesOffset);
-    return finalAngle;
-  }
-
-  public Rotation2d aimWaistSimpleAngleFieldRelative(Translation2d towards) {
-    // the subtracting of the yaw is to account for the rotation of the robot
-    double angle = getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), towards)
-        - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
-    // clamping the value because our turret only goes 240(?) degrees
-    angle = Math.toDegrees(angle) % 360;
-    angle = MathUtil.clamp(angle, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
-    var finalAngle = new Rotation2d(Math.toRadians(angle + RobotContainer.kSwerveDrive.getPose().getRotation().getDegrees()));
-    // + TurretConfig.WaistConfig.kWaistDegreesOffset);
-    return finalAngle;
-  }
-
   private void updateSetpointsForDisabledMode() {
     if (RobotState.isDisabled()) {
       setSetpointDegrees(getDegrees());
