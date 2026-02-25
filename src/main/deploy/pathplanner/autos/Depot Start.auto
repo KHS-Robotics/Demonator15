@@ -13,7 +13,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Deploy Intake"
+            "name": "DeployIntake"
           }
         },
         {
@@ -23,16 +23,28 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Depot Pick Up From Top Slow"
+                  "pathName": "Depot Pick Up From Top"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "RunIntake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RunIndexer"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AgitateIntake"
           }
         },
         {
@@ -48,13 +60,13 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 10.0
+                  "waitTime": 8.0
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
+                  "name": "FireAutomatic"
                 }
               }
             ]
@@ -63,7 +75,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Climb L1"
+            "name": "ClimbL1"
           }
         }
       ]

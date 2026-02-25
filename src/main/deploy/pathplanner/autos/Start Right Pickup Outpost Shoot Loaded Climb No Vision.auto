@@ -23,7 +23,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Wait For Outpost Load"
+                  "name": null
                 }
               }
             ]
@@ -42,7 +42,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
+                  "name": null
                 }
               },
               {
@@ -57,7 +57,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Climb L1"
+            "name": null
           }
         }
       ]

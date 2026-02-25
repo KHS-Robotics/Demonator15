@@ -63,6 +63,7 @@ public final class RobotMap {
   public static final int TURRET_AIMER_WAIST_ID = 43;
   public static final int TURRET_SPITTER_LEADER_ID = 42;
   public static final int TURRET_KICKER_MOTOR_ID = 44;
+  public static final int TURRET_BELT_MOTOR_ID = 45;
   
 
 

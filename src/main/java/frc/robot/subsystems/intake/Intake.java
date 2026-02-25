@@ -51,13 +51,13 @@ public class Intake extends SubsystemBase {
         return cmd.withName("SetDeployerStateAgitate");
     }
 
-    public Command intakefuel() {
+    public Command intakeFuel() {
         var cmd = startEnd(grabbyWheels::intake, grabbyWheels::stop);
         cmd.addRequirements(grabbyWheels);
         return cmd.withName("IntakeFuel");
     }
 
-    public Command outakefuel() {
+    public Command outtakeFuel() {
         var cmd = startEnd(grabbyWheels::outake, grabbyWheels::stop);
         cmd.addRequirements(grabbyWheels);
         return cmd.withName("OutakeFuel");

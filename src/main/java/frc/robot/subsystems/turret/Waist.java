@@ -1,6 +1,9 @@
 package frc.robot.subsystems.turret;
 
+import com.revrobotics.spark.SparkAnalogSensor;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -10,11 +13,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotState;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -22,40 +27,66 @@ import frc.robot.RobotMap;
 import frc.robot.subsystems.turret.TurretConfig.HoodConfig;
 import frc.robot.subsystems.turret.TurretConfig.WaistConfig;
 
-
+import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 
-public class Waist extends SubsystemBase{
-    private final SparkMax motor;
-    private final PIDController pid;
-    private final AbsoluteEncoder encoder;
+public class Waist extends SubsystemBase {
+  private final SparkMax motor;
+  private final SparkClosedLoopController pid;
+  private final SparkAnalogSensor absoluteEncoder;
+  private final RelativeEncoder relativeEncoder;
 
-    private double setpointRotationDegrees;
+  private double setpointRotationDegrees;
 
-    public Waist() {
+  public Waist() {
 
-        var encoderConfig = new AbsoluteEncoderConfig()
-                .inverted(true);
+    var relativeEncoderConfig = new EncoderConfig()
+        .positionConversionFactor(TurretConfig.WaistConfig.kWaistEncoderPositionConversionFactor)
+        .velocityConversionFactor(TurretConfig.WaistConfig.kWaistEncoderVelocityConversionFactor);
 
-        var waistConfig = new SparkMaxConfig()
-                .idleMode(IdleMode.kBrake)
-                .smartCurrentLimit(30)
-                .inverted(false)
-                .apply(encoderConfig);
+    var absoluteEncoderConfig = new AbsoluteEncoderConfig()
+        .inverted(true);
 
-        motor = new SparkMax(RobotMap.TURRET_AIMER_WAIST_ID, MotorType.kBrushless);
-        motor.configure(waistConfig, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+    var softLimitConfig = new SoftLimitConfig()
+        .forwardSoftLimit(TurretConfig.WaistConfig.kMaxSoftLimit)
+        .reverseSoftLimit(TurretConfig.WaistConfig.kMinSoftLimit)
+        .forwardSoftLimitEnabled(true)
+        .reverseSoftLimitEnabled(true);
 
-        encoder = motor.getAbsoluteEncoder();
+    var pidConfig = new ClosedLoopConfig()
+        .pid(TurretConfig.WaistConfig.kAimerWaistP, TurretConfig.WaistConfig.kAimerWaistI, TurretConfig.WaistConfig.kAimerWaistD)
+          .maxOutput(0.35)
+          .minOutput(-0.35)
+        .iZone(10);
 
-        pid = new PIDController(WaistConfig.kAimerWaistP, WaistConfig.kAimerWaistI, WaistConfig.kAimerWaistD);
+    var waistConfig = new SparkMaxConfig()
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(30, 10)
+        .inverted(false)
+        .idleMode(IdleMode.kBrake)
+        .apply(relativeEncoderConfig)
+        .apply(pidConfig)
+        .apply(softLimitConfig)
+        .apply(absoluteEncoderConfig);
 
-    }
+    motor = new SparkMax(RobotMap.TURRET_AIMER_WAIST_ID, MotorType.kBrushless);
+    motor.configure(waistConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
-    public Command setDegreesCommand(double angleDegrees) {
-    //0 degrees should be perpendicular with the back
+   absoluteEncoder = motor.getAnalog();
+
+    relativeEncoder = motor.getEncoder();
+
+    pid = motor.getClosedLoopController();
+    SmartDashboard.putData(this);
+
+  }
+
+  public Command setDegreesCommand(double angleDegrees) {
+    // 0 degrees should be perpendicular with the back
     var cmd = this.run(() -> setSetpointDegrees(angleDegrees)).until(this::isAtSetpoint);
     return cmd.withName("SetWaistSetpoint");
   }
@@ -65,30 +96,23 @@ public class Waist extends SubsystemBase{
     return cmd.withName("StopWaist");
   }
 
-    public double getDegrees() {
-    //0 should be perpendicular with the back
-    var angle = Units.rotationsToDegrees(encoder.getPosition()) * HoodConfig.kRotationsToDegreesConversion;
-    return angle;
+  public double getDegrees() {
+    return relativeEncoder.getPosition();
   }
 
-    public void setSetpointDegrees(double setpointDegrees) {
+  public double getAbsoluteReading(){
+    return absoluteEncoder.getPosition();
+  }
+
+  public void setSetpointDegrees(double setpointDegrees) {
     // only reset for new setpoints
-    if (setpointDegrees != setpointRotationDegrees) {
-      pid.reset();
-    }
     setpointRotationDegrees = MathUtil.clamp(setpointDegrees, -180.0, 180.0);
+    pid.setSetpoint(setpointDegrees, ControlType.kPosition);
   }
 
   public boolean isAtSetpoint() {
     var error = Math.abs(setpointRotationDegrees - getDegrees());
-    return (error < 2);
-  }
-
-    private void setMotorOutputForSetpoint() {
-    var pidOutput = pid.calculate(getDegrees(), setpointRotationDegrees);
-    pidOutput = MathUtil.clamp(pidOutput, -3, 4);
-    pidOutput *= TurretConfig.HoodConfig.kRotationsToDegreesConversion;
-    motor.setVoltage(pidOutput);
+    return (error < 1);
   }
 
   private void updateSetpointsForDisabledMode() {
@@ -99,21 +123,22 @@ public class Waist extends SubsystemBase{
 
   public void stop() {
     motor.stopMotor();
-    pid.reset();
     setSetpointDegrees(getDegrees());
   }
 
   public void periodic() {
-    setMotorOutputForSetpoint();
     updateSetpointsForDisabledMode();
   }
 
-
-
+  @Override
+  public void initSendable(SendableBuilder builder) {
+      super.initSendable(builder);
+      builder.addDoubleProperty("Angle", () -> getDegrees(), null);
+      builder.addDoubleProperty("AngleAbsolute", () -> this.getAbsoluteReading(), null);
+  }
 
 }
 // yaw adjustment
 // o–(•o•)–o
-//   /   \
-//   o   o yay!!!
-
+// / \
+// o o yay!!!
