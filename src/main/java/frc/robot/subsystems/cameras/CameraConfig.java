@@ -7,6 +7,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.UnitBuilder;
 import frc.robot.subsystems.cameras.DemonLimelightCamera.LimelightPoseEstimateAlgorithm;
 
 public final class CameraConfig {
@@ -83,22 +84,58 @@ public final class CameraConfig {
         kBlueAllianceTowerFiducialIds.add(32);
     }
 
+    //offsets from the robot to the cameras for the transform3ds
 
-    
+    //limelight
+    public static final double kLimelightTranslationX = Units.inchesToMeters(0);
+    public static final double kLimelightTranslationY = Units.inchesToMeters(0);
+    public static final double kLimelightTranslationZ = Units.inchesToMeters(0);
+    public static final double kLimelightRoll = Math.toRadians(0);
+    public static final double kLimelightPitch = Math.toRadians(0);
+    public static final double kLimelightYaw = Math.toRadians(0);
+
+    //photon 1
+    public static final double kPhoton1TranslationX = Units.inchesToMeters(0);
+    public static final double kPhoton1TranslationY = Units.inchesToMeters(0);
+    public static final double kPhoton1TranslationZ = Units.inchesToMeters(0);
+    public static final double kPhoton1Roll = Math.toRadians(0);
+    public static final double kPhoton1Pitch = Math.toRadians(0);
+    public static final double kPhoton1Yaw = Math.toRadians(0);
+
+    //photon 1
+    public static final double kPhoton2TranslationX = Units.inchesToMeters(0);
+    public static final double kPhoton2TranslationY = Units.inchesToMeters(0);
+    public static final double kPhoton2TranslationZ = Units.inchesToMeters(0);
+    public static final double kPhoton2Roll = Math.toRadians(0);
+    public static final double kPhoton2Pitch = Math.toRadians(0);
+    public static final double kPhoton2Yaw = Math.toRadians(0);
+
+    //photon 1
+    public static final double kPhoton3TranslationX = Units.inchesToMeters(0);
+    public static final double kPhoton3TranslationY = Units.inchesToMeters(0);
+    public static final double kPhoton3TranslationZ = Units.inchesToMeters(0);
+    public static final double kPhoton3Roll = Math.toRadians(0);
+    public static final double kPhoton3Pitch = Math.toRadians(0);
+    public static final double kPhoton3Yaw = Math.toRadians(0);
+
+
 
   public class PhotonVisionConfig {
     /** The nickname of the camera (found in the PhotonVision UI). */
-    public static final String PhotonCameraName = "PhotonCamera";
+    public static final String PhotonCamera1Name = "PhotonCamera1";
+    public static final String PhotonCamera2Name = "PhotonCamera2";
+    public static final String PhotonCamera3Name = "PhotonCamera3";
     /**
      * Transform3d from the center of the robot to the camera mount position (ie,
      * robot ➔ camera) in the <a href=
      * "https://docs.wpilib.org/en/stable/docs/software/advanced-controls/geometry/coordinate-systems.html#robot-coordinate-system">Robot
      * Coordinate System</a>.
-     * <p>
+     * <p>k
      * https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#creating-a-photonposeestimator
      */
-    public static final Transform3d RobotToPhotonCamera = new Transform3d(Units.inchesToMeters(10.5),
-        Units.inchesToMeters(-7), Units.inchesToMeters(16.5), new Rotation3d(0, Math.toRadians(20), 0));
+    public static final Transform3d RobotToPhotonCamera1 = new Transform3d(kPhoton1TranslationX, kPhoton1TranslationY, kPhoton1TranslationZ, new Rotation3d(kPhoton1Roll, kPhoton1Pitch, kPhoton1Yaw));
+    public static final Transform3d RobotToPhotonCamera2 = new Transform3d(kPhoton2TranslationX, kPhoton2TranslationY, kPhoton2TranslationZ, new Rotation3d(kPhoton2Roll, kPhoton2Pitch, kPhoton2Yaw));
+    public static final Transform3d RobotToPhotonCamera3 = new Transform3d(kPhoton3TranslationX, kPhoton3TranslationY, kPhoton3TranslationZ, new Rotation3d(kPhoton2Roll, kPhoton3Pitch, kPhoton3Yaw));
     
     /**
      * The layout of the AprilTags on the field.
@@ -124,7 +161,6 @@ public final class CameraConfig {
      * <p>
      * <b>This must be configured in the Limelight UI too under 3-D.</b>
      */
-    public static final Transform3d kRobotToLimelightCamera = new Transform3d(Units.inchesToMeters(-10),
-        Units.inchesToMeters(6), Units.inchesToMeters(30), new Rotation3d(0, Math.toRadians(6), Math.toRadians(180)));
+    public static final Transform3d kRobotToLimelightCamera = new Transform3d(kLimelightTranslationX, kLimelightTranslationY, kLimelightTranslationZ, new Rotation3d(kLimelightRoll, kLimelightPitch, kLimelightYaw));
   }
 }

@@ -105,6 +105,10 @@ public class Waist extends SubsystemBase {
     return relativeEncoder.getPosition();
   }
 
+  public double getSetpointRotationDegrees(){
+    return setpointRotationDegrees;
+  }
+
   public double getAbsoluteReading() {
     return absoluteEncoder.getPosition();
   }
@@ -112,7 +116,7 @@ public class Waist extends SubsystemBase {
   public void setSetpointDegrees(double setpointDegrees) {
     // only reset for new setpoints
     setpointRotationDegrees = MathUtil.clamp(setpointDegrees, TurretConfig.WaistConfig.kMinSoftLimit,
-        TurretConfig.WaistConfig.kMinSoftLimit);
+        TurretConfig.WaistConfig.kMaxSoftLimit);
     pid.setSetpoint(setpointDegrees, ControlType.kPosition);
   }
 
@@ -134,7 +138,7 @@ public class Waist extends SubsystemBase {
     double angle = getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), towards)
         - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
     // clamping the value because our turret only goes 240(?) degrees
-    angle = Math.toDegrees(angle) % 360;
+    angle = Units.radiansToDegrees(MathUtil.angleModulus(angle));
     angle = MathUtil.clamp(angle, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
     // + TurretConfig.WaistConfig.kWaistDegreesOffset);
     var cmd = setDegreesCommand(angle);
@@ -153,7 +157,7 @@ public class Waist extends SubsystemBase {
   }
 
   public void periodic() {
-    updateSetpointsForDisabledMode();
+    // updateSetpointsForDisabledMode();
   }
 
   @Override
@@ -161,6 +165,8 @@ public class Waist extends SubsystemBase {
     super.initSendable(builder);
     builder.addDoubleProperty("Angle", () -> getDegrees(), null);
     builder.addDoubleProperty("AngleAbsolute", () -> this.getAbsoluteReading(), null);
+    builder.addBooleanProperty("IsAtRotationSetpoint", () -> this.isAtSetpoint(), null);
+    builder.addDoubleProperty("SetpointRotationDegrees", () -> this.getSetpointRotationDegrees(), null);
   }
 
 }

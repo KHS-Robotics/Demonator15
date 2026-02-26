@@ -180,7 +180,7 @@ public class Hood extends SubsystemBase {
     builder.setActuator(true);
     builder.addDoubleProperty("Setpoint", () -> setpointAngleDegrees, this::setSetpointAngle);
     builder.addDoubleProperty("Angle", () -> this.getAngle(), null);
-    builder.addBooleanProperty("IsAtSetpoint", () -> this.isAtSetpoint(), null);
+    builder.addBooleanProperty("IsAtAngleSetpoint", () -> this.isAtSetpoint(), null);
   }
 }
 

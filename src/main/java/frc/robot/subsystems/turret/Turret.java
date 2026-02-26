@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotContainer;
@@ -21,12 +22,6 @@ public class Turret extends SubsystemBase{
 
     public Turret() {
         SmartDashboard.putData(this);
-    }
-
-    public void periodic() {
-        //waist.setDefaultCommand(waist.setDegreesCommand(getDesiredWaistAngle()));
-        //hood.setDefaultCommand(hood.setAngleCommand(getDesiredHoodAngle()));
-        //spitter.setDefaultCommand(spitter.startCommand());
     }
 
     public void stop() {
@@ -45,16 +40,19 @@ public class Turret extends SubsystemBase{
 
     public Command shoot() {
         var cmd = spitter.startEnd(spitter::start, spitter::stop);
+        cmd.addRequirements(spitter);
         return cmd.withName("ShootFuel");
     }
 
     public Command kick() {
         var cmd = kicker.startEnd(kicker::start, kicker::stop);
+        cmd.addRequirements(kicker);
         return cmd.withName("KickFuel");
     }
 
     public Command feed() {
         var cmd = belt.startEnd(belt::start, belt::stop);
+        cmd.addRequirements(belt);
         return cmd.withName("FeedFuel");
     }
 
@@ -62,6 +60,7 @@ public class Turret extends SubsystemBase{
         var startKicker = kicker.startCommand();
         var startBelt = belt.startCommand();
         var cmd = startKicker.alongWith(startBelt);
+        cmd.addRequirements(kicker, belt);
         return cmd.withName("ReloadFuel");
     }
 
@@ -70,6 +69,7 @@ public class Turret extends SubsystemBase{
         var startKicker = kicker.startCommand();
         var startBelt = belt.startCommand();
         var cmd = startSpitter.alongWith(startKicker).alongWith(startBelt);
+        cmd.addRequirements(spitter, kicker, belt);
         return cmd.withName("ShootFuel");
     }
 
@@ -308,6 +308,7 @@ public class Turret extends SubsystemBase{
         var aimWaist = hood.setAngleCommand(getDesiredWaistAngle());
         var aimHood = waist.setDegreesCommand(getDesiredHoodAngle());
         var cmd = aimWaist.alongWith(aimHood);
+        cmd.addRequirements(hood, waist);
         return cmd.withName("TurretAimTowardsHubWithVelocity");
     }
 
@@ -315,6 +316,7 @@ public class Turret extends SubsystemBase{
         var aimWaist = hood.aimHoodSimple(getCurrentHubPosition());
         var aimHood = waist.aimWaistSimple(getCurrentHubPosition());
         var cmd = aimWaist.alongWith(aimHood);
+        cmd.addRequirements(hood, waist, this);
         return cmd.withName("TurretAimTowardsHub");
     }
 
@@ -325,6 +327,7 @@ public class Turret extends SubsystemBase{
         var startKicker = kicker.startCommand();
         var startBelt = belt.startCommand();
         var cmd = aimWaist.alongWith(aimHood).alongWith(startBelt).alongWith(startKicker).alongWith(startSpitter);
+        cmd.addRequirements(this);
         return cmd.withName("TurretAimAndShootTowardsHub");
     }
 
@@ -335,16 +338,19 @@ public class Turret extends SubsystemBase{
         var startKicker = kicker.startCommand();
         var startBelt = belt.startCommand();
         var cmd = aimWaist.alongWith(aimHood).alongWith(startBelt).alongWith(startKicker).alongWith(startSpitter);
+        cmd.addRequirements(hood, waist, spitter, kicker, belt);
         return cmd.withName("TurretAimAndShootTowardsHubWithVelocity");
     }
 
     public Command goToSetHoodAngle() {
         var cmd = hood.setAngleCommand(20);
+        cmd.addRequirements(hood);
         return cmd.withName("GoToHoodAngle");
     }
     
     public Command goToSetWaistAngle() {
         var cmd = waist.setDegreesCommand(0);
+        cmd.addRequirements(waist);
         return cmd.withName("GoToWaistAngle");
     }
 
@@ -352,6 +358,8 @@ public class Turret extends SubsystemBase{
         super.initSendable(builder);
         builder.setSmartDashboardType(getName());
         builder.setSafeState(this::stop);
+        builder.addBooleanProperty("IsAtSetpoint", () -> hood.isAtSetpoint() && waist.isAtSetpoint(), null);
+        builder.addBooleanProperty("IsAiming", () -> this.aimTowardsHub().isScheduled(), null);
         //builder.addDoubleProperty("testHoodCalcs",() -> hood.aimHoodSimpleAngle(getCurrentHubPosition()), null);
     }
 }
