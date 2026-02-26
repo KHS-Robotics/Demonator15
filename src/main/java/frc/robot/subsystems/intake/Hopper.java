@@ -20,26 +20,29 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
-import frc.robot.subsystems.turret.TurretConfig;
 
 /** motor used in a rack and pinion to deploy the hopper **/
 
 public class Hopper extends SubsystemBase {
-    private enum HopperPosition {
-        Extended, Stowed, Moving
+    private enum HopperState {
+        Deployed(IntakeConfig.HopperSetPoints.DEPLOY),
+        Stowed(IntakeConfig.HopperSetPoints.STOW);
+
+    private final double hopperPosition;
+
+    private HopperState(double hopperPosition) {
+        this.hopperPosition = hopperPosition;
+    }
     }
 
     private final SparkMax motor;
     private final SparkClosedLoopController pid;
     private final RelativeEncoder relativeEncoder;
-    private HopperPosition state = HopperPosition.Stowed;
-    private HopperPosition setpointState = HopperPosition.Stowed;
+    private HopperState setpointState = HopperState.Stowed;
 
     public Hopper() {
         
@@ -68,64 +71,37 @@ public class Hopper extends SubsystemBase {
     SmartDashboard.putData(this);
     }
 
-    public void retractHopper() {
-    }
-
-    public void deployHopper(HopperPosition setpointState) {
-        pid.setSetpoint(getPositionOfHopperState(setpointState), ControlType.kPosition);
-    }
-
-    public double getPositionOfHopperState(HopperPosition state) {
-        var position = 0.0;
-        if (state == HopperPosition.Extended){
-            position = IntakeConfig.HopperConfig.kExtendedExtension;
-        }else if (state == HopperPosition.Stowed){
-            position = IntakeConfig.HopperConfig.kStowedExtension;
-        }
-        return position;
-    }
-
-    public HopperPosition getState() {
-        double currentPosition = relativeEncoder.getPosition();
-        HopperPosition currentState = HopperPosition.Moving;
-        //0.5 as error
-        if (Math.abs(currentPosition - IntakeConfig.HopperConfig.kExtendedExtension) < 0.5){
-            currentState = HopperPosition.Extended;
-        }else if (Math.abs(currentPosition - IntakeConfig.HopperConfig.kStowedExtension) < 0.5){
-            currentState = HopperPosition.Stowed;
-        }
-        return currentState;
+    public void moveHopper(HopperState setpointState) {
+        pid.setSetpoint(setpointState.hopperPosition, ControlType.kPosition);
     }
 
     public boolean isAtSetPoint() {
-        var isAtPoint = (state == getState());
-        return isAtPoint;
+        var error = Math.abs(setpointState.hopperPosition - relativeEncoder.getPosition());
+        return (error < 0.5);
     }
 
     public Command retractHopperCommand() {
-        var setHopperState = runOnce(() -> state = HopperPosition.Stowed);
+        var setHopperState = runOnce(() -> setpointState = HopperState.Stowed);
 
         var cmd = setHopperState
-            .andThen(this.run(() -> retractHopper()).until(this::isAtSetPoint))
-            .andThen(Commands.waitSeconds(0.5));
+            .andThen(this.run(() -> moveHopper(setpointState)).until(this::isAtSetPoint));
         return cmd;
     }
 
     public Command deployHopperCommand() {
-        var setHopperState = runOnce(() -> state = HopperPosition.Extended);
+        var setHopperState = runOnce(() -> setpointState = HopperState.Deployed);
 
         var cmd = setHopperState
-            .andThen(this.run(() -> deployHopper(state)).until(this::isAtSetPoint))
-            .andThen(Commands.waitSeconds(0.5));
+            .andThen(this.run(() -> moveHopper(setpointState)).until(this::isAtSetPoint));
         return cmd;
     }
 
-    public Supplier<HopperPosition> state() {
-        return () -> this.state;
+    public Supplier<HopperState> state() {
+        return () -> this.setpointState;
     }
 
     public BooleanSupplier isBlockingIntake() {
-        return () -> state().get() == HopperPosition.Stowed;
+        return () -> state().get() == HopperState.Stowed;
     }
 
     /** {@inheritDoc}} */

@@ -33,9 +33,6 @@ public class IntakeConfig {
         public static final double kHopperEncoderPositionConversionFactor = 1;
         public static final double kHopperEncodervelocityConversionFactor = 1;
 
-        //extension in rotations, 
-        public static final double kStowedExtension = 0.0;
-        public static final double kExtendedExtension = 0.0;
     }
 
 }
