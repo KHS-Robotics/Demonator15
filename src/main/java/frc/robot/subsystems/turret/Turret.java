@@ -266,7 +266,7 @@ public class Turret extends SubsystemBase{
         Translation2d phantomRobotPosition = getPhantomRobotPosition();
         double radialVelocity = getRadialVelocityForPhantom(RobotContainer.kSwerveDrive.getChassisSpeeds().vxMetersPerSecond, RobotContainer.kSwerveDrive.getChassisSpeeds().vyMetersPerSecond, phantomRobotPosition);
         Rotation2d angleOfRad = new Rotation2d(getAngleToPosition(phantomRobotPosition, towards));
-        double T = getDistanceToHub(phantomRobotPosition) / (TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity * Math.cos(Math.toRadians(90 - solvePitch(phantomRobotPosition.getDistance(towards)))));
+        double T = getDistanceToHub(phantomRobotPosition) / (TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity * Math.cos(Math.toRadians(90 - Math.toDegrees(solvePitch(phantomRobotPosition.getDistance(towards))))));
         //rotational calcs
         var rotationalVelocity = getTurretRotationalToLinearVelocity();
         double robotRotationalRadVelocity = getTangentialVelocity(rotationalVelocity.getX(), rotationalVelocity.getY());
