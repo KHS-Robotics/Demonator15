@@ -1,8 +1,5 @@
 package frc.robot.subsystems.intake;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -23,13 +20,11 @@ import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.config.LimitSwitchConfig;
 
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.intake.IntakeConfig.DeployerConfig;
-
 
 public class Deployer extends SubsystemBase {
   private double setpointAngleDegrees;
@@ -41,7 +36,7 @@ public class Deployer extends SubsystemBase {
   private final SparkMax motor;
 
   public Deployer() {
-    
+
     super(Deployer.class.getSimpleName() + "/" + Deployer.class.getSimpleName());
     var encoderConfig = new AbsoluteEncoderConfig()
         .inverted(true);
@@ -114,7 +109,7 @@ public class Deployer extends SubsystemBase {
 
     var output = pidOutput + ffGravity;
     output = MathUtil.clamp(output, -3, 4);
-    motor.setVoltage(output); 
+    motor.setVoltage(output);
   }
 
   /** Updates the setpoint to the current position. */

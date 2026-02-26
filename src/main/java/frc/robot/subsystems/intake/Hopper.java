@@ -32,11 +32,11 @@ public class Hopper extends SubsystemBase {
         Deployed(IntakeConfig.HopperSetPoints.DEPLOY),
         Stowed(IntakeConfig.HopperSetPoints.STOW);
 
-    private final double hopperPosition;
+        private final double hopperPosition;
 
-    private HopperState(double hopperPosition) {
-        this.hopperPosition = hopperPosition;
-    }
+        private HopperState(double hopperPosition) {
+            this.hopperPosition = hopperPosition;
+        }
     }
 
     private final SparkMax motor;
@@ -45,30 +45,40 @@ public class Hopper extends SubsystemBase {
     private HopperState setpointState = HopperState.Stowed;
 
     public Hopper() {
-        
-    var relativeEncoderConfig = new EncoderConfig()
-        .positionConversionFactor(IntakeConfig.HopperConfig.kHopperEncoderPositionConversionFactor)
-        .velocityConversionFactor(IntakeConfig.HopperConfig.kHopperEncoderPositionConversionFactor);
+
+        var relativeEncoderConfig = new EncoderConfig()
+                .positionConversionFactor(IntakeConfig.HopperConfig.kHopperEncoderPositionConversionFactor)
+                .velocityConversionFactor(IntakeConfig.HopperConfig.kHopperEncoderPositionConversionFactor);
 
         var pidConfig = new ClosedLoopConfig()
-        .pid(IntakeConfig.HopperConfig.kDeployerP, IntakeConfig.HopperConfig.kDeployerI, IntakeConfig.HopperConfig.kDeployerD)
-        .minOutput(-0.5)
-        .maxOutput(0.5);
+                .pid(IntakeConfig.HopperConfig.kDeployerP, IntakeConfig.HopperConfig.kDeployerI,
+                        IntakeConfig.HopperConfig.kDeployerD)
+                .minOutput(-0.5)
+                .maxOutput(0.5);
 
         var motorConfig = new SparkMaxConfig()
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(30)
-        .follow(RobotMap.HOPPER_EXTENDER_ID, true)
-        .apply(pidConfig)
-        .apply(relativeEncoderConfig);
-    motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
-    motor.configure(motorConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
+                .idleMode(IdleMode.kBrake)
+                .smartCurrentLimit(30)
+                .follow(RobotMap.HOPPER_EXTENDER_ID, true)
+                .apply(pidConfig)
+                .apply(relativeEncoderConfig);
+        motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
+        motor.configure(motorConfig, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
 
-    pid = motor.getClosedLoopController();
-    relativeEncoder = motor.getAlternateEncoder();
+        pid = motor.getClosedLoopController();
+        relativeEncoder = motor.getAlternateEncoder();
 
-    SmartDashboard.putData(this);
+        SmartDashboard.putData(this);
+    }
+
+    public void stop() {
+        motor.stopMotor();
+    }
+
+    public Command stopCommand() {
+        var cmd = runOnce(this::stop);
+        return cmd.withName("StopHopper");
     }
 
     public void moveHopper(HopperState setpointState) {
@@ -84,7 +94,7 @@ public class Hopper extends SubsystemBase {
         var setHopperState = runOnce(() -> setpointState = HopperState.Stowed);
 
         var cmd = setHopperState
-            .andThen(this.run(() -> moveHopper(setpointState)).until(this::isAtSetPoint));
+                .andThen(this.run(() -> moveHopper(setpointState)).until(this::isAtSetPoint));
         return cmd;
     }
 
@@ -92,7 +102,7 @@ public class Hopper extends SubsystemBase {
         var setHopperState = runOnce(() -> setpointState = HopperState.Deployed);
 
         var cmd = setHopperState
-            .andThen(this.run(() -> moveHopper(setpointState)).until(this::isAtSetPoint));
+                .andThen(this.run(() -> moveHopper(setpointState)).until(this::isAtSetPoint));
         return cmd;
     }
 
@@ -108,10 +118,7 @@ public class Hopper extends SubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType(getName());
-        builder.addBooleanProperty("IntakeBlocked", isBlockingIntake(), null); 
+        builder.addBooleanProperty("IntakeBlocked", isBlockingIntake(), null);
     }
 
-    public void stop() {
-    motor.stopMotor();
-  }
 }

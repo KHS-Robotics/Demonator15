@@ -16,7 +16,8 @@ public class Intake extends SubsystemBase {
     }
 
     public Command deployDeployer() {
-        var hopperCurrentlyRetracted = hopper.deployHopperCommand().andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY));
+        var hopperCurrentlyRetracted = hopper.deployHopperCommand()
+                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY));
         var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY);
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
@@ -24,15 +25,18 @@ public class Intake extends SubsystemBase {
     }
 
     public Command stowDeployer() {
-        var hopperCurrentlyRetracted = hopper.deployHopperCommand().andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW).andThen(hopper.retractHopperCommand()));
-        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW).andThen(hopper.retractHopperCommand());
+        var hopperCurrentlyRetracted = hopper.deployHopperCommand().andThen(
+                deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW).andThen(hopper.retractHopperCommand()));
+        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW)
+                .andThen(hopper.retractHopperCommand());
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
         return cmd.withName("SetDeployerStateStow");
     }
 
     public Command agitateDeployer() {
-        var hopperCurrentlyRetracted = hopper.deployHopperCommand().andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE));
+        var hopperCurrentlyRetracted = hopper.deployHopperCommand()
+                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE));
         var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE);
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
@@ -72,13 +76,13 @@ public class Intake extends SubsystemBase {
         grabbyWheels.stop();
     }
 
-     public Command fullyStow() {
+    public Command fullyStow() {
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
-        .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW))
-        .andThen(hopper.retractHopperCommand());
+                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW))
+                .andThen(hopper.retractHopperCommand());
 
         var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW)
-        .andThen(hopper.retractHopperCommand());
+                .andThen(hopper.retractHopperCommand());
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
         return cmd.withName("setStowDeployerAndHopper");
