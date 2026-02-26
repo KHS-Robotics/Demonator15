@@ -62,7 +62,7 @@ public class Hopper extends SubsystemBase {
                 .follow(RobotMap.HOPPER_EXTENDER_ID, true)
                 .apply(pidConfig)
                 .apply(relativeEncoderConfig);
-        motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
+        motor = new SparkMax(RobotMap.HOPPER_EXTENDER_ID, MotorType.kBrushless);
         motor.configure(motorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 

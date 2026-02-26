@@ -47,10 +47,10 @@ public class Deployer extends SubsystemBase {
     var motorConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
-        .follow(RobotMap.INTAKE_DEPLOYER_LEADER_ID, true)
+        .follow(RobotMap.INTAKE_DEPLOYER_ID, true)
         .apply(encoderConfig)
         .apply(limitSwitchConfig);
-    motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
+    motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_ID, MotorType.kBrushless);
     motor.configure(motorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
