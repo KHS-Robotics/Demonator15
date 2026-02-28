@@ -316,7 +316,7 @@ public class Turret extends SubsystemBase{
         var aimWaist = hood.aimHoodSimple(getCurrentHubPosition());
         var aimHood = waist.aimWaistSimple(getCurrentHubPosition());
         var cmd = aimWaist.alongWith(aimHood);
-        cmd.addRequirements(hood, waist, this);
+        cmd.addRequirements(hood, waist);
         return cmd.withName("TurretAimTowardsHub");
     }
 

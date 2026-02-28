@@ -27,6 +27,12 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putData(this);
     }
 
+    public Command agitate(){
+        var cmd = this.extendDeployer().andThen(this.stowDeployer());
+        cmd.addRequirements(this);
+        return cmd.withName("AgitateIntake");
+    }
+
     public Command deployDeployer() {
         var hopperCurrentlyRetracted = hopper.deployHopperCommand().andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY));
         var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY);
@@ -43,12 +49,12 @@ public class Intake extends SubsystemBase {
         return cmd.withName("SetDeployerStateStow");
     }
 
-    public Command agitateDeployer() {
-        var hopperCurrentlyRetracted = hopper.deployHopperCommand().andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE));
-        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE);
+    public Command extendDeployer() {
+        Command hopperCurrentlyRetracted = hopper.deployHopperCommand().andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.EXTEND));
+        Command hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.EXTEND);
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
-        return cmd.withName("SetDeployerStateAgitate");
+        return cmd.withName("SetDeployerStateExtend");
     }
 
     public Command intakeFuel() {
@@ -103,5 +109,6 @@ public class Intake extends SubsystemBase {
         builder.setSmartDashboardType(getName());
         builder.setSafeState(this::stop);
         builder.setActuator(true);
+        builder.
     }
 }

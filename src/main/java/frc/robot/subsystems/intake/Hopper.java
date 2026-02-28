@@ -19,9 +19,22 @@ import frc.robot.RobotMap;
 
 public class Hopper extends SubsystemBase {
     private enum HopperPosition {
-        Retract, Deploy, stow
+        Retract("Retract"),
+        Deploy("Deploy"),
+        Stow("Stow");
+
+        private final String state;
+
+    private HopperPosition(String s) {
+      state = s;
     }
 
+    public String toString() {
+      return this.state;
+    }
+    }
+
+    private HopperPosition hopperPosition = HopperPosition.Stow;
     private final Servo rightAcuator, leftAcuator;
     private double setPointHopperStowed = IntakeConfig.HopperSetPoints.HOPPERSTOW;
     private HopperPosition state = HopperPosition.Retract;
@@ -80,6 +93,7 @@ public class Hopper extends SubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType(getName());
+        builder.addStringProperty("HopperState", () -> hopperPosition.toString(), null);
         builder.addBooleanProperty("IntakeBlocked", isBlockingIntake(), null); 
     }
 
