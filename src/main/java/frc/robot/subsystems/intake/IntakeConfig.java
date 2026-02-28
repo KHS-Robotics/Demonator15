@@ -4,8 +4,10 @@ public class IntakeConfig {
 
     protected final class DeployerSetpoints {
         public static final double STOW = 0;
-        public static final double AGITATE = 0;
+        public static final double AGITATELOW = 0;
+        public static final double AGITATEHIGH = 0;
         public static final double DEPLOY = 0;
+        public static final double EXTEND = 0;
     }
 
     protected final class DeployerConfig {
