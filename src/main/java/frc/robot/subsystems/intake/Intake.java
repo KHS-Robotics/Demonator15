@@ -109,6 +109,5 @@ public class Intake extends SubsystemBase {
         builder.setSmartDashboardType(getName());
         builder.setSafeState(this::stop);
         builder.setActuator(true);
-        builder.
     }
 }
