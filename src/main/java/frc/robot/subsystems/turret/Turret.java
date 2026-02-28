@@ -305,24 +305,24 @@ public class Turret extends SubsystemBase{
     }
 
     public Command aimTowardsHubWithVelocity() {
-        var aimWaist = hood.setAngleCommand(getDesiredWaistAngle());
-        var aimHood = waist.setDegreesCommand(getDesiredHoodAngle());
+        var aimHood = hood.setAngleCommand(getDesiredWaistAngle());
+        var aimWaist = waist.setDegreesCommand(getDesiredHoodAngle());
         var cmd = aimWaist.alongWith(aimHood);
         cmd.addRequirements(hood, waist);
         return cmd.withName("TurretAimTowardsHubWithVelocity");
     }
 
     public Command aimTowardsHub() {
-        var aimWaist = hood.aimHoodSimple(getCurrentHubPosition());
-        var aimHood = waist.aimWaistSimple(getCurrentHubPosition());
+        var aimHood = hood.setAngleCommand(getDesiredWaistAngle());
+        var aimWaist = waist.setDegreesCommand(getDesiredHoodAngle());
         var cmd = aimWaist.alongWith(aimHood);
         cmd.addRequirements(hood, waist);
         return cmd.withName("TurretAimTowardsHub");
     }
 
     public Command aimAndShootTowardsHub() {
-        var aimWaist = hood.aimHoodSimple(getCurrentHubPosition());
-        var aimHood = waist.aimWaistSimple(getCurrentHubPosition());
+        var aimHood = hood.setAngleCommand(getDesiredWaistAngle());
+        var aimWaist = waist.setDegreesCommand(getDesiredHoodAngle());
         var startSpitter = spitter.startCommand();
         var startKicker = kicker.startCommand();
         var startBelt = belt.startCommand();
@@ -332,8 +332,8 @@ public class Turret extends SubsystemBase{
     }
 
     public Command aimAndShootTowardsHubWithVelocity() {
-        var aimWaist = hood.setAngleCommand(getDesiredWaistAngle());
-        var aimHood = waist.setDegreesCommand(getDesiredHoodAngle());
+        var aimHood = hood.setAngleCommand(getDesiredWaistAngle());
+        var aimWaist = waist.setDegreesCommand(getDesiredHoodAngle());
         var startSpitter = spitter.startCommand();
         var startKicker = kicker.startCommand();
         var startBelt = belt.startCommand();
