@@ -145,11 +145,11 @@ public class Waist extends SubsystemBase {
     return cmd;
   }
 
-  private void updateSetpointsForDisabledMode() {
-    if (RobotState.isDisabled()) {
-      setSetpointDegrees(getDegrees());
-    }
-  }
+  // private void updateSetpointsForDisabledMode() {
+  //   if (RobotState.isDisabled()) {
+  //     setSetpointDegrees(getDegrees());
+  //   }
+  // }
 
   public void stop() {
     motor.stopMotor();
