@@ -91,9 +91,9 @@ public class RobotContainer {
   // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   public static final Turret kTurret = new Turret();
-  public static final Intake kIntake = new Intake();
+  //public static final Intake kIntake = new Intake();
   public static final Indexer kIndexer = new Indexer();
-  public static final Climber kClimber = new Climber();
+  //public static final Climber kClimber = new Climber();
   // Subsystems - Cameras
   // photon
   //public static final DemonPhotonCamera kFrontRightPhotonCamera = new DemonPhotonCamera(
@@ -158,6 +158,8 @@ public class RobotContainer {
     // kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading());
    
 
+    kDriverController.a().whileTrue(kTurret.goToSetWaistAngle().alongWith(kTurret.goToSetHoodAngle().alongWith(kTurret.kick().alongWith(kTurret.feed())).alongWith(kTurret.shoot())));
+    kDriverController.b().whileTrue(kIndexer.forwardCommand());
     // // give driver ability to limit speeds for when elevator is high up to
     // // help prevent tipping over - useful for slight alignment adjustments too
     // kDriverController.goSlow().whileTrue(kSwerveDrive.goSlow());
@@ -170,29 +172,29 @@ public class RobotContainer {
 
 
   /** Binds commands to operator stick buttons. */
-  private void configureOpertatorStickBindings() {
-    //Intake
-    kOperatorStick.runIntake().whileTrue(kIntake.intakeFuel());
-    kOperatorStick.outtake().whileTrue(kIntake.outtakeFuel());
+   private void configureOpertatorStickBindings() {
+  //   //Intake
+  //   kOperatorStick.runIntake().whileTrue(kIntake.intakeFuel());
+  //   kOperatorStick.outtake().whileTrue(kIntake.outtakeFuel());
 
-    kOperatorStick.deployIntake().onTrue(kIntake.deployDeployer());
-    kOperatorStick.agitateIntake().onTrue(kIntake.extendDeployer());
-    kOperatorStick.agitateIntake().debounce(0.2).whileTrue(kIntake.agitate());
-    kOperatorStick.stowIntake().onTrue(kIntake.stowDeployer());
-
-
-    //Indexer
-    kOperatorStick.forwardIndex().whileTrue(kIndexer.forwardCommand());
-    kOperatorStick.reverseIndex().whileTrue(kIndexer.reverseCommand());
+  //   kOperatorStick.deployIntake().onTrue(kIntake.deployDeployer());
+  //   kOperatorStick.agitateIntake().onTrue(kIntake.extendDeployer());
+  //   kOperatorStick.agitateIntake().debounce(0.2).whileTrue(kIntake.agitate());
+  //   kOperatorStick.stowIntake().onTrue(kIntake.stowDeployer());
 
 
-    //Climber
-    kOperatorStick.autoClimb().onTrue(kClimber.climbL1());
-    kOperatorStick.stopClimber().onTrue(kClimber.stopCommand());
+  //   //Indexer
+  //   kOperatorStick.forwardIndex().whileTrue(kIndexer.forwardCommand());
+  //   kOperatorStick.reverseIndex().whileTrue(kIndexer.reverseCommand());
 
 
-    //Turret
-    kOperatorStick.autoShoot().whileTrue(kTurret.shootContinuously());
+  //   //Climber
+  //   kOperatorStick.autoClimb().onTrue(kClimber.climbL1());
+  //   kOperatorStick.stopClimber().onTrue(kClimber.stopCommand());
+
+
+  //   //Turret
+  //   kOperatorStick.autoShoot().whileTrue(kTurret.shootContinuously());
   }
 
   /** https://pathplanner.dev/home.html */
