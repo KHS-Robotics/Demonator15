@@ -3,7 +3,6 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -12,21 +11,11 @@ public class Intake extends SubsystemBase {
     private final GrabbyWheels grabbyWheels = new GrabbyWheels();
     private final Hopper hopper = new Hopper();
 
+
     public Intake() {
         SmartDashboard.putData(this);
     }
 
-    public Command agitate(){
-        var cmd = this.extendDeployer().andThen(this.deployerToAgitate());
-        cmd.addRequirements(this);
-        return cmd.withName("AgitateIntake");
-    }
-    
-    public Command deployerToAgitate(){
-        var cmd = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE);
-        cmd.addRequirements(this);
-        return cmd.withName("SetIntakeStateToAgitate");
-    }
 
     public Command deployDeployer() {
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
@@ -59,6 +48,16 @@ public class Intake extends SubsystemBase {
      * when calling this command in robotcontainer, make sure to add .repeatedly at the end 
      * to make sure it agitates continuously rather than just once. 
      */
+    public Command agitateDeployer() {
+        
+        var hopperCurrentlyRetracted = hopper.deployHopperCommand()
+                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATELOW)
+                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATEHIGH)));
+        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATELOW)
+                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATEHIGH));
+        var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
+        return cmd;
+    }
  
     public Command intakeFuel() {
         var cmd = startEnd(grabbyWheels::intake, grabbyWheels::stop);
