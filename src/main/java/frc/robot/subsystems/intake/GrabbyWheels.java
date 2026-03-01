@@ -91,7 +91,7 @@ public class GrabbyWheels extends SubsystemBase {
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-    builder.addStringProperty("IntakeState", () -> intakeState.toString(), null);
+    builder.addStringProperty("Intake State", () -> intakeState.toString(), null);
   }
 
   public enum IntakeState {

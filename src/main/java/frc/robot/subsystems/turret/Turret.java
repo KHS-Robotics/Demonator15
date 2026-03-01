@@ -343,7 +343,7 @@ public class Turret extends SubsystemBase{
     }
 
     public Command goToSetHoodAngle() {
-        var cmd = hood.setAngleCommand(20);
+        var cmd = hood.setAngleCommand(40);
         cmd.addRequirements(hood);
         return cmd.withName("GoToHoodAngle");
     }
@@ -358,8 +358,7 @@ public class Turret extends SubsystemBase{
         super.initSendable(builder);
         builder.setSmartDashboardType(getName());
         builder.setSafeState(this::stop);
-        builder.addBooleanProperty("IsAtSetpoint", () -> hood.isAtSetpoint() && waist.isAtSetpoint(), null);
-        builder.addBooleanProperty("IsAiming", () -> this.aimTowardsHub().isScheduled(), null);
+        builder.addBooleanProperty("Is Turret At Setpoint?", () -> hood.isAtSetpoint() && waist.isAtSetpoint(), null);
         //builder.addDoubleProperty("testHoodCalcs",() -> hood.aimHoodSimpleAngle(getCurrentHubPosition()), null);
     }
 }

@@ -93,8 +93,8 @@ public class Hopper extends SubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType(getName());
-        builder.addStringProperty("HopperState", () -> hopperPosition.toString(), null);
-        builder.addBooleanProperty("IntakeBlocked", isBlockingIntake(), null); 
+        builder.addStringProperty("Hopper State", () -> hopperPosition.toString(), null);
+        builder.addBooleanProperty("Intake Blocked?", isBlockingIntake(), null); 
     }
 
     public void stop() {

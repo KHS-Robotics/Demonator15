@@ -105,7 +105,7 @@ public class Hood extends SubsystemBase {
 
   public boolean isAtSetpoint() {
     var error = Math.abs(setpointAngleDegrees - getAngle());
-    return (error < 2);
+    return (error < 0.5);
   }
 
   private void updateSetpointsForDisabledMode() {
@@ -151,6 +151,10 @@ public class Hood extends SubsystemBase {
     return theta;
   }
 
+  public double hoodError(){
+    return Math.abs(getAngle() - setpointAngleDegrees);
+  }
+
   public Command aimHoodSimple(Translation2d towards) {
     double distanceToPoint = RobotContainer.kSwerveDrive.getPose().getTranslation().getDistance(towards);
     var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
@@ -178,9 +182,10 @@ public class Hood extends SubsystemBase {
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-    builder.addDoubleProperty("Setpoint", () -> setpointAngleDegrees, this::setSetpointAngle);
-    builder.addDoubleProperty("Angle", () -> this.getAngle(), null);
-    builder.addBooleanProperty("IsAtAngleSetpoint", () -> this.isAtSetpoint(), null);
+    builder.addDoubleProperty("Hood Setpoint Angle", () -> setpointAngleDegrees, this::setSetpointAngle);
+    builder.addDoubleProperty("Hood Angle", () -> this.getAngle(), null);
+    builder.addDoubleProperty("Hood Error", () -> this.hoodError(), null);
+    builder.addBooleanProperty("Is Hood At Setpoint?", () -> this.isAtSetpoint(), null);
   }
 }
 

@@ -163,10 +163,10 @@ public class Waist extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
-    builder.addDoubleProperty("Angle", () -> getDegrees(), null);
-    builder.addDoubleProperty("AngleAbsolute", () -> this.getAbsoluteReading(), null);
-    builder.addBooleanProperty("IsAtRotationSetpoint", () -> this.isAtSetpoint(), null);
-    builder.addDoubleProperty("SetpointRotationDegrees", () -> this.getSetpointRotationDegrees(), null);
+    builder.addDoubleProperty("Waist Rotation Angle", () -> getDegrees(), null);
+    builder.addDoubleProperty("Waist Rotation Absolute Angle", () -> this.getAbsoluteReading(), null);
+    builder.addBooleanProperty("Is Waist At Setpoint?", () -> this.isAtSetpoint(), null);
+    builder.addDoubleProperty("Waist Setpoint", () -> this.getSetpointRotationDegrees(), null);
   }
 
 }

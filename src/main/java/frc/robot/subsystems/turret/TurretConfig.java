@@ -25,9 +25,11 @@ public class TurretConfig {
     }
 
     protected final class SpitterConfig {
-        public static final double kSpitterP = 0;
-        public static final double kSpitterI = 0;
-        public static final double kSpitterD = 0;
+        public static final double kSpitterP = 0.0025;
+        public static final double kSpitterI = 0.000001;
+        public static final double kSpitterD = 0.04;
+
+        public static final double kSpitterRPM = 4000;
     }
 
     protected final class TurretFieldAndRobotInfo {

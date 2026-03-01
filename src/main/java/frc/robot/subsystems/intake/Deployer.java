@@ -53,10 +53,10 @@ public class Deployer extends SubsystemBase {
     var leaderConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
-        .follow(RobotMap.INTAKE_DEPLOYER_LEADER_ID, true)
+        .follow(RobotMap.INTAKE_DEPLOYER_ID, true)
         .apply(encoderConfig)
         .apply(limitSwitchConfig);
-    motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_FOLLOWER_ID, MotorType.kBrushless);
+    motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_ID, MotorType.kBrushless);
     motor.configure(leaderConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
@@ -135,8 +135,8 @@ public class Deployer extends SubsystemBase {
   public void initSendable(SendableBuilder builder) {
       super.initSendable(builder);
       builder.setSmartDashboardType("Deployer");
-      builder.addBooleanProperty("IsAtSetpoint", () -> this.isAtSetpoint(), null);
-      builder.addDoubleProperty("Angle", () -> this.getAngle(), null);
+      builder.addBooleanProperty("Intake At Setpoint?", () -> this.isAtSetpoint(), null);
+      builder.addDoubleProperty("Intake Angle", () -> this.getAngle(), null);
   }
 
 }
