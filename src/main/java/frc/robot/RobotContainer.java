@@ -91,7 +91,7 @@ public class RobotContainer {
   // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   public static final Turret kTurret = new Turret();
-  //public static final Intake kIntake = new Intake();
+  public static final Intake kIntake = new Intake();
   public static final Indexer kIndexer = new Indexer();
   //public static final Climber kClimber = new Climber();
   // Subsystems - Cameras
@@ -173,14 +173,14 @@ public class RobotContainer {
 
   /** Binds commands to operator stick buttons. */
    private void configureOpertatorStickBindings() {
-  //   //Intake
-  //   kOperatorStick.runIntake().whileTrue(kIntake.intakeFuel());
-  //   kOperatorStick.outtake().whileTrue(kIntake.outtakeFuel());
+    //Intake
+    kOperatorStick.runIntake().whileTrue(kIntake.intakeFuel());
+    kOperatorStick.outtake().whileTrue(kIntake.outtakeFuel());
 
-  //   kOperatorStick.deployIntake().onTrue(kIntake.deployDeployer());
-  //   kOperatorStick.agitateIntake().onTrue(kIntake.extendDeployer());
-  //   kOperatorStick.agitateIntake().debounce(0.2).whileTrue(kIntake.agitate());
-  //   kOperatorStick.stowIntake().onTrue(kIntake.stowDeployer());
+    kOperatorStick.deployIntake().onTrue(kIntake.deployDeployer());
+    kOperatorStick.agitateIntake().onTrue(kIntake.extendDeployer());
+    kOperatorStick.agitateIntake().debounce(0.2).whileTrue(kIntake.agitate().repeatedly());
+    kOperatorStick.stowIntake().onTrue(kIntake.stowDeployer());
 
 
   //   //Indexer
