@@ -49,14 +49,13 @@ public class Intake extends SubsystemBase {
      * to make sure it agitates continuously rather than just once. 
      */
     public Command agitateDeployer() {
-        
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
-                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATELOW)
-                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATEHIGH)));
-        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATELOW)
-                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATEHIGH));
+                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_LOW)
+                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_HIGH)));
+        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_LOW)
+                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_HIGH));
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
-        return cmd;
+        return cmd.withName("AgitateIntake");
     }
  
     public Command intakeFuel() {
