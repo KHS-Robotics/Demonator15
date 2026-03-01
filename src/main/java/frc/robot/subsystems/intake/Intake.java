@@ -3,7 +3,6 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -21,7 +20,7 @@ public class Intake extends SubsystemBase {
         cmd.addRequirements(this);
         return cmd.withName("AgitateIntake");
     }
-    
+
     public Command deployerToAgitate(){
         var cmd = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE);
         cmd.addRequirements(this);

@@ -8,6 +8,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Servo;
@@ -252,6 +253,21 @@ public class Elevator extends SubsystemBase {
                 pid.reset();
                 return setpointHeightFromGroundInches;
         }
+    }
+
+    public double getError(){
+        return Math.abs(getHeightFromGroundInches() - setpointHeightFromGroundInches);
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        builder.setSafeState(this::stop);
+        builder.setSmartDashboardType(this.getName());
+        builder.addDoubleProperty("Inches From Ground", () -> this.getHeightFromGroundInches(), null);
+        builder.addBooleanProperty("Is At Setpoint?", () -> this.motorIsAtSetpoint(), null);
+        builder.addDoubleProperty("Setpoint Inches From Ground", () -> this.setpointHeightFromGroundInches, null);
+        builder.addDoubleProperty("Inches Error From Setpoint", () -> this.getError(), null);
     }
  
     //  (*º-º*)

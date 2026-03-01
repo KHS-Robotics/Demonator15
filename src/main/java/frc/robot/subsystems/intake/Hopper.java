@@ -67,7 +67,7 @@ public class Hopper extends SubsystemBase {
                 PersistMode.kPersistParameters);
 
         pid = motor.getClosedLoopController();
-        relativeEncoder = motor.getAlternateEncoder();
+        relativeEncoder = motor.getEncoder();
 
         SmartDashboard.putData(this);
     }

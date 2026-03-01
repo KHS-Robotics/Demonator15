@@ -31,6 +31,7 @@ import frc.robot.subsystems.turret.TurretConfig.HoodConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+@SuppressWarnings("unused")
 public class Hood extends SubsystemBase {
   private final SparkMax motor;
   private final SparkClosedLoopController pid;
