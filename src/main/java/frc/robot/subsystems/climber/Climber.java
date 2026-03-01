@@ -1,5 +1,6 @@
 package frc.robot.subsystems.climber;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -9,7 +10,7 @@ public class Climber extends SubsystemBase{
 
 
     public Climber() {
-        SmartDashboard.putData(this);
+        SmartDashboard.putData(getName(), this);
     }
 
     public Command setClimberL1() {
@@ -95,6 +96,13 @@ public class Climber extends SubsystemBase{
     public Command climbL3(){
         var cmd = retractOutsideHooks().andThen(setClimberL3()).andThen(deployOutsideHooks()).andThen(stowClimber()); //add boolean conditional once smartdashboard changes are merged. also change it when the climber actually exists
         return cmd.withName("ClimbL3");
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        builder.setSmartDashboardType(this.getName());
+        builder.setSafeState(this::stop);
     }
 
     //we should have a prepare climb thing and an autoclimb, look into the elevator for how to do autoclimb

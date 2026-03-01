@@ -37,6 +37,7 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 
+@SuppressWarnings("unused")
 public class Waist extends SubsystemBase {
   private final SparkMax motor;
   private final SparkClosedLoopController pid;
@@ -133,6 +134,10 @@ public class Waist extends SubsystemBase {
     return angleToHub;
   }
 
+  public double waistError(){
+    return Math.abs(setpointRotationDegrees - getDegrees());
+  }
+
   public Command aimWaistSimple(Translation2d towards) {
     // the subtracting of the yaw is to account for the rotation of the robot
     double angle = getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), towards)
@@ -167,6 +172,7 @@ public class Waist extends SubsystemBase {
     builder.addDoubleProperty("Waist Rotation Absolute Angle", () -> this.getAbsoluteReading(), null);
     builder.addBooleanProperty("Is Waist At Setpoint?", () -> this.isAtSetpoint(), null);
     builder.addDoubleProperty("Waist Setpoint", () -> this.getSetpointRotationDegrees(), null);
+    builder.addDoubleProperty("Waist Error", () -> this.waistError(), null);
   }
 
 }

@@ -93,7 +93,7 @@ public class RobotContainer {
   public static final Turret kTurret = new Turret();
   public static final Intake kIntake = new Intake();
   public static final Indexer kIndexer = new Indexer();
-  //public static final Climber kClimber = new Climber();
+  public static final Climber kClimber = new Climber();
   // Subsystems - Cameras
   // photon
   //public static final DemonPhotonCamera kFrontRightPhotonCamera = new DemonPhotonCamera(
