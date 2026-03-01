@@ -178,13 +178,13 @@ public class RobotContainer {
   /** Binds commands to operator stick buttons. */
    private void configureOpertatorStickBindings() {
     //Intake
-    kOperatorStick.runIntake().whileTrue(kIntake.intakeFuel());
-    kOperatorStick.outtake().whileTrue(kIntake.outtakeFuel());
+    //kOperatorStick.runIntake().whileTrue(kIntake.intakeFuel());
+    //kOperatorStick.outtake().whileTrue(kIntake.outtakeFuel());
 
-    kOperatorStick.deployIntake().onTrue(kIntake.deployDeployer());
+    //kOperatorStick.deployIntake().onTrue(kIntake.deployDeployer());
     kOperatorStick.agitateIntake().onTrue(kIntake.extendDeployer());
-    kOperatorStick.agitateIntake().debounce(0.2).whileTrue(kIntake.agitate().repeatedly());
-    kOperatorStick.stowIntake().onTrue(kIntake.stowDeployer());
+    kOperatorStick.agitateIntake().debounce(0.2).whileTrue(kIntake.extendDeployer().andThen(kIntake.agitateDeployer().repeatedly()));
+    //kOperatorStick.stowIntake().onTrue(kIntake.stowDeployer());
 
 
     //Indexer
