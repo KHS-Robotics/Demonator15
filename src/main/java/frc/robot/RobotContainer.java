@@ -183,7 +183,7 @@ public class RobotContainer {
 
     //kOperatorStick.deployIntake().onTrue(kIntake.deployDeployer());
     kOperatorStick.agitateIntake().onTrue(kIntake.extendDeployer());
-    kOperatorStick.agitateIntake().debounce(0.2).whileTrue(kIntake.extendDeployer().andThen(kIntake.agitateDeployer().repeatedly()));
+    kOperatorStick.agitateIntake().debounce(0.2).whileTrue(kIntake.agitateDeployer().repeatedly());
     //kOperatorStick.stowIntake().onTrue(kIntake.stowDeployer());
 
 
