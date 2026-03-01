@@ -41,7 +41,7 @@ public class Kicker extends SubsystemBase {
     }
 
     public void start() {
-        motor.setVoltage(12);
+        motor.setVoltage(6);
     }
 
     public Command startCommand() {

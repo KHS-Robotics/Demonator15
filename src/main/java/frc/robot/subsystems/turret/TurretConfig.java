@@ -25,20 +25,22 @@ public class TurretConfig {
     }
 
     protected final class SpitterConfig {
-        public static final double kSpitterP = 0;
-        public static final double kSpitterI = 0;
-        public static final double kSpitterD = 0;
+        public static final double kSpitterP = 0.0025;
+        public static final double kSpitterI = 0.000001;
+        public static final double kSpitterD = 0.04;
+
+        public static final double kSpitterRPM = 4000;
     }
 
     protected final class TurretFieldAndRobotInfo {
         //in meters
-        public static final double kRedHubPositionX = 0.0;
-        public static final double kRedHubPositionY = 0.0;
+        public static final double kRedHubPositionX = 11.92;
+        public static final double kRedHubPositionY = 4.02;
         public static final Translation2d kRedHubPositionOnField = new Translation2d(kRedHubPositionX, kRedHubPositionY);
 
         //in meters
-        public static final double kBlueHubPositionX = 0.0;
-        public static final double kBlueHubPositionY = 0.0;
+        public static final double kBlueHubPositionX = 4.65;
+        public static final double kBlueHubPositionY = 4.02;
         public static final Translation2d kBlueHubPositionOnField = new Translation2d(kBlueHubPositionX, kBlueHubPositionY);
 
         public static final double kGravity = 9.8;

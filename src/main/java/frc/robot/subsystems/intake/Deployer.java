@@ -125,4 +125,12 @@ public class Deployer extends SubsystemBase {
     setSetpointAngle(getAngle());
   }
 
+  @Override
+  public void initSendable(SendableBuilder builder) {
+      super.initSendable(builder);
+      builder.setSmartDashboardType("Deployer");
+      builder.addBooleanProperty("Intake At Setpoint?", () -> this.isAtSetpoint(), null);
+      builder.addDoubleProperty("Intake Angle", () -> this.getAngle(), null);
+  }
+
 }

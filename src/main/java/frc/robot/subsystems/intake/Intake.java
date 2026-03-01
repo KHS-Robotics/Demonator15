@@ -16,6 +16,12 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putData(this);
     }
 
+    public Command agitate(){
+        var cmd = this.extendDeployer().andThen(this.stowDeployer());
+        cmd.addRequirements(this);
+        return cmd.withName("AgitateIntake");
+    }
+
     public Command deployDeployer() {
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
                 .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY));
@@ -41,7 +47,7 @@ public class Intake extends SubsystemBase {
         var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.EXTEND);
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
-        return cmd.withName("SetDeployerStateAgitate");
+        return cmd.withName("SetDeployerStateExtend");
     }
     /*
      * when calling this command in robotcontainer, make sure to add .repeatedly at the end 

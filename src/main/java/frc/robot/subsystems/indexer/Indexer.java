@@ -23,8 +23,8 @@ public class Indexer extends SubsystemBase {
     var indexerConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
-        .inverted(true);
-    motor = new SparkMax(RobotMap.HOPPER_MOTOR_ID, MotorType.kBrushless);
+        .inverted(false);
+    motor = new SparkMax(RobotMap.INDEXER_MOTOR_ID, MotorType.kBrushless);
     motor.configure(indexerConfig, ResetMode.kResetSafeParameters,
      PersistMode.kPersistParameters);
 
@@ -42,11 +42,11 @@ public class Indexer extends SubsystemBase {
 
   public void forward() {
     indexerState = IndexerState.FORWARD;
-    motor.setVoltage(2.75);
+    motor.setVoltage(12);
   }
 
   public Command forwardCommand() {
-    var cmd = runOnce(this::forward);
+    var cmd = startEnd(this::forward, this::stop);
     return cmd.withName("ForwardIndexer");
   }
 
@@ -56,7 +56,7 @@ public class Indexer extends SubsystemBase {
   }
 
   public Command reverseCommand() {
-    var cmd = runOnce(this::reverse);
+    var cmd = startEnd(this::reverse, this::stop);
     return cmd.withName("ReverseIndexer");
   }
 

@@ -43,7 +43,7 @@ public class Spitter extends SubsystemBase {
 
     var motorConfig = new SparkFlexConfig()
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(40, 20)
+        .smartCurrentLimit(60, 30)
         .inverted(false)
         .idleMode(IdleMode.kCoast)
         .apply(pidConfig)
@@ -69,11 +69,15 @@ public class Spitter extends SubsystemBase {
   }
 
   public void start() {
-    pid.setSetpoint(6000, ControlType.kVelocity);
+    pid.setSetpoint(TurretConfig.SpitterConfig.kSpitterRPM, ControlType.kVelocity);
+  }
+
+  public double getAppliedOutput(){
+    return motor.getAppliedOutput();
   }
 
   public boolean isAtSetpoint() {
-    return Math.abs(relativeEncoder.getVelocity() - 6000) < 50;
+    return Math.abs(relativeEncoder.getVelocity() - TurretConfig.SpitterConfig.kSpitterRPM) < 50;
   }
 
   public Command startCommand() {
@@ -89,8 +93,9 @@ public class Spitter extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
       super.initSendable(builder);
-      builder.addDoubleProperty("Speed", () -> getVelocity(), null);
-      builder.addDoubleProperty("Error", () -> Math.abs(getVelocity() - 6000), null);
+      builder.addDoubleProperty("Flywheel Speed", () -> getVelocity(), null);
+      builder.addDoubleProperty("Flywheel Error", () -> Math.abs(getVelocity() - TurretConfig.SpitterConfig.kSpitterRPM), null);
+      builder.addDoubleProperty("Flywheel Applied Output", () -> this.getAppliedOutput(), null);
   }
 }
 // two shooter motors
