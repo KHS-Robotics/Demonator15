@@ -5,15 +5,28 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Start Left Head Depot No Vision"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "DeployIntake"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Start Left Head Depot No Vision"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAim"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "DeployIntake"
+                }
+              }
+            ]
           }
         },
         {
@@ -37,36 +50,81 @@
                 "data": {
                   "name": "RunIndexer"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAim"
+                }
               }
             ]
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "AgitateIntake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "To Tower After Depot Top Pickup"
-          }
-        },
-        {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "wait",
+                "type": "named",
                 "data": {
-                  "waitTime": 8.0
+                  "name": "ExtendIntake"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "FireAutomatic"
+                  "name": "AutoAim"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "To Tower After Depot Top Pickup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAim"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 8.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "FireAutomatic"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAim"
                 }
               }
             ]
