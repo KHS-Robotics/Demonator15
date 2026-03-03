@@ -43,11 +43,11 @@ public class TurretConfig {
         public static final double kBlueHubPositionY = 4.02;
         public static final Translation2d kBlueHubPositionOnField = new Translation2d(kBlueHubPositionX, kBlueHubPositionY);
 
-        //CHANGE THESE
-        public static final Translation2d kPassingPositionBlueTop = new Translation2d(0,0);
-        public static final Translation2d kPassingPositionBlueBottom = new Translation2d(0,0);
-        public static final Translation2d kPassingPositionRedTop = new Translation2d(0,0);
-        public static final Translation2d kPassingPositionRedBottom = new Translation2d(0,0);
+        //left and right from blue drive team perspective for both
+        public static final Translation2d kPassingPositionBlueLeft = new Translation2d(1,6.5);
+        public static final Translation2d kPassingPositionBlueRight = new Translation2d(1,1.5);
+        public static final Translation2d kPassingPositionRedLeft = new Translation2d(15,6.5);
+        public static final Translation2d kPassingPositionRedRight = new Translation2d(15,1.5);
 
         public static final double kGravity = 9.8;
 

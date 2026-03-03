@@ -90,18 +90,18 @@ public class Turret extends SubsystemBase {
 
         if (RobotContainer.kSwerveDrive.getPose().getTranslation().getY() > 4.02 &&
                 (alliance.isPresent() && alliance.get() == Alliance.Red)) {
-            passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionRedTop;
+            passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionRedLeft;
 
         } else if (RobotContainer.kSwerveDrive.getPose().getTranslation().getY() > 4.02
                 && (alliance.isPresent() && alliance.get() == Alliance.Blue)) {
-            passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionBlueTop;
+            passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionBlueLeft;
 
         }else if (RobotContainer.kSwerveDrive.getPose().getTranslation().getY() <= 4.02 &&
                 (alliance.isPresent() && alliance.get() == Alliance.Red)) {
-            passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionRedBottom;
+            passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionRedRight;
 
         } else{
-            passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionBlueBottom;
+            passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionBlueRight;
         }
         return passingTranslation;
     }
