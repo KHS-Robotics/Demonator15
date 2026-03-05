@@ -9,8 +9,10 @@ package frc.robot.subsystems.drive;
 
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.fasterxml.jackson.databind.ser.std.NumberSerializers.DoubleSerializer;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -319,12 +321,11 @@ public class SwerveDrive extends SubsystemBase {
    * 
    * @return the command to reset the robot heading
    */
-  public Command resetHeading() {
+  public Command resetHeading(DoubleSupplier x, DoubleSupplier y) {
     var cmd = runOnce(() -> {
-      var currentPose = getPose();
       // always reset facing RED alliance
       var awayAngle = 0;
-      resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(awayAngle)));
+      resetPose(new Pose2d(x.getAsDouble(), y.getAsDouble(), Rotation2d.fromDegrees(awayAngle)));
     });
     return cmd.withName("ResetRobotHeading");
   }

@@ -21,6 +21,8 @@ public class Turret extends SubsystemBase{
 
     public Turret() {
         SmartDashboard.putData(this);
+
+        waist.setDefaultCommand(waist.aimWaistSimple(getCurrentHubPosition()));
     }
 
     public void stop() {
@@ -64,9 +66,9 @@ public class Turret extends SubsystemBase{
     }
 
     public Command shootContinuously() {
-        var startSpitter = spitter.startCommand();
-        var startKicker = kicker.startCommand();
-        var startBelt = belt.startCommand();
+        var startSpitter = spitter.startEnd(spitter::start, spitter::stop);
+        var startKicker = kicker.startEnd(kicker::start, kicker::stop);
+        var startBelt = belt.startEnd(belt::start, belt::stop);
         var cmd = startSpitter.alongWith(startKicker).alongWith(startBelt);
         cmd.addRequirements(spitter, kicker, belt);
         return cmd.withName("ShootFuel");
@@ -342,7 +344,7 @@ public class Turret extends SubsystemBase{
     }
 
     public Command goToSetHoodAngle() {
-        var cmd = hood.setAngleCommand(40);
+        var cmd = hood.setAngleCommand(12.5);
         cmd.addRequirements(hood);
         return cmd.withName("GoToHoodAngle");
     }

@@ -11,8 +11,8 @@ public class ButtonMap {
 
 
     //Indexer
-    public static final int FORWARD_INDEX_BUTTON = 0;
-    public static final int REVERSE_INDEX_BUTTON = 0;
+    public static final int FORWARD_INDEX_BUTTON = 3;
+    public static final int REVERSE_INDEX_BUTTON = 4;
 
 
     //Climber
@@ -21,6 +21,6 @@ public class ButtonMap {
 
 
     //Turret
-    public static final int AUTO_FIRE_BUTTON = 0;
-    // public static final int SWITCH_AIMING_MODE = 0;
+    public static final int AUTO_FIRE_BUTTON = 1;
+    public static final int MANUAL_AIM = 8;
 }

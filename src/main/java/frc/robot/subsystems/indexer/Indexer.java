@@ -21,7 +21,7 @@ public class Indexer extends SubsystemBase {
     super(Indexer.class.getSimpleName() + "/" + Indexer.class.getSimpleName());
 
     var indexerConfig = new SparkMaxConfig()
-        .idleMode(IdleMode.kBrake)
+        .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(30)
         .inverted(false);
     motor = new SparkMax(RobotMap.HOPPER_MOTOR_ID, MotorType.kBrushless);
