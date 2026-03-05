@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
@@ -156,9 +158,9 @@ public class Hood extends SubsystemBase {
     return Math.abs(getAngle() - setpointAngleDegrees);
   }
 
-  public Command aimHoodSimple(Translation2d towards) {
+  public Command aimHoodSimple(Supplier<Translation2d> towards) {
     var cmd = runEnd(() -> {
-    double distanceToPoint = RobotContainer.kSwerveDrive.getPose().getTranslation().getDistance(towards);
+    double distanceToPoint = RobotContainer.kSwerveDrive.getPose().getTranslation().getDistance(towards.get());
     var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
     // clamp to the physical limits of our hood
     // TurretConfig.HoodConfig.kHoodDegreesOffset;

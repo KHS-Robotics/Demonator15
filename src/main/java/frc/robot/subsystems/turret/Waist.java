@@ -13,6 +13,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import java.util.function.Supplier;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig;
@@ -138,10 +141,10 @@ public class Waist extends SubsystemBase {
     return Math.abs(setpointRotationDegrees - getDegrees());
   }
 
-  public Command aimWaistSimple(Translation2d towards) {
+  public Command aimWaistSimple(Supplier<Translation2d> towards) {
     var cmd = runEnd(() -> {
       // the subtracting of the yaw is to account for the rotation of the robot
-      double angle = getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), towards)
+      double angle = getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), towards.get())
         - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
       // clamping the value because our turret only goes 240(?) degrees
       angle = Units.radiansToDegrees(MathUtil.angleModulus(angle + TurretConfig.WaistConfig.kWaistRadiansOffset));

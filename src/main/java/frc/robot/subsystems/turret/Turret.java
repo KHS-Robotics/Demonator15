@@ -24,9 +24,9 @@ public class Turret extends SubsystemBase {
     public Turret() {
         SmartDashboard.putData(this);
 
-        waist.setDefaultCommand(waist.aimWaistSimple(currentHubTranslation().get()));
-        // waist.setDefaultCommand(waist.aimWaistSimple(currentShootingTarget().get()));
-        // hood.setDefaultCommand(hood.aimHoodSimple(currentShootingTarget().get()));
+        waist.setDefaultCommand(waist.aimWaistSimple(currentHubTranslation()));
+        // waist.setDefaultCommand(waist.aimWaistSimple(currentShootingTarget()));
+        // hood.setDefaultCommand(hood.aimHoodSimple(currentShootingTarget()));
         // spitter.setDefaultCommand(spitter.startCommand());
     }
 
