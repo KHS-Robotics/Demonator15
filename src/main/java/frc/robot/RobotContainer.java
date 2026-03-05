@@ -196,8 +196,8 @@ public class RobotContainer {
 
 
     //Turret
-    kOperatorStick.autoShoot().whileTrue(kTurret.goToSetHoodAngle().alongWith(kTurret.goToSetWaistAngle()).alongWith(kTurret.shootContinuously()));
-    kOperatorStick.manualAim().onTrue(kTurret.aimTowardsHub());
+    //we want this to (eventually) only turn on the belt, everything else should be defaultcommand
+    kOperatorStick.shoot().whileTrue(kTurret.goToSetHoodAngle().alongWith(kTurret.goToSetWaistAngle()).alongWith(kTurret.shootContinuously()));
   }
 
   /** https://pathplanner.dev/home.html */

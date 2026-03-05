@@ -54,8 +54,8 @@ public class OperatorStick extends Joystick {
     return new Trigger(() -> this.getRawButton(ButtonMap.REVERSE_INDEX_BUTTON));
   }
 
-  public Trigger autoShoot(){
-    return new Trigger(() -> this.getRawButton(ButtonMap.AUTO_FIRE_BUTTON));
+  public Trigger shoot(){
+    return new Trigger(() -> this.getRawButton(ButtonMap.FIRE_BUTTON));
   }
 
   // public Trigger switchAimingMode(){

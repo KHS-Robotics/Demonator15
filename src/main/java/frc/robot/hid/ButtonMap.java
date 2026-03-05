@@ -21,6 +21,6 @@ public class ButtonMap {
 
 
     //Turret
-    public static final int AUTO_FIRE_BUTTON = 1;
+    public static final int FIRE_BUTTON = 1;
     public static final int MANUAL_AIM = 8;
 }

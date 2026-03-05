@@ -8,20 +8,15 @@ public class TurretConfig {
         public static final double kHoodP = 0.02;
         public static final double kHoodI = 0.0005;
         public static final double kHoodD = 0;
-
-        public static final double kHoodMaxAngle = 45;
-        public static final double kHoodMinAngle = 0;
         
         public static final double kHoodEncoderPositionConversionFactor = 3.791;
         public static final double kHoodEncoderVelocityConversionFactor = kHoodEncoderPositionConversionFactor / 60.0;
         
         public static final double kMinSoftLimit = 0;
-        public static final double kMaxSoftLimit = 45;
+        public static final double kMaxSoftLimit = 40;
 
         //I think we will need a conversion for rotations of motor to how many degrees the hood will change
         public static final double kRotationsToDegreesConversion = 3.791;
-
-        public static final double kHoodDegreesOffset = 0;
     }
 
     protected final class SpitterConfig {
@@ -54,7 +49,7 @@ public class TurretConfig {
         public static final double kShooterVelocity = 9;
 
         //offset between navX zero and turret zero
-        public static final double kDegreeOffsetOfTurret = 0;
+        public static final double kDegreeOffsetOfTurret = 180;
         public static final double kTurretDistanceToNavX = 0;
         //in meters, at ground level
         public static final double kHeightBetweenShooterAndHub = 1.8;
@@ -66,7 +61,7 @@ public class TurretConfig {
         public static final double kAimerWaistI = 0.000075;
         public static final double kAimerWaistD = 0.05;
         
-        public static final double kWaistDegreesOffset = 0;
+        public static final double kWaistRadiansOffset = Math.PI;
 
         public static final double kWaistEncoderPositionConversionFactor = 14.21;
         public static final double kWaistEncoderVelocityConversionFactor = kWaistEncoderPositionConversionFactor / 60.0;

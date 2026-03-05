@@ -139,17 +139,16 @@ public class Waist extends SubsystemBase {
   }
 
   public Command aimWaistSimple(Translation2d towards) {
-    var angleCmd = runEnd(() -> {
+    var cmd = runEnd(() -> {
+      // the subtracting of the yaw is to account for the rotation of the robot
       double angle = getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), towards)
         - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
       // clamping the value because our turret only goes 240(?) degrees
-      angle = Units.radiansToDegrees(MathUtil.angleModulus(angle + Math.PI));
+      angle = Units.radiansToDegrees(MathUtil.angleModulus(angle + TurretConfig.WaistConfig.kWaistRadiansOffset));
       angle = MathUtil.clamp(angle, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
-      // + TurretConfig.WaistConfig.kWaistDegreesOffset);
       setSetpointDegrees(angle);
     }, this::stop);
-    // the subtracting of the yaw is to account for the rotation of the robot
-    return angleCmd;
+    return cmd;
   }
 
   // private void updateSetpointsForDisabledMode() {

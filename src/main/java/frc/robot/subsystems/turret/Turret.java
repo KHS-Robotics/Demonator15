@@ -1,5 +1,7 @@
 package frc.robot.subsystems.turret;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -22,7 +24,10 @@ public class Turret extends SubsystemBase {
     public Turret() {
         SmartDashboard.putData(this);
 
-        waist.setDefaultCommand(waist.aimWaistSimple(getCurrentHubPosition()));
+        waist.setDefaultCommand(waist.aimWaistSimple(currentHubTranslation().get()));
+        // waist.setDefaultCommand(waist.aimWaistSimple(currentShootingTarget().get()));
+        // hood.setDefaultCommand(hood.aimHoodSimple(currentShootingTarget().get()));
+        // spitter.setDefaultCommand(spitter.startCommand());
     }
 
     public void stop() {
@@ -58,8 +63,8 @@ public class Turret extends SubsystemBase {
     }
 
     public Command reload() {
-        var startKicker = kicker.startCommand();
-        var startBelt = belt.startCommand();
+        var startKicker = kicker.startEnd(kicker::start, kicker::stop);
+        var startBelt = belt.startEnd(belt::start, belt::stop);
         var cmd = startKicker.alongWith(startBelt);
         cmd.addRequirements(kicker, belt);
         return cmd.withName("ReloadFuel");
@@ -74,7 +79,7 @@ public class Turret extends SubsystemBase {
         return cmd.withName("ShootFuel");
     }
 
-    private Translation2d getCurrentHubTranslation() {
+    private Supplier<Translation2d> currentHubTranslation() {
         Translation2d hubPosition;
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent() && alliance.get() == Alliance.Red) {
@@ -83,33 +88,61 @@ public class Turret extends SubsystemBase {
         } else {
             hubPosition = TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionOnField;
         }
-        return hubPosition;
+        return () -> hubPosition;
     }
 
-    private Translation2d getCurrentPassingTranslation() {
+    private Supplier<Translation2d> currentPassingTranslation() {
         Translation2d passingTranslation;
         var alliance = DriverStation.getAlliance();
 
-        if (RobotContainer.kSwerveDrive.getPose().getTranslation().getY() > 4.02 &&
+        if (RobotContainer.kSwerveDrive.getPose().getTranslation()
+                .getY() > TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionY &&
                 (alliance.isPresent() && alliance.get() == Alliance.Red)) {
             passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionRedLeft;
 
-        } else if (RobotContainer.kSwerveDrive.getPose().getTranslation().getY() > 4.02
+        } else if (RobotContainer.kSwerveDrive.getPose().getTranslation()
+                .getY() > TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionY
                 && (alliance.isPresent() && alliance.get() == Alliance.Blue)) {
             passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionBlueLeft;
 
-        }else if (RobotContainer.kSwerveDrive.getPose().getTranslation().getY() <= 4.02 &&
+        } else if (RobotContainer.kSwerveDrive.getPose().getTranslation()
+                .getY() <= TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionY &&
                 (alliance.isPresent() && alliance.get() == Alliance.Red)) {
             passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionRedRight;
 
-        } else{
+        } else {
             passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionBlueRight;
         }
-        return passingTranslation;
+        return () -> passingTranslation;
+    }
+
+    private Supplier<Translation2d> currentShootingTarget() {
+        var alliance = DriverStation.getAlliance();
+        Translation2d target;
+        if ((alliance.isPresent() && alliance.get() == Alliance.Red)
+                && RobotContainer.kSwerveDrive.getPose().getTranslation()
+                .getX() <= TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionX) {
+            target = currentPassingTranslation().get();
+
+        }else if ((alliance.isPresent() && alliance.get() == Alliance.Red)
+                && RobotContainer.kSwerveDrive.getPose().getTranslation()
+                .getX() > TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionX) {
+            target = currentHubTranslation().get();
+
+        }else if ((alliance.isPresent() && alliance.get() == Alliance.Blue)
+                && RobotContainer.kSwerveDrive.getPose().getTranslation()
+                .getX() >= TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionX) {
+            target = currentPassingTranslation().get();
+
+        }else{
+            target = currentHubTranslation().get();
+        }
+        return () -> target;
     }
 
     private double getAngleToPosition() {
-        return getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(), getCurrentHubTranslation());
+        return getAngleToPosition(RobotContainer.kSwerveDrive.getPose().getTranslation(),
+                currentHubTranslation().get());
     }
 
     private double getAngleToPosition(Translation2d fromPose, Translation2d toPose) {
@@ -121,7 +154,7 @@ public class Turret extends SubsystemBase {
     }
 
     private double getDistanceToHub(Translation2d pose) {
-        double distanceToHub = pose.getDistance(getCurrentHubTranslation());
+        double distanceToHub = pose.getDistance(currentHubTranslation().get());
         return distanceToHub;
     }
 
@@ -289,7 +322,7 @@ public class Turret extends SubsystemBase {
      *         current position and velocity of the robot
      */
     private double getDesiredWaistAngle(boolean useVelocity) {
-        return getDesiredWaistAngle(getCurrentHubTranslation(), useVelocity);
+        return getDesiredWaistAngle(currentHubTranslation().get(), useVelocity);
     }
 
     private Rotation2d getWaistAimFinalRotation(Translation2d towards, boolean useVelocity) {
@@ -357,25 +390,26 @@ public class Turret extends SubsystemBase {
      *         current position and velocity of the robot
      */
     private double getDesiredHoodAngle(boolean useVelocity) {
-        return getDesiredHoodAngle(getCurrentHubTranslation(), useVelocity);
+        return getDesiredHoodAngle(currentHubTranslation().get(), useVelocity);
     }
 
     public Command aimTowardsHubWithVelocity() {
-        var aimHood = hood.setAngleCommand(getDesiredWaistAngle(true));
-        var aimWaist = waist.setDegreesCommand(getDesiredHoodAngle(true));
+        var aimHood = hood.runEnd(() -> hood.setSetpointAngle(getDesiredHoodAngle(true)), hood::stop);
+        var aimWaist = waist.runEnd(() -> waist.setSetpointDegrees(getDesiredWaistAngle(true)), waist::stop);
         var cmd = aimWaist.alongWith(aimHood);
         cmd.addRequirements(hood, waist);
         return cmd.withName("TurretAimTowardsHubWithVelocity");
     }
 
     public Command aimTowardsHub() {
-        var aimHood = hood.setAngleCommand(getDesiredWaistAngle(false));
-        var aimWaist = waist.setDegreesCommand(getDesiredHoodAngle(false));
+        var aimHood = hood.runEnd(() -> hood.setSetpointAngle(getDesiredHoodAngle(false)), hood::stop);
+        var aimWaist = waist.runEnd(() -> waist.setSetpointDegrees(getDesiredWaistAngle(false)), waist::stop);
         var cmd = aimWaist.alongWith(aimHood);
         cmd.addRequirements(hood, waist);
         return cmd.withName("TurretAimTowardsHub");
     }
 
+    // not sure if this will work because of command shenanagins
     public Command aimAndShootTowardsHub() {
         var aim = aimTowardsHub();
         var shoot = shootContinuously();
@@ -384,6 +418,7 @@ public class Turret extends SubsystemBase {
         return cmd.withName("Shoot At Hub");
     }
 
+    // not sure if this will work because of command shenanagins
     public Command aimAndShootTowardsHubWithVelocity() {
         var aim = aimTowardsHubWithVelocity();
         var shoot = shootContinuously();
@@ -393,13 +428,17 @@ public class Turret extends SubsystemBase {
     }
 
     public Command aimForPassing() {
-        var aimHood = hood.setAngleCommand(getDesiredWaistAngle(getCurrentPassingTranslation(),false));
-        var aimWaist = waist.setDegreesCommand(getDesiredHoodAngle(getCurrentPassingTranslation(), false));
+        var aimHood = hood.runEnd(
+                () -> hood.setSetpointAngle(getDesiredHoodAngle(currentPassingTranslation().get(), false)), hood::stop);
+        var aimWaist = waist.runEnd(
+                () -> waist.setSetpointDegrees(getDesiredWaistAngle(currentPassingTranslation().get(), false)),
+                waist::stop);
         var cmd = aimWaist.alongWith(aimHood);
         cmd.addRequirements(this);
         return cmd.withName("Aim For Passing");
     }
 
+    // not sure if this will work because of command shenanagins
     public Command aimAndShootForPassing() {
         var aim = aimForPassing();
         var shoot = shootContinuously();
@@ -425,7 +464,7 @@ public class Turret extends SubsystemBase {
         builder.setSmartDashboardType(getName());
         builder.setSafeState(this::stop);
         builder.addBooleanProperty("Is Turret At Setpoint?", () -> hood.isAtSetpoint() && waist.isAtSetpoint(), null);
-        // builder.addDoubleProperty("testHoodCalcs",() ->
+        builder.addDoubleProperty("testHoodCalcs", () -> hood.aimHoodSimpleAngle(currentHubTranslation().get()), null);
         // hood.aimHoodSimpleAngle(getCurrentHubPosition()), null);
     }
 }
