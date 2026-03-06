@@ -18,8 +18,8 @@ public class IntakeConfig {
         public static final double kDeployerKG = 0;
         public static final double kDeployerOffsetAngle = 0;
 
-        public static final double kDeployerEncoderPositionConversionFactor = 0;
-        public static final double kDeployerEncoderVelocityConversionFactor = 0;
+        public static final double kDeployerEncoderPositionConversionFactor = 360.0 * (1.0 / 10.0) * (48.0/17.0);
+        public static final double kDeployerEncoderVelocityConversionFactor = kDeployerEncoderPositionConversionFactor / 60.0;
     }
 
     protected final class HopperSetPoints {

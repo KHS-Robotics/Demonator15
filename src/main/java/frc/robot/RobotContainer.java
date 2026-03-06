@@ -91,7 +91,7 @@ public class RobotContainer {
   // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   public static final Turret kTurret = new Turret();
-  // public static final Intake kIntake = new Intake();
+  public static final Intake kIntake = new Intake();
   public static final Indexer kIndexer = new Indexer();
   // public static final Climber kClimber = new Climber();
   // Subsystems - Cameras
@@ -159,7 +159,7 @@ public class RobotContainer {
     // reset robot heading - ALWAYS FACE RED ALLIANCE WHEN DOING THIS - this is
     // // useful during driver practice to reset for field oriented driving direction
     // // or a rare odd scenario on the field during a match
-    kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading(() -> 1.016, () -> 4.02));
+    kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading(() -> 1.016, () -> 4.0));
    
 
     // // give driver ability to limit speeds for when elevator is high up to
@@ -197,7 +197,7 @@ public class RobotContainer {
 
     //Turret
     //we want this to (eventually) only turn on the belt, everything else should be defaultcommand
-    kOperatorStick.shoot().whileTrue(kTurret.goToSetHoodAngle().alongWith(kTurret.goToSetWaistAngle()).alongWith(kTurret.shootContinuously()));
+    kOperatorStick.shoot().whileTrue(kTurret.shootContinuously());
   }
 
   /** https://pathplanner.dev/home.html */

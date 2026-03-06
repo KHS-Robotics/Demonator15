@@ -24,7 +24,7 @@ public class Turret extends SubsystemBase {
     public Turret() {
         SmartDashboard.putData(this);
 
-        waist.setDefaultCommand(waist.aimWaistSimple(currentHubTranslation()));
+        
         // waist.setDefaultCommand(waist.aimWaistSimple(currentShootingTarget()));
         // hood.setDefaultCommand(hood.aimHoodSimple(currentShootingTarget()));
         // spitter.setDefaultCommand(spitter.startCommand());
@@ -80,64 +80,69 @@ public class Turret extends SubsystemBase {
     }
 
     private Supplier<Translation2d> currentHubTranslation() {
-        Translation2d hubPosition;
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get() == Alliance.Red) {
-            hubPosition = TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionOnField;
-            // if the alliance is null, it is auto set to blue variables
-        } else {
-            hubPosition = TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionOnField;
-        }
-        return () -> hubPosition;
+        return () -> {
+            Translation2d hubPosition;
+            var alliance = DriverStation.getAlliance();
+            if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+                hubPosition = TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionOnField;
+                // if the alliance is null, it is auto set to blue variables
+            } else {
+                hubPosition = TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionOnField;
+            }
+            return hubPosition;
+        };
     }
 
     private Supplier<Translation2d> currentPassingTranslation() {
-        Translation2d passingTranslation;
-        var alliance = DriverStation.getAlliance();
+        return () -> {
+            Translation2d passingTranslation;
+            var alliance = DriverStation.getAlliance();
+            if (RobotContainer.kSwerveDrive.getPose().getTranslation()
+                    .getY() > TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionY &&
+                    (alliance.isPresent() && alliance.get() == Alliance.Red)) {
+                passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionRedLeft;
 
-        if (RobotContainer.kSwerveDrive.getPose().getTranslation()
-                .getY() > TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionY &&
-                (alliance.isPresent() && alliance.get() == Alliance.Red)) {
-            passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionRedLeft;
+            } else if (RobotContainer.kSwerveDrive.getPose().getTranslation()
+                    .getY() > TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionY
+                    && (alliance.isPresent() && alliance.get() == Alliance.Blue)) {
+                passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionBlueLeft;
 
-        } else if (RobotContainer.kSwerveDrive.getPose().getTranslation()
-                .getY() > TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionY
-                && (alliance.isPresent() && alliance.get() == Alliance.Blue)) {
-            passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionBlueLeft;
+            } else if (RobotContainer.kSwerveDrive.getPose().getTranslation()
+                    .getY() <= TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionY &&
+                    (alliance.isPresent() && alliance.get() == Alliance.Red)) {
+                passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionRedRight;
 
-        } else if (RobotContainer.kSwerveDrive.getPose().getTranslation()
-                .getY() <= TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionY &&
-                (alliance.isPresent() && alliance.get() == Alliance.Red)) {
-            passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionRedRight;
-
-        } else {
-            passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionBlueRight;
-        }
-        return () -> passingTranslation;
+            } else {
+                passingTranslation = TurretConfig.TurretFieldAndRobotInfo.kPassingPositionBlueRight;
+            }
+            return passingTranslation;
+        };
     }
 
     private Supplier<Translation2d> currentShootingTarget() {
-        var alliance = DriverStation.getAlliance();
-        Translation2d target;
-        if ((alliance.isPresent() && alliance.get() == Alliance.Red)
-                && RobotContainer.kSwerveDrive.getPose().getTranslation()
-                .getX() <= TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionX) {
-            target = currentPassingTranslation().get();
+        return () -> {
+            var alliance = DriverStation.getAlliance();
+            Translation2d target;
+            if ((alliance.isPresent() && alliance.get() == Alliance.Red)
+                    && RobotContainer.kSwerveDrive.getPose().getTranslation()
+                    .getX() <= TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionX) {
+                target = currentPassingTranslation().get();
 
-        }else if ((alliance.isPresent() && alliance.get() == Alliance.Red)
-                && RobotContainer.kSwerveDrive.getPose().getTranslation()
-                .getX() > TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionX) {
-            target = currentHubTranslation().get();
+            }else if ((alliance.isPresent() && alliance.get() == Alliance.Red)
+                    && RobotContainer.kSwerveDrive.getPose().getTranslation()
+                    .getX() > TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionX) {
+                target = currentHubTranslation().get();
 
-        }else if ((alliance.isPresent() && alliance.get() == Alliance.Blue)
-                && RobotContainer.kSwerveDrive.getPose().getTranslation()
-                .getX() >= TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionX) {
-            target = currentPassingTranslation().get();
+            }else if ((alliance.isPresent() && alliance.get() == Alliance.Blue)
+                    && RobotContainer.kSwerveDrive.getPose().getTranslation()
+                    .getX() >= TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionX) {
+                target = currentPassingTranslation().get();
 
-        }else{
-            target = currentHubTranslation().get();
-        }
-        return () -> target;
+            }else{
+                target = currentHubTranslation().get();
+            }
+            return target;
+        };
     }
 
     private double getAngleToPosition() {

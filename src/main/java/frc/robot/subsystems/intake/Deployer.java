@@ -2,10 +2,12 @@ package frc.robot.subsystems.intake;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.EncoderConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -30,7 +32,7 @@ public class Deployer extends SubsystemBase {
   private double setpointAngleDegrees;
   // ^ There are two seperate motors for the intake pivot,
   // might want to change right/left names to avoid confusion
-  private final AbsoluteEncoder encoder;
+  private final RelativeEncoder encoder;
   private final PIDController pid;
   private final SparkLimitSwitch sensor;
   private final SparkMax motor;
@@ -38,8 +40,9 @@ public class Deployer extends SubsystemBase {
   public Deployer() {
 
     super(Deployer.class.getSimpleName() + "/" + Deployer.class.getSimpleName());
-    var encoderConfig = new AbsoluteEncoderConfig()
-        .inverted(true);
+    var encoderConfig = new EncoderConfig()
+        .positionConversionFactor(IntakeConfig.DeployerConfig.kDeployerEncoderPositionConversionFactor)
+        .velocityConversionFactor(IntakeConfig.DeployerConfig.kDeployerEncoderPositionConversionFactor);
 
     var limitSwitchConfig = new LimitSwitchConfig()
         .forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor);
@@ -47,14 +50,14 @@ public class Deployer extends SubsystemBase {
     var motorConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
-        .follow(RobotMap.INTAKE_DEPLOYER_ID, true)
+        .follow(RobotMap.INTAKE_DEPLOYER_ID, false)
         .apply(encoderConfig)
         .apply(limitSwitchConfig);
     motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_ID, MotorType.kBrushless);
     motor.configure(motorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
-    encoder = motor.getAbsoluteEncoder();
+    encoder = motor.getEncoder();
     sensor = motor.getForwardLimitSwitch();
 
     pid = new PIDController(DeployerConfig.kDeployerP, DeployerConfig.kDeployerI, DeployerConfig.kDeployerD);
@@ -88,7 +91,7 @@ public class Deployer extends SubsystemBase {
   }
 
   public double getAngle() {
-    return Units.rotationsToDegrees(encoder.getPosition()) + DeployerConfig.kDeployerOffsetAngle;
+    return encoder.getPosition();
   }
 
   public boolean isAtSetpoint() {

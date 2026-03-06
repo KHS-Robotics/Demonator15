@@ -150,6 +150,9 @@ public class Hood extends SubsystemBase {
                   * (2 * (v * Math.cos(theta)) * (v * Math.cos(theta)))));
       double step = func / derivative;
       theta = theta - step;
+      if (i >= 19) {
+        theta = TurretConfig.HoodConfig.kMaxSoftLimit;
+      }
     }
     return theta;
   }

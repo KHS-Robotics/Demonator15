@@ -5,9 +5,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 public class TurretConfig {
 
     protected final class HoodConfig {
-        public static final double kHoodP = 0.02;
+        public static final double kHoodP = 0.015;
         public static final double kHoodI = 0.0005;
-        public static final double kHoodD = 0;
+        public static final double kHoodD = 0.015;
         
         public static final double kHoodEncoderPositionConversionFactor = 3.791;
         public static final double kHoodEncoderVelocityConversionFactor = kHoodEncoderPositionConversionFactor / 60.0;
@@ -24,7 +24,7 @@ public class TurretConfig {
         public static final double kSpitterI = 0.000001;
         public static final double kSpitterD = 0.04;
 
-        public static final double kSpitterRPM = 4000;
+        public static final double kSpitterRPM = 6000;
     }
 
     protected final class TurretFieldAndRobotInfo {
@@ -66,7 +66,7 @@ public class TurretConfig {
         public static final double kWaistEncoderPositionConversionFactor = 14.21;
         public static final double kWaistEncoderVelocityConversionFactor = kWaistEncoderPositionConversionFactor / 60.0;
 
-        public static final double kMinSoftLimit = -120;
-        public static final double kMaxSoftLimit = 120;
+        public static final double kMinSoftLimit = -100;
+        public static final double kMaxSoftLimit = 22;
     }
 }
