@@ -37,15 +37,15 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 public class Hood extends SubsystemBase {
   private final SparkMax motor;
   private final SparkClosedLoopController pid;
-  // private final AbsoluteEncoder absoluteEncoder;
+  private final AbsoluteEncoder absoluteEncoder;
   private final RelativeEncoder relativeEncoder;
 
   private double setpointAngleDegrees;
 
   public Hood() {
 
-    // var absoluteEncoderConfig = new AbsoluteEncoderConfig()
-    // .inverted(true);
+    var absoluteEncoderConfig = new AbsoluteEncoderConfig()
+      .inverted(true);
 
     var relativeEncoderConfig = new EncoderConfig()
         .positionConversionFactor(TurretConfig.HoodConfig.kHoodEncoderPositionConversionFactor)
@@ -67,11 +67,11 @@ public class Hood extends SubsystemBase {
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
         .inverted(true)
+        .idleMode(IdleMode.kBrake)
         .apply(relativeEncoderConfig)
         .apply(softLimitConfig)
         .apply(pidConfig)
-        .idleMode(IdleMode.kBrake);
-    // .apply(absoluteEncoderConfig);
+        .apply(absoluteEncoderConfig);
 
     motor = new SparkMax(RobotMap.TURRET_AIMER_HOOD_ID, MotorType.kBrushless);
     motor.configure(hoodConfig, ResetMode.kResetSafeParameters,
@@ -79,7 +79,7 @@ public class Hood extends SubsystemBase {
 
     relativeEncoder = motor.getEncoder();
 
-    // absoluteEncoder = motor.getAbsoluteEncoder();
+    absoluteEncoder = motor.getAbsoluteEncoder();
 
     pid = motor.getClosedLoopController();
     SmartDashboard.putData(this);
@@ -98,6 +98,10 @@ public class Hood extends SubsystemBase {
 
   public double getAngle() {
     return relativeEncoder.getPosition();
+  }
+
+  public double getAbosluteAngle() {
+    return absoluteEncoder.getPosition();
   }
 
   public void setSetpointAngle(double setpointDegrees) {
@@ -194,6 +198,7 @@ public class Hood extends SubsystemBase {
     builder.addDoubleProperty("Hood Angle", () -> this.getAngle(), null);
     builder.addDoubleProperty("Hood Error", () -> this.hoodError(), null);
     builder.addBooleanProperty("Is Hood At Setpoint?", () -> this.isAtSetpoint(), null);
+    builder.addDoubleProperty("Hood Absolute Angle", () -> this.getAbosluteAngle(), null);
   }
 }
 

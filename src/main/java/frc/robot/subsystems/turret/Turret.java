@@ -28,6 +28,7 @@ public class Turret extends SubsystemBase {
         // waist.setDefaultCommand(waist.aimWaistSimple(currentShootingTarget()));
         // hood.setDefaultCommand(hood.aimHoodSimple(currentShootingTarget()));
         // spitter.setDefaultCommand(spitter.startCommand());
+        // kicker.setDefaultCommand(kicker.startCommand());
     }
 
     public void stop() {
