@@ -56,7 +56,9 @@ public class Waist extends SubsystemBase {
         .velocityConversionFactor(TurretConfig.WaistConfig.kWaistEncoderVelocityConversionFactor);
 
     var absoluteEncoderConfig = new AbsoluteEncoderConfig()
-        .inverted(true);
+        .positionConversionFactor(TurretConfig.WaistConfig.kWaistAnalogPositionConversionFactor)
+        .velocityConversionFactor(TurretConfig.WaistConfig.kWaistAnalogVelocityConversionFactor)
+        .inverted(false);
 
     var softLimitConfig = new SoftLimitConfig()
         .forwardSoftLimit(TurretConfig.WaistConfig.kMaxSoftLimit)
@@ -119,6 +121,16 @@ public class Waist extends SubsystemBase {
 
   public double getAbsoluteReading() {
     return absoluteEncoder.getPosition();
+  }
+
+  public void calibrateRelativeEncoder() {
+    double absolutePosition = absoluteEncoder.getPosition() * 1;
+    relativeEncoder.setPosition(absolutePosition);
+  }
+
+  public Command calibrateRelativeEncoderCommand(){
+    var cmd = runOnce(this::calibrateRelativeEncoder);
+    return cmd.withName("calibrate relative");
   }
 
   public void setSetpointDegrees(double setpointDegrees) {

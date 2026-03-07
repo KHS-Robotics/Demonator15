@@ -11,6 +11,9 @@ public class TurretConfig {
         
         public static final double kHoodEncoderPositionConversionFactor = 3.791;
         public static final double kHoodEncoderVelocityConversionFactor = kHoodEncoderPositionConversionFactor / 60.0;
+
+        public static final double kHoodAnalogPositionConversionFactor = 1.0;
+        public static final double kHoodAnalogVelocityConversionFactor = kHoodAnalogPositionConversionFactor / 60.0;
         
         public static final double kMinSoftLimit = 0;
         public static final double kMaxSoftLimit = 40;
@@ -65,6 +68,9 @@ public class TurretConfig {
 
         public static final double kWaistEncoderPositionConversionFactor = 14.21;
         public static final double kWaistEncoderVelocityConversionFactor = kWaistEncoderPositionConversionFactor / 60.0;
+        
+        public static final double kWaistAnalogPositionConversionFactor = 1.0;
+        public static final double kWaistAnalogVelocityConversionFactor = kWaistAnalogPositionConversionFactor / 60.0;
 
         public static final double kMinSoftLimit = -100;
         public static final double kMaxSoftLimit = 22;
