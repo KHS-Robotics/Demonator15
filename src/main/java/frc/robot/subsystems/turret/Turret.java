@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -20,13 +21,17 @@ public class Turret extends SubsystemBase {
     private final Waist waist = new Waist();
     private final Kicker kicker = new Kicker();
     private final Spitter spitter = new Spitter();
+    private Supplier<Boolean> hoodCanMakeShot;
+    private Supplier<Boolean> waistCanMakeShot;
 
     public Turret() {
         SmartDashboard.putData(this);
 
         
         // waist.setDefaultCommand(waist.aimWaistSimple(currentShootingTarget()));
+        waist.setDefaultCommand(waist.setDegreesCommand(getDesiredWaistAngle(currentShootingTarget(), false)));
         // hood.setDefaultCommand(hood.aimHoodSimple(currentShootingTarget()));
+        hood.setDefaultCommand(hood.setAngleCommand(getDesiredHoodAngle(currentShootingTarget(), false)));
         // spitter.setDefaultCommand(spitter.startCommand());
         // kicker.setDefaultCommand(kicker.startCommand());
     }
@@ -316,10 +321,11 @@ public class Turret extends SubsystemBase {
      * @return the angle that the waist should be to hit the position towards based
      *         on the current position and velocity of the robot
      */
-    private double getDesiredWaistAngle(Translation2d towards, boolean useVelocity) {
-
-        var angle = getWaistAimFinalRotation(towards, useVelocity).getDegrees();
-        return angle;
+    private Supplier<Double> getDesiredWaistAngle(Supplier<Translation2d> towards, boolean useVelocity) {
+        return () -> {
+            var angle = getWaistAimFinalRotation(towards, useVelocity);
+            return angle;
+        };
     }
 
     /**
@@ -327,57 +333,64 @@ public class Turret extends SubsystemBase {
      * @return the angle that the waist should be to score in the hub based on the
      *         current position and velocity of the robot
      */
-    private double getDesiredWaistAngle(boolean useVelocity) {
-        return getDesiredWaistAngle(currentHubTranslation().get(), useVelocity);
+    private Supplier<Double> getDesiredWaistAngle(boolean useVelocity) {
+        return getDesiredWaistAngle(currentHubTranslation(), useVelocity);
     }
 
-    private Rotation2d getWaistAimFinalRotation(Translation2d towards, boolean useVelocity) {
+    private double getWaistAimFinalRotation(Supplier<Translation2d> towards, boolean useVelocity) {
         Translation2d phantomRobotPosition = RobotContainer.kSwerveDrive.getPose().getTranslation();
         if (useVelocity) {
             phantomRobotPosition = getPhantomRobotPosition();
         }
         // the adding of the yaw is to account for the rotation of the robot
-        double angle = getAngleToPosition(phantomRobotPosition, towards)
+        double angle = getAngleToPosition(phantomRobotPosition, towards.get())
                 - RobotContainer.kSwerveDrive.getPose().getRotation().getRadians();
         // clamping the value because our turret only goes 240(?) degrees
-        angle = Math.toDegrees(angle) % 360;
+        angle = Units.radiansToDegrees(MathUtil.angleModulus(angle + TurretConfig.WaistConfig.kWaistRadiansOffset));
+        if (angle > TurretConfig.WaistConfig.kMaxSoftLimit || angle < TurretConfig.WaistConfig.kMinSoftLimit) {
+                waistCanMakeShot = () -> false;
+        }else {waistCanMakeShot = () -> true;}
         angle = MathUtil.clamp(angle, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
-        Rotation2d angleRotation = new Rotation2d(angle);
         // + TurretConfig.WaistConfig.kWaistDegreesOffset);
-        return angleRotation;
+        return angle;
     }
 
-    private double getHoodAimFinalAngle(Translation2d towards, boolean useVelocity) {
-        Translation2d phantomPitchPosition = new Translation2d(0, 0);
-        if (useVelocity) {
-            // linear calcs
-            Translation2d phantomRobotPosition = getPhantomRobotPosition();
-            double radialVelocity = getRadialVelocityForPhantom(
-                    RobotContainer.kSwerveDrive.getChassisSpeeds().vxMetersPerSecond,
-                    RobotContainer.kSwerveDrive.getChassisSpeeds().vyMetersPerSecond, phantomRobotPosition);
-            Rotation2d angleOfRad = new Rotation2d(getAngleToPosition(phantomRobotPosition, towards));
-            double T = getDistanceToHub(phantomRobotPosition) / (TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity
-                    * Math.cos(Math.toRadians(90 - solvePitch(phantomRobotPosition.getDistance(towards)))));
-            // rotational calcs
-            var rotationalVelocity = getTurretRotationalToLinearVelocity();
-            double robotRotationalRadVelocity = getTangentialVelocity(rotationalVelocity.getX(),
-                    rotationalVelocity.getY());
+    private Supplier<Double> getHoodAimFinalAngle(Supplier<Translation2d> towards, boolean useVelocity) {
+        return () -> {
+            Translation2d phantomPitchPosition = new Translation2d(0, 0);
+            if (useVelocity) {
+                // linear calcs
+                Translation2d phantomRobotPosition = getPhantomRobotPosition();
+                double radialVelocity = getRadialVelocityForPhantom(
+                        RobotContainer.kSwerveDrive.getChassisSpeeds().vxMetersPerSecond,
+                        RobotContainer.kSwerveDrive.getChassisSpeeds().vyMetersPerSecond, phantomRobotPosition);
+                Rotation2d angleOfRad = new Rotation2d(getAngleToPosition(phantomRobotPosition, towards.get()));
+                double T = getDistanceToHub(phantomRobotPosition) / (TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity
+                        * Math.cos(Math.toRadians(90 - solvePitch(phantomRobotPosition.getDistance(towards.get())))));
+                // rotational calcs
+                var rotationalVelocity = getTurretRotationalToLinearVelocity();
+                double robotRotationalRadVelocity = getTangentialVelocity(rotationalVelocity.getX(),
+                        rotationalVelocity.getY());
 
-            double phantomPitchDistance = T * (radialVelocity + robotRotationalRadVelocity);
-            Translation2d phantomPitchVector = new Translation2d(phantomPitchDistance, angleOfRad);
-            phantomPitchPosition = phantomPitchVector.plus(phantomRobotPosition);
-        } else {
-            phantomPitchPosition = RobotContainer.kSwerveDrive.getPose().getTranslation();
-        }
+                double phantomPitchDistance = T * (radialVelocity + robotRotationalRadVelocity);
+                Translation2d phantomPitchVector = new Translation2d(phantomPitchDistance, angleOfRad);
+                phantomPitchPosition = phantomPitchVector.plus(phantomRobotPosition);
+            } else {
+                phantomPitchPosition = RobotContainer.kSwerveDrive.getPose().getTranslation();
+            }
 
-        double distanceToPoint = phantomPitchPosition.getDistance(towards);
-        var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
-        // add radial velocity calcs
-        // clamp to the physical limits of our hood
-        angle = MathUtil.clamp(angle, TurretConfig.HoodConfig.kMinSoftLimit, TurretConfig.HoodConfig.kMaxSoftLimit);
-        // this will be part of the relative / absolute hybrid incorporation +
-        // TurretConfig.HoodConfig.kHoodDegreesOffset;
-        return angle;
+            double distanceToPoint = phantomPitchPosition.getDistance(towards.get());
+            var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
+            // add radial velocity calcs
+            // clamp to the physical limits of our hood
+            if (angle > TurretConfig.HoodConfig.kMaxSoftLimit || angle < TurretConfig.HoodConfig.kMinSoftLimit) {
+                hoodCanMakeShot = () -> false;
+            }else {hoodCanMakeShot = () -> true;}
+            angle = MathUtil.clamp(angle, TurretConfig.HoodConfig.kMinSoftLimit, TurretConfig.HoodConfig.kMaxSoftLimit);
+            // this will be part of the relative / absolute hybrid incorporation +
+            // TurretConfig.HoodConfig.kHoodDegreesOffset;
+            return angle;
+        };
     }
 
     /**
@@ -385,9 +398,11 @@ public class Turret extends SubsystemBase {
      * @return the angle that the hood should be to hit the position towards based
      *         on the current position and velocity of the robot
      */
-    private double getDesiredHoodAngle(Translation2d towards, boolean useVelocity) {
-        double angle = getHoodAimFinalAngle(towards, useVelocity);
-        return angle;
+    private Supplier<Double> getDesiredHoodAngle(Supplier<Translation2d> towards, boolean useVelocity) {
+        return () -> {
+            double angle = getHoodAimFinalAngle(towards, useVelocity).get();
+            return angle;
+        };
     }
 
     /**
@@ -395,21 +410,21 @@ public class Turret extends SubsystemBase {
      * @return the angle that the hood should be to score in the hub based on the
      *         current position and velocity of the robot
      */
-    private double getDesiredHoodAngle(boolean useVelocity) {
-        return getDesiredHoodAngle(currentHubTranslation().get(), useVelocity);
+    private Supplier<Double> getDesiredHoodAngle(boolean useVelocity) {
+        return getDesiredHoodAngle(currentHubTranslation(), useVelocity);
     }
 
     public Command aimTowardsHubWithVelocity() {
-        var aimHood = hood.runEnd(() -> hood.setSetpointAngle(getDesiredHoodAngle(true)), hood::stop);
-        var aimWaist = waist.runEnd(() -> waist.setSetpointDegrees(getDesiredWaistAngle(true)), waist::stop);
+        var aimHood = hood.runEnd(() -> hood.setSetpointAngle(getDesiredHoodAngle(true).get()), hood::stop);
+        var aimWaist = waist.runEnd(() -> waist.setSetpointDegrees(getDesiredWaistAngle(true).get()), waist::stop);
         var cmd = aimWaist.alongWith(aimHood);
         cmd.addRequirements(hood, waist);
         return cmd.withName("TurretAimTowardsHubWithVelocity");
     }
 
     public Command aimTowardsHub() {
-        var aimHood = hood.runEnd(() -> hood.setSetpointAngle(getDesiredHoodAngle(false)), hood::stop);
-        var aimWaist = waist.runEnd(() -> waist.setSetpointDegrees(getDesiredWaistAngle(false)), waist::stop);
+        var aimHood = hood.runEnd(() -> hood.setSetpointAngle(getDesiredHoodAngle(false).get()), hood::stop);
+        var aimWaist = waist.runEnd(() -> waist.setSetpointDegrees(getDesiredWaistAngle(false).get()), waist::stop);
         var cmd = aimWaist.alongWith(aimHood);
         cmd.addRequirements(hood, waist);
         return cmd.withName("TurretAimTowardsHub");
@@ -435,9 +450,9 @@ public class Turret extends SubsystemBase {
 
     public Command aimForPassing() {
         var aimHood = hood.runEnd(
-                () -> hood.setSetpointAngle(getDesiredHoodAngle(currentPassingTranslation().get(), false)), hood::stop);
+                () -> hood.setSetpointAngle(getDesiredHoodAngle(currentPassingTranslation(), false).get()), hood::stop);
         var aimWaist = waist.runEnd(
-                () -> waist.setSetpointDegrees(getDesiredWaistAngle(currentPassingTranslation().get(), false)),
+                () -> waist.setSetpointDegrees(getDesiredWaistAngle(currentPassingTranslation(), false).get()),
                 waist::stop);
         var cmd = aimWaist.alongWith(aimHood);
         cmd.addRequirements(this);
@@ -454,13 +469,13 @@ public class Turret extends SubsystemBase {
     }
 
     public Command goToSetHoodAngle() {
-        var cmd = hood.setAngleCommand(12.5);
+        var cmd = hood.setAngleCommand(() -> 12.5);
         cmd.addRequirements(hood);
         return cmd.withName("GoToHoodAngle");
     }
 
     public Command goToSetWaistAngle() {
-        var cmd = waist.setDegreesCommand(0);
+        var cmd = waist.setDegreesCommand(() -> 0.0);
         cmd.addRequirements(waist);
         return cmd.withName("GoToWaistAngle");
     }
@@ -470,7 +485,8 @@ public class Turret extends SubsystemBase {
         builder.setSmartDashboardType(getName());
         builder.setSafeState(this::stop);
         builder.addBooleanProperty("Is Turret At Setpoint?", () -> hood.isAtSetpoint() && waist.isAtSetpoint(), null);
-        builder.addDoubleProperty("testHoodCalcs", () -> hood.aimHoodSimpleAngle(currentHubTranslation().get()), null);
+        builder.addBooleanProperty("Hood Can Hit", () -> hoodCanMakeShot.get(), null);
+        builder.addBooleanProperty("Waist Can Hit", () -> waistCanMakeShot.get(), null);
         // hood.aimHoodSimpleAngle(getCurrentHubPosition()), null);
     }
 }

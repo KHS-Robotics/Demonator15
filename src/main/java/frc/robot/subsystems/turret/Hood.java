@@ -86,8 +86,8 @@ public class Hood extends SubsystemBase {
   }
   // use angler as base
 
-  public Command setAngleCommand(double angleDegrees) {
-    var cmd = this.run(() -> setSetpointAngle(angleDegrees)).until(this::isAtSetpoint);
+  public Command setAngleCommand(Supplier<Double> angleDegrees) {
+    var cmd = this.run(() -> setSetpointAngle(angleDegrees.get())).until(this::isAtSetpoint);
     return cmd.withName("SetHoodSetpoint");
   }
 
@@ -130,62 +130,8 @@ public class Hood extends SubsystemBase {
     updateSetpointsForDisabledMode();
   }
 
-  private double solvePitch(double distance) {
-    // uses newtons method to itterate until it finds a zero (or something close
-    // enough) of the original physics function
-    // the original function shows where the angle needs to be to hit a set point,
-    // in this case the hub
-    // the function has two answers (where x = 0) that give us an angle that hits
-    // the hub, we take the higher one by calculating using a higher guess for the
-    // angle
-    double theta = Math.toRadians(88);
-    double g = TurretConfig.TurretFieldAndRobotInfo.kGravity;
-    double d = distance;
-    double v = TurretConfig.TurretFieldAndRobotInfo.kShooterVelocity;
-    double h = TurretConfig.TurretFieldAndRobotInfo.kHeightBetweenShooterAndHub;
-    for (int i = 0; i < 20; i++) {
-      double func = d * Math.tan(theta) - (g * d * d) / (2 * (v * Math.cos(theta)) * (v * Math.cos(theta))) - h;
-      if (Math.abs(func) < 0.001) {
-        return theta;
-      }
-      double derivative = (d * (1 / Math.cos(theta)) * (1 / Math.cos(theta))
-          - (4 * g * d * d * (v * Math.cos(theta)) * v * Math.sin(theta))
-              / ((2 * (v * Math.cos(theta)) * (v * Math.cos(theta)))
-                  * (2 * (v * Math.cos(theta)) * (v * Math.cos(theta)))));
-      double step = func / derivative;
-      theta = theta - step;
-      if (i >= 19) {
-        theta = TurretConfig.HoodConfig.kMaxSoftLimit;
-      }
-    }
-    return theta;
-  }
-
   public double hoodError(){
     return Math.abs(getAngle() - setpointAngleDegrees);
-  }
-
-  public Command aimHoodSimple(Supplier<Translation2d> towards) {
-    var cmd = runEnd(() -> {
-    double distanceToPoint = RobotContainer.kSwerveDrive.getPose().getTranslation().getDistance(towards.get());
-    var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
-    // clamp to the physical limits of our hood
-    // TurretConfig.HoodConfig.kHoodDegreesOffset;
-    angle = MathUtil.clamp(angle, TurretConfig.HoodConfig.kMinSoftLimit, TurretConfig.HoodConfig.kMaxSoftLimit);
-    // this will be part of the relative / absolute hybrid incorporation
-    setSetpointAngle(angle);
-    }, this::stop);
-    return cmd;
-  }
-
-  public double aimHoodSimpleAngle(Translation2d towards) {
-    double distanceToPoint = RobotContainer.kSwerveDrive.getPose().getTranslation().getDistance(towards);
-    var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
-    // clamp to the physical limits of our hood
-    angle = MathUtil.clamp(angle, TurretConfig.HoodConfig.kMinSoftLimit, TurretConfig.HoodConfig.kMaxSoftLimit);
-    // this will be part of the relative / absolute hybrid incorporation +
-    // TurretConfig.HoodConfig.kHoodDegreesOffset;
-    return angle;
   }
 
   @Override
