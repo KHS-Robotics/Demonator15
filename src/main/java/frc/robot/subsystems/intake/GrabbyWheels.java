@@ -31,7 +31,7 @@ public class GrabbyWheels extends SubsystemBase {
     var GrabbyWheelsConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
-        .inverted(false);
+        .inverted(true);
     motor = new SparkMax(RobotMap.INTAKE_GRABBY_WHEELS_ID, MotorType.kBrushless);
     motor.configure(GrabbyWheelsConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
@@ -55,7 +55,7 @@ public class GrabbyWheels extends SubsystemBase {
 
   public void intake() {
     intakeState = IntakeState.INTAKING;
-    motor.setVoltage(2.75);
+    motor.setVoltage(12);
   }
 
   public Command intakeCommand() {
@@ -63,9 +63,9 @@ public class GrabbyWheels extends SubsystemBase {
     return cmd.withName("StartIntake");
   }
 
-  public void outake() {
+  public void outtake() {
     intakeState = IntakeState.OUTTAKING;
-    motor.setVoltage(-12);
+    motor.setVoltage(-6);
   }
 
   public void outakeSlow() {
@@ -74,7 +74,7 @@ public class GrabbyWheels extends SubsystemBase {
   }
 
   public Command outakeCommand() {
-    var cmd = runOnce(this::outake);
+    var cmd = runOnce(this::outtake);
     return cmd.withName("Outtake");
   }
 

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.turret;
 
+import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -37,7 +38,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 public class Hood extends SubsystemBase {
   private final SparkMax motor;
   private final SparkClosedLoopController pid;
-  private final AbsoluteEncoder absoluteEncoder;
+  private final SparkAnalogSensor absoluteEncoder;
   private final RelativeEncoder relativeEncoder;
 
   private double setpointAngleDegrees;
@@ -81,7 +82,7 @@ public class Hood extends SubsystemBase {
 
     relativeEncoder = motor.getEncoder();
 
-    absoluteEncoder = motor.getAbsoluteEncoder();
+    absoluteEncoder = motor.getAnalog();
 
     pid = motor.getClosedLoopController();
     SmartDashboard.putData(this);
@@ -103,7 +104,7 @@ public class Hood extends SubsystemBase {
   }
 
   public double getAbosluteAngle() {
-    return absoluteEncoder.getPosition();
+    return absoluteEncoder.getVoltage();
   }
 
   public void calibrateRelativeEncoder() {
@@ -156,7 +157,7 @@ public class Hood extends SubsystemBase {
     builder.addDoubleProperty("Hood Angle", () -> this.getAngle(), null);
     builder.addDoubleProperty("Hood Error", () -> this.hoodError(), null);
     builder.addBooleanProperty("Is Hood At Setpoint?", () -> this.isAtSetpoint(), null);
-    builder.addDoubleProperty("Absolute Hood Angle", () -> this.getAbosluteAngle(), null);
+    builder.addDoubleProperty("Absolute Hood Voltage", () -> this.getAbosluteAngle(), null);
   }
 }
 

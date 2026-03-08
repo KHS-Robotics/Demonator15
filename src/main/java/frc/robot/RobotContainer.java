@@ -130,7 +130,7 @@ public class RobotContainer {
    */
   private void configureSubsystemDefaultCommands() {
     // control swerve drive with the xbox controller by default
-    kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> !kDriverController.robotRelative().getAsBoolean(),
+    kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> true,
        DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
     // RearLimelightCamera - AprilTag updates for odometry
@@ -146,7 +146,7 @@ public class RobotContainer {
   private void configureBindings() {
     configureAutomatedBindings();
     configureXboxControllerBindings();
-    configureOpertatorStickBindings();
+    configureOperatorStickBindings();
   }
 
   /** Automated bindings that happen without pressing any buttons. */
@@ -160,7 +160,13 @@ public class RobotContainer {
     // // useful during driver practice to reset for field oriented driving direction
     // // or a rare odd scenario on the field during a match
     kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading(() -> 1.016, () -> 4.0));
-   
+
+    kDriverController.stowIntake().onTrue(kIntake.retractHopper());
+    kDriverController.deployIntake().onTrue(kIntake.deployHopper());
+    kDriverController.runIntake().whileTrue(kIntake.intakeFuel());
+    kDriverController.rurnIntakeReverse().whileTrue(kIntake.outtakeFuel());
+
+    kDriverController.shootFuel().whileTrue(kTurret.feed().alongWith(kIndexer.forwardCommand()));
 
     // // give driver ability to limit speeds for when elevator is high up to
     // // help prevent tipping over - useful for slight alignment adjustments too
@@ -168,13 +174,13 @@ public class RobotContainer {
 
     // // For defense / to make the robot harder to move
     kDriverController.lockHeadingForDefense()
-      .whileTrue(kSwerveDrive.holdCurrentHeadingWhileDriving(kDriverController, () -> !kDriverController.robotRelative().getAsBoolean(),
+      .whileTrue(kSwerveDrive.holdCurrentHeadingWhileDriving(kDriverController, () -> true,
         DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
   }
 
 
   /** Binds commands to operator stick buttons. */
-   private void configureOpertatorStickBindings() {
+   private void configureOperatorStickBindings() {
     //Intake
     //kOperatorStick.runIntake().whileTrue(kIntake.intakeFuel());
     //kOperatorStick.outtake().whileTrue(kIntake.outtakeFuel());
@@ -186,9 +192,8 @@ public class RobotContainer {
 
 
     //Indexer
-    kOperatorStick.forwardIndex().whileTrue(kIndexer.forwardCommand());
-    kOperatorStick.reverseIndex().whileTrue(kIndexer.reverseCommand());
-
+    kOperatorStick.forwardIndex().whileTrue(kTurret.goToSetHoodAngle());
+    kOperatorStick.reverseIndex().whileTrue(kTurret.goToSetHoodAngle2());
 
     //Climber
     // kOperatorStick.autoClimb().onTrue(kClimber.climbL1());

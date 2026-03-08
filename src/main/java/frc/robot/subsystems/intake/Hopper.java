@@ -12,10 +12,12 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -39,34 +41,19 @@ public class Hopper extends SubsystemBase {
         }
     }
 
-    private final SparkMax motor;
-    private final SparkClosedLoopController pid;
+    private final SparkFlex motor;
     private final RelativeEncoder relativeEncoder;
     private HopperState setpointState = HopperState.Stowed;
 
     public Hopper() {
 
-        var relativeEncoderConfig = new EncoderConfig()
-                .positionConversionFactor(IntakeConfig.HopperConfig.kHopperEncoderPositionConversionFactor)
-                .velocityConversionFactor(IntakeConfig.HopperConfig.kHopperEncoderPositionConversionFactor);
-
-        var pidConfig = new ClosedLoopConfig()
-                .pid(IntakeConfig.HopperConfig.kDeployerP, IntakeConfig.HopperConfig.kDeployerI,
-                        IntakeConfig.HopperConfig.kDeployerD)
-                .minOutput(-0.5)
-                .maxOutput(0.5);
-
-        var motorConfig = new SparkMaxConfig()
-                .idleMode(IdleMode.kBrake)
-                .smartCurrentLimit(30)
-                .follow(RobotMap.HOPPER_EXTENDER_ID, true)
-                .apply(pidConfig)
-                .apply(relativeEncoderConfig);
-        motor = new SparkMax(RobotMap.HOPPER_EXTENDER_ID, MotorType.kBrushless);
+        var motorConfig = new SparkFlexConfig()
+                .idleMode(IdleMode.kCoast)
+                .smartCurrentLimit(30);
+        motor = new SparkFlex(RobotMap.HOPPER_EXTENDER_ID, MotorType.kBrushless);
         motor.configure(motorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        pid = motor.getClosedLoopController();
         relativeEncoder = motor.getEncoder();
 
         SmartDashboard.putData(this);
@@ -81,8 +68,19 @@ public class Hopper extends SubsystemBase {
         return cmd.withName("StopHopper");
     }
 
+    public Command primitiveSetVoltage() {
+        var cmd = runEnd(() -> motor.setVoltage(4.0), this::stop);
+        return cmd;
+    }
+
     public void moveHopper(HopperState setpointState) {
-        pid.setSetpoint(setpointState.hopperPosition, ControlType.kPosition);
+        double volts;
+        if (setpointState == HopperState.Stowed) {
+            volts = -4.0;
+        } else {
+            volts = 4.0;
+        }
+        motor.setVoltage(volts);
     }
 
     public boolean isAtSetPoint() {
@@ -93,16 +91,16 @@ public class Hopper extends SubsystemBase {
     public Command retractHopperCommand() {
         var setHopperState = runOnce(() -> setpointState = HopperState.Stowed);
 
-        var cmd = setHopperState
-                .andThen(this.run(() -> moveHopper(setpointState)).until(this::isAtSetPoint));
+        var cmd = (this.run(() -> moveHopper(HopperState.Stowed)).withTimeout(1.0)).andThen(setHopperState)
+                .andThen(this::stop);
         return cmd;
     }
 
     public Command deployHopperCommand() {
         var setHopperState = runOnce(() -> setpointState = HopperState.Deployed);
 
-        var cmd = setHopperState
-                .andThen(this.run(() -> moveHopper(setpointState)).until(this::isAtSetPoint));
+        var cmd = (this.run(() -> moveHopper(HopperState.Deployed)).withTimeout(1.5)).andThen(setHopperState)
+                .andThen(this::stop);
         return cmd;
     }
 

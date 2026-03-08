@@ -50,7 +50,7 @@ public class Deployer extends SubsystemBase {
     var motorConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
-        .follow(RobotMap.INTAKE_DEPLOYER_ID, false)
+        .inverted(true)
         .apply(encoderConfig)
         .apply(limitSwitchConfig);
     motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_ID, MotorType.kBrushless);
@@ -90,13 +90,27 @@ public class Deployer extends SubsystemBase {
     setpointAngleDegrees = setpointDegrees;
   }
 
+  public Command setStow() {
+    var cmd = runEnd(() -> {
+      setpointAngleDegrees = IntakeConfig.DeployerSetpoints.STOW;
+    }, this::stop);
+    return cmd;
+  }
+
+    public Command setDeploy() {
+    var cmd = runEnd(() -> {
+      setpointAngleDegrees = IntakeConfig.DeployerSetpoints.DEPLOY;
+    }, this::stop);
+    return cmd;
+  }
+
   public double getAngle() {
-    return encoder.getPosition();
+    return encoder.getPosition() + IntakeConfig.DeployerConfig.kDeployerOffsetAngle;
   }
 
   public boolean isAtSetpoint() {
     var error = Math.abs(setpointAngleDegrees - getAngle());
-    return (error < 2);
+    return (error < 10);
   }
 
   // if the deployer is at the same spot as the the limitswitch
@@ -107,11 +121,11 @@ public class Deployer extends SubsystemBase {
   private void setMotorOutputForSetpoint() {
     var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
 
-    var angle = Math.cos(Math.toRadians(getAngle()));
-    var ffGravity = DeployerConfig.kDeployerKG * angle;
+    var angle = Math.sin(Math.toRadians(getAngle()));
+    var ffGravity = 0;//DeployerConfig.kDeployerKG * angle;
 
     var output = pidOutput + ffGravity;
-    output = MathUtil.clamp(output, -3, 4);
+    output = MathUtil.clamp(output, -6, 6);
     motor.setVoltage(output);
   }
 
@@ -134,6 +148,7 @@ public class Deployer extends SubsystemBase {
       builder.setSmartDashboardType("Deployer");
       builder.addBooleanProperty("Intake At Setpoint?", () -> this.isAtSetpoint(), null);
       builder.addDoubleProperty("Intake Angle", () -> this.getAngle(), null);
+      builder.addDoubleProperty("Intake Setpoint Angle", () -> this.setpointAngleDegrees, null);
   }
 
 }

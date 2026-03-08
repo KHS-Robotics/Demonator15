@@ -24,7 +24,7 @@ public class Indexer extends SubsystemBase {
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(30)
         .inverted(false);
-    motor = new SparkMax(RobotMap.HOPPER_MOTOR_ID, MotorType.kBrushless);
+    motor = new SparkMax(RobotMap.INDEXER_ID, MotorType.kBrushless);
     motor.configure(indexerConfig, ResetMode.kResetSafeParameters,
      PersistMode.kPersistParameters);
 

@@ -51,7 +51,7 @@ public final class RobotMap {
   public static final int DEPLOYER_LEFT_SERVO = 14;
 
 //indexer motors
-  public static final int HOPPER_MOTOR_ID = 2;
+  public static final int INDEXER_ID = 2;
 
 //intake motors
   public static final int INTAKE_DEPLOYER_ID = 12;

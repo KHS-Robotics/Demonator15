@@ -112,7 +112,7 @@ public class Waist extends SubsystemBase {
   }
 
   public double getAbsoluteDegrees() {
-    return absoluteEncoder.getPosition();
+    return absoluteEncoder.getVoltage();
   }
 
   public double getSetpointRotationDegrees(){
@@ -172,7 +172,7 @@ public class Waist extends SubsystemBase {
     builder.addBooleanProperty("Is Waist At Setpoint?", () -> this.isAtSetpoint(), null);
     builder.addDoubleProperty("Waist Setpoint", () -> this.getSetpointRotationDegrees(), null);
     builder.addDoubleProperty("Waist Error", () -> this.waistError(), null);
-    builder.addDoubleProperty("Absolute Waist Rotation Angle", () -> getAbsoluteDegrees(), null);
+    builder.addDoubleProperty("Absolute Waist Voltage", () -> getAbsoluteDegrees(), null);
   }
 
 }

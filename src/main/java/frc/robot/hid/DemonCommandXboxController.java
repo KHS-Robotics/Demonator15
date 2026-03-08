@@ -36,8 +36,28 @@ public class DemonCommandXboxController extends CommandXboxController {
     return this.rightBumper();
   }
 
-  public Trigger robotRelative() {
+  public Trigger stowIntake(){
+    return this.povDown();
+  }
+
+  public Trigger deployIntake(){
+    return this.povUp();
+  }
+
+  public Trigger shootFuel(){
+    return this.rightTrigger();
+  }
+
+  public Trigger runIntake(){
     return this.a();
   }
+
+  public Trigger rurnIntakeReverse(){
+    return this.b();
+  }
+
+  // public Trigger robotRelative() {
+  //   return this.a();
+  // }
 
 }

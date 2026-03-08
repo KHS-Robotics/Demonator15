@@ -27,7 +27,7 @@ public class TurretConfig {
         public static final double kSpitterI = 0.000001;
         public static final double kSpitterD = 0.04;
 
-        public static final double kSpitterRPM = 6000;
+        public static final double kSpitterRPM = 4500;
     }
 
     protected final class TurretFieldAndRobotInfo {
@@ -49,7 +49,7 @@ public class TurretConfig {
 
         public static final double kGravity = 9.8;
 
-        public static final double kShooterVelocity = 9;
+        public static final double kShooterVelocity = 6;
 
         //offset between navX zero and turret zero
         public static final double kDegreeOffsetOfTurret = 180;

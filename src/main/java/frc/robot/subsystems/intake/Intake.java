@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    private final Deployer deployer = new Deployer();
+    public final Deployer deployer = new Deployer();
     private final GrabbyWheels grabbyWheels = new GrabbyWheels();
     private final Hopper hopper = new Hopper();
 
@@ -57,15 +57,23 @@ public class Intake extends SubsystemBase {
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
         return cmd.withName("AgitateIntake");
     }
+
+    public Command retractHopper() {
+        return hopper.retractHopperCommand();
+    }
+
+    public Command deployHopper() {
+        return hopper.deployHopperCommand();
+    }
  
     public Command intakeFuel() {
-        var cmd = startEnd(grabbyWheels::intake, grabbyWheels::stop);
+        var cmd = runEnd(grabbyWheels::intake, grabbyWheels::stop);
         cmd.addRequirements(grabbyWheels);
         return cmd.withName("IntakeFuel");
     }
 
     public Command outtakeFuel() {
-        var cmd = startEnd(grabbyWheels::outake, grabbyWheels::stop);
+        var cmd = runEnd(grabbyWheels::outtake, grabbyWheels::stop);
         cmd.addRequirements(grabbyWheels);
         return cmd.withName("OutakeFuel");
     }
