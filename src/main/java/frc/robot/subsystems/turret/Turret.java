@@ -379,8 +379,9 @@ public class Turret extends SubsystemBase {
             }
 
             double distanceToPoint = phantomPitchPosition.getDistance(towards.get());
-            var angle = 90 - Math.toDegrees(solvePitch(distanceToPoint));
-            if ((Math.toDegrees(solvePitch(distanceToPoint)) > 90) || (distanceToPoint > TurretConfig.TurretFieldAndRobotInfo.kMaxDistance)) {
+            double pitchAngle = Math.toDegrees(solvePitch(distanceToPoint));
+            var angle = 90 - pitchAngle;
+            if ((pitchAngle > 90) || (distanceToPoint > TurretConfig.TurretFieldAndRobotInfo.kMaxDistance)) {
                 angle = TurretConfig.HoodConfig.kMaxSoftLimit + 1;
             }
             // add radial velocity calcs

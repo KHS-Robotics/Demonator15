@@ -56,6 +56,9 @@ public class TurretConfig {
         public static final double kTurretDistanceToNavX = 0;
         //in meters, at ground level
         public static final double kHeightBetweenShooterAndHub = 1.5;
+        //presets: 8 shooter velocity - 4.88 max distance
+        // 8.5 shooter velocity - 5.95 max distance
+        // 8.25 shooter velocity - 5.38 max distance
         public static final double kMaxDistance = 4.88;
     }
 
