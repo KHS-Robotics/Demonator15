@@ -5,14 +5,14 @@ public class ButtonMap {
     public static final int INTAKE_BUTTON = 0;
     public static final int OUTTAKE_BUTTON = 0;
 
-    public static final int DEPLOY_INTAKE_BUTTON = 0;
+    public static final int DEPLOY_INTAKE_BUTTON = 3;
     public static final int AGITATE_INTAKE_BUTTON = 0;
-    public static final int STOW_INTAKE_BUTTON = 0;
+    public static final int STOW_INTAKE_BUTTON = 4;
 
 
     //Indexer
-    public static final int FORWARD_INDEX_BUTTON = 3;
-    public static final int REVERSE_INDEX_BUTTON = 4;
+    public static final int FORWARD_INDEX_BUTTON = 0;
+    public static final int REVERSE_INDEX_BUTTON = 0;
 
 
     //Climber

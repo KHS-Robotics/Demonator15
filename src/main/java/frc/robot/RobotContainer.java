@@ -179,7 +179,7 @@ public class RobotContainer {
   }
 
 
-  /** Binds commands to operator stick buttons. */
+  /** Binds commands to operator stick buttons. Anything in here is used for testing 2026*/
    private void configureOperatorStickBindings() {
     //Intake
     //kOperatorStick.runIntake().whileTrue(kIntake.intakeFuel());
@@ -192,8 +192,8 @@ public class RobotContainer {
 
 
     //Indexer
-    kOperatorStick.forwardIndex().whileTrue(kTurret.goToSetHoodAngle());
-    kOperatorStick.reverseIndex().whileTrue(kTurret.goToSetHoodAngle2());
+    kOperatorStick.stowIntake().onTrue(kIntake.deployer.setStow());
+    kOperatorStick.deployIntake().onTrue(kIntake.deployer.setDeploy());
 
     //Climber
     // kOperatorStick.autoClimb().onTrue(kClimber.climbL1());
