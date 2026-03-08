@@ -49,13 +49,14 @@ public class TurretConfig {
 
         public static final double kGravity = 9.8;
 
-        public static final double kShooterVelocity = 6;
+        public static final double kShooterVelocity = 8;
 
         //offset between navX zero and turret zero
         public static final double kDegreeOffsetOfTurret = 180;
         public static final double kTurretDistanceToNavX = 0;
         //in meters, at ground level
-        public static final double kHeightBetweenShooterAndHub = 1.8;
+        public static final double kHeightBetweenShooterAndHub = 1.5;
+        public static final double kMaxDistance = 4.88;
     }
 
 
