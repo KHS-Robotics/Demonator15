@@ -76,9 +76,9 @@ public class Hopper extends SubsystemBase {
     public void moveHopper(HopperState setpointState) {
         double volts;
         if (setpointState == HopperState.Stowed) {
-            volts = -4.0;
+            volts = -5.0;
         } else {
-            volts = 4.0;
+            volts = 5.0;
         }
         motor.setVoltage(volts);
     }

@@ -11,7 +11,7 @@ public class IntakeConfig {
     }
 
     protected final class DeployerConfig {
-        public static final double kDeployerP = 0.2;
+        public static final double kDeployerP = 0.1;
         public static final double kDeployerI = 0;
         public static final double kDeployerD = 0;
 

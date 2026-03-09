@@ -11,8 +11,8 @@ public class ButtonMap {
 
 
     //Indexer
-    public static final int FORWARD_INDEX_BUTTON = 0;
-    public static final int REVERSE_INDEX_BUTTON = 0;
+    public static final int FORWARD_INDEX_BUTTON = 5;
+    public static final int REVERSE_INDEX_BUTTON = 6;
 
 
     //Climber

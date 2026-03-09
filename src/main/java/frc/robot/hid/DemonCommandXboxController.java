@@ -52,7 +52,7 @@ public class DemonCommandXboxController extends CommandXboxController {
     return this.a();
   }
 
-  public Trigger rurnIntakeReverse(){
+  public Trigger runIntakeReverse(){
     return this.b();
   }
 

@@ -7,7 +7,7 @@ public class TurretConfig {
     protected final class HoodConfig {
         public static final double kHoodP = 0.015;
         public static final double kHoodI = 0.0005;
-        public static final double kHoodD = 0.015;
+        public static final double kHoodD = 0.03;
         
         public static final double kHoodEncoderPositionConversionFactor = 3.791;
         public static final double kHoodEncoderVelocityConversionFactor = kHoodEncoderPositionConversionFactor / 60.0;
@@ -27,7 +27,7 @@ public class TurretConfig {
         public static final double kSpitterI = 0.000001;
         public static final double kSpitterD = 0.04;
 
-        public static final double kSpitterRPM = 4500;
+        public static final double kSpitterRPM = 5000;
     }
 
     protected final class TurretFieldAndRobotInfo {

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.455,
-        "y": 0.897
+        "x": 0.5973751783166898,
+        "y": 0.5609700427960058
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4073975903589808,
-        "y": 1.5544096385518982
+        "x": 1.5497727686756706,
+        "y": 1.218379681347904
       },
       "isLocked": false,
       "linkedName": "Outpost Pickup"
@@ -33,10 +33,10 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 180.0,
+    "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
@@ -48,7 +48,7 @@
   "folder": "To Tower (Not From Start) No Vision",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

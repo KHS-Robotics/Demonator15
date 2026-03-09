@@ -68,8 +68,9 @@ public class Deployer extends SubsystemBase {
   }
 
   public void periodic() {
-    setMotorOutputForSetpoint();
-    updateSetpointsForDisabledMode();
+    // TODO: re-add once we have reliable absolute encoder or no slop?
+    //setMotorOutputForSetpoint();
+    //updateSetpointsForDisabledMode();
   }
 
   public Command setAngleCommand(double angleDegrees) {
@@ -80,6 +81,16 @@ public class Deployer extends SubsystemBase {
   public Command stopCommand() {
     var cmd = runOnce(this::stop);
     return cmd.withName("StopDeployer");
+  }
+
+  public Command bangBangControlDeploy() {
+    var cmd = startEnd(() -> motor.setVoltage(-3), this::stop);
+    return cmd.withTimeout(0.5);
+  }
+
+  public Command bangBangControlStow() {
+    var cmd = startEnd(() -> motor.setVoltage(3), this::stop);
+    return cmd.withTimeout(0.67/*six seven */);
   }
 
   public void setSetpointAngle(double setpointDegrees) {
