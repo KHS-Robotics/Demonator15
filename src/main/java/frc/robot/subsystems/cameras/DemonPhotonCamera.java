@@ -154,7 +154,9 @@ public class DemonPhotonCamera extends SubsystemBase {
    * @return a command to apply an action to Photon pose updates
    */
   public Command pollForPoseUpdates(Consumer<PhotonPoseUpdate> action) {
-    var pollForPoseUpdatesCmd = run(() -> getLatestAprilTagResults().ifPresent((estimate) -> action.accept(estimate)));
+    var pollForPoseUpdatesCmd = run(() -> {
+      getLatestAprilTagResults().ifPresent((estimate) -> action.accept(estimate));
+    });
     pollForPoseUpdatesCmd.setName(getName() + "_PollForPoseUpdates");
     return pollForPoseUpdatesCmd.ignoringDisable(true);
   }
@@ -363,7 +365,7 @@ public class DemonPhotonCamera extends SubsystemBase {
       return;
     }
 
-    // process results from photon
+    // process results from photon;
     var photonPoseUpdate = poseEstimator.update(cameraResult);
 
     // check if processed result has an update from photon
@@ -428,7 +430,7 @@ public class DemonPhotonCamera extends SubsystemBase {
 
       // Decrease std devs if multiple targets are visible
       if (numTags > 1 && avgDist < 3.5)
-        estStdDevs = VecBuilder.fill(0.2, 0.2, 999999999);
+        estStdDevs = VecBuilder.fill(0.7, 0.7, 999999999);
 
       // Increase std devs based on (average) distance
       if (numTags == 1 && avgDist > 3.5)

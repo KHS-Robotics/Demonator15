@@ -89,7 +89,7 @@ public class Deployer extends SubsystemBase {
   }
 
   public Command bangBangControlStow() {
-    var cmd = startEnd(() -> motor.setVoltage(3), this::stop);
+    var cmd = startEnd(() -> motor.setVoltage(2.5), this::stop);
     return cmd.withTimeout(0.67/*six seven */);
   }
 

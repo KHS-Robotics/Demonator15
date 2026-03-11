@@ -29,7 +29,7 @@ public class GrabbyWheels extends SubsystemBase {
     super(GrabbyWheels.class.getSimpleName() + "/" + GrabbyWheels.class.getSimpleName());
 
     var GrabbyWheelsConfig = new SparkMaxConfig()
-        .idleMode(IdleMode.kBrake)
+        .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(30)
         .inverted(true);
     motor = new SparkMax(RobotMap.INTAKE_GRABBY_WHEELS_ID, MotorType.kBrushless);

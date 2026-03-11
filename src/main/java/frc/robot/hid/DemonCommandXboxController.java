@@ -29,11 +29,11 @@ public class DemonCommandXboxController extends CommandXboxController {
   }
 
   public Trigger goSlow() {
-    return this.leftBumper();
+    return this.leftTrigger();
   }
 
   public Trigger lockHeadingForDefense() {
-    return this.rightBumper();
+    return this.leftBumper();
   }
 
   public Trigger stowIntake(){

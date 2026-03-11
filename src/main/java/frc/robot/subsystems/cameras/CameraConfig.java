@@ -95,12 +95,12 @@ public final class CameraConfig {
     public static final double kLimelightYaw = Math.toRadians(0);
 
     //photon 1
-    public static final double kPhoton1TranslationX = Units.inchesToMeters(0);
-    public static final double kPhoton1TranslationY = Units.inchesToMeters(0);
-    public static final double kPhoton1TranslationZ = Units.inchesToMeters(0);
+    public static final double kPhoton1TranslationX = Units.inchesToMeters(-12.5);
+    public static final double kPhoton1TranslationY = Units.inchesToMeters(10.25);
+    public static final double kPhoton1TranslationZ = Units.inchesToMeters(17.0);
     public static final double kPhoton1Roll = Math.toRadians(0);
-    public static final double kPhoton1Pitch = Math.toRadians(0);
-    public static final double kPhoton1Yaw = Math.toRadians(0);
+    public static final double kPhoton1Pitch = Math.toRadians(20);
+    public static final double kPhoton1Yaw = Math.toRadians(135);
 
     //photon 1
     public static final double kPhoton2TranslationX = Units.inchesToMeters(0);
@@ -150,7 +150,7 @@ public final class CameraConfig {
 
   public class LimelightConfig {
     /** The name of the camera from the UI. */
-    public static final String LimelightCameraName = "LimelightCamera";
+    public static final String LimelightCameraName = "limelight-rear";
     /** The pose estimation algorithm to use, */
     public static final LimelightPoseEstimateAlgorithm kPoseAlgorithm = LimelightPoseEstimateAlgorithm.Megatag2;
     /**

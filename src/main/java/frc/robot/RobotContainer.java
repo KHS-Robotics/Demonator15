@@ -96,15 +96,15 @@ public class RobotContainer {
   // public static final Climber kClimber = new Climber();
   // Subsystems - Cameras
   // //photon
-  // public static final DemonPhotonCamera kPhotonCamera1 = new DemonPhotonCamera(
-  //     PhotonVisionConfig.PhotonCamera1Name, PhotonVisionConfig.RobotToPhotonCamera1);
+  public static final DemonPhotonCamera kPhotonCamera1 = new DemonPhotonCamera(
+      PhotonVisionConfig.PhotonCamera1Name, PhotonVisionConfig.RobotToPhotonCamera1);
   // public static final DemonPhotonCamera kPhotonCamera2 = new DemonPhotonCamera(
   //     PhotonVisionConfig.PhotonCamera2Name, PhotonVisionConfig.RobotToPhotonCamera2);
   // public static final DemonPhotonCamera kPhotonCamera3 = new DemonPhotonCamera(
   //     PhotonVisionConfig.PhotonCamera3Name, PhotonVisionConfig.RobotToPhotonCamera3);
   // //limelight
-  // public static final DemonLimelightCamera kLimelightCamera = new DemonLimelightCamera(
-  //     LimelightConfig.LimelightCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+  public static final DemonLimelightCamera kLimelightCamera = new DemonLimelightCamera(
+      LimelightConfig.LimelightCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
 
   // Subsystems - LED indicators
   // public static final LEDStrip kLedStrip = new LEDStrip(
@@ -133,11 +133,18 @@ public class RobotContainer {
     kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> true,
        DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
-    // RearLimelightCamera - AprilTag updates for odometry
-    // kLimelightCamera.setDefaultCommand(
-    //     kLimelightCamera
-    //         .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
-    //             estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
+    // AprilTag updates for odometry
+    // kPhotonCamera1.setDefaultCommand(
+    //     kPhotonCamera1
+    //         .pollForPoseUpdates((estimate) -> {
+    //           kSwerveDrive.addVisionMeasurementForOdometry(estimate.estimatedRobotPose.estimatedPose.toPose2d(),
+    //             estimate.estimatedRobotPose.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs);
+    //       }));
+
+    kLimelightCamera.setDefaultCommand(
+        kLimelightCamera
+            .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
+                estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
   }
 
   /**
@@ -161,8 +168,17 @@ public class RobotContainer {
     // // or a rare odd scenario on the field during a match
     kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading(() -> 1.016, () -> 4.0));
 
-    kDriverController.stowIntake().onTrue(kIntake.retractHopper());
-    kDriverController.deployIntake().onTrue(kIntake.deployHopper());
+    /*
+    STOW INTAKE = DOWN BUTTON
+    DEPLOY INTAKE = UP BUTTON
+    INTAKE = A
+    OUTTAKE = B
+
+    SHOOT (INDEX + LOAD TURRET) =
+    */
+
+    kDriverController.stowIntake().onTrue(kIntake.stowDeployerBangBang());
+    kDriverController.deployIntake().onTrue(kIntake.deployDeployerBangBang());
     kDriverController.runIntake().whileTrue(kIntake.intakeFuel());
     kDriverController.runIntakeReverse().whileTrue(kIntake.outtakeFuel());
 

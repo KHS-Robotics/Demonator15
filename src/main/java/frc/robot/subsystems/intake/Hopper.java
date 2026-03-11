@@ -76,9 +76,9 @@ public class Hopper extends SubsystemBase {
     public void moveHopper(HopperState setpointState) {
         double volts;
         if (setpointState == HopperState.Stowed) {
-            volts = -5.0;
+            volts = -12.0;
         } else {
-            volts = 5.0;
+            volts = 12.0;
         }
         motor.setVoltage(volts);
     }
@@ -99,7 +99,7 @@ public class Hopper extends SubsystemBase {
     public Command deployHopperCommand() {
         var setHopperState = runOnce(() -> setpointState = HopperState.Deployed);
 
-        var cmd = (this.run(() -> moveHopper(HopperState.Deployed)).withTimeout(1.5)).andThen(setHopperState)
+        var cmd = ((this.run(() -> moveHopper(HopperState.Deployed)).withTimeout(1.5)).andThen(setHopperState))
                 .andThen(this::stop);
         return cmd;
     }

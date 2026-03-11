@@ -16,7 +16,6 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putData(this);
     }
 
-
     public Command deployDeployer() {
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
                 .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY));
@@ -37,8 +36,10 @@ public class Intake extends SubsystemBase {
 
     public Command stowDeployerBangBang() {
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
-                .andThen(deployer.bangBangControlStow());
-        var hopperAlreadyDeployed = deployer.bangBangControlStow();
+                .andThen(deployer.bangBangControlStow())
+                .andThen(hopper.retractHopperCommand());
+        var hopperAlreadyDeployed = deployer.bangBangControlStow()
+            .andThen(hopper.retractHopperCommand());
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
         return cmd.withName("SetDeployerStateStowBang");
