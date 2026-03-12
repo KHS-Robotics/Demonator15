@@ -42,7 +42,7 @@ public class Indexer extends SubsystemBase {
 
   public void forward() {
     indexerState = IndexerState.FORWARD;
-    motor.setVoltage(6);
+    motor.setVoltage(12);
   }
 
   public Command forwardCommand() {

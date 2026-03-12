@@ -93,6 +93,10 @@ public class Deployer extends SubsystemBase {
     return cmd.withTimeout(0.67/*six seven */);
   }
 
+  public void keepDeployerDown() {
+    motor.setVoltage(-1.0);
+  }
+
   public void setSetpointAngle(double setpointDegrees) {
     // only reset for new setpoints
     if (setpointDegrees != setpointAngleDegrees) {

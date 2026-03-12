@@ -38,8 +38,6 @@ public class Intake extends SubsystemBase {
     }
 
     public Command stowDeployerBangBang() {
-        var setTurretDontFollowHub = RobotContainer.kTurret.setOverride(true, -90);
-        
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
                 .andThen(deployer.bangBangControlStow())
                 .andThen(hopper.retractHopperCommand());
@@ -91,8 +89,14 @@ public class Intake extends SubsystemBase {
     }
  
     public Command intakeFuel() {
-        var cmd = runEnd(grabbyWheels::intake, grabbyWheels::stop);
-        cmd.addRequirements(grabbyWheels);
+        var cmd = runEnd(() -> {
+            grabbyWheels.intake();
+            deployer.keepDeployerDown();
+        }, () -> {
+            grabbyWheels.stop();
+            deployer.stop();
+        });
+        cmd.addRequirements(grabbyWheels, deployer);
         return cmd.withName("IntakeFuel");
     }
 
