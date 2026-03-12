@@ -30,8 +30,11 @@ public class Intake extends SubsystemBase {
         var setTurretFollowHub = RobotContainer.kTurret.setOverride(false, 0);
 
         var hopperCurrentlyRetracted = 
-                hopper.deployHopperCommand().andThen(deployer.bangBangControlDeploy());
-        var hopperAlreadyDeployed = deployer.bangBangControlDeploy();
+                hopper.deployHopperCommand()
+                .andThen(RobotContainer.kTurret.setOverride(false, 0))
+                .andThen(deployer.bangBangControlDeploy());
+        var hopperAlreadyDeployed = RobotContainer.kTurret.setOverride(false, 0)
+        .andThen(deployer.bangBangControlDeploy());
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
         return cmd.withName("SetDeployerStateDeployBang");
@@ -39,9 +42,11 @@ public class Intake extends SubsystemBase {
 
     public Command stowDeployerBangBang() {
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
+                .andThen(RobotContainer.kTurret.setOverride(true, -90))
                 .andThen(deployer.bangBangControlStow())
                 .andThen(hopper.retractHopperCommand());
         var hopperAlreadyDeployed = deployer.bangBangControlStow()
+            .andThen(RobotContainer.kTurret.setOverride(true, -90))
             .andThen(hopper.retractHopperCommand());
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
