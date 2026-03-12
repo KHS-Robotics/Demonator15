@@ -166,7 +166,8 @@ public class RobotContainer {
     // reset robot heading - ALWAYS FACE RED ALLIANCE WHEN DOING THIS - this is
     // // useful during driver practice to reset for field oriented driving direction
     // // or a rare odd scenario on the field during a match
-    kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading(() -> 1.016, () -> 4.0));
+    // kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading(() -> 1.016, () -> 4.0));
+    kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading(() -> kSwerveDrive.getPose().getX(), () -> kSwerveDrive.getPose().getY()));
 
     /*
     STOW INTAKE = DOWN BUTTON
@@ -265,9 +266,11 @@ public class RobotContainer {
     // Intake
     NamedCommands.registerCommand("STOPIntake", kIntake.stopCommand());
 
-    NamedCommands.registerCommand("DeployIntake", kIntake.deployDeployer());
-    NamedCommands.registerCommand("StowIntake", kIntake.stowDeployer());
-    NamedCommands.registerCommand("ExtendIntake", kIntake.extendDeployer());
+    // NamedCommands.registerCommand("DeployIntake", kIntake.deployDeployer());
+    // NamedCommands.registerCommand("StowIntake", kIntake.stowDeployer());
+    //NamedCommands.registerCommand("ExtendIntake", kIntake.extendDeployer());
+    NamedCommands.registerCommand("BangBangControlDeploy",kIntake.deployDeployerBangBang());
+    NamedCommands.registerCommand("BangBangControlStow", kIntake.stowDeployerBangBang());
 
     NamedCommands.registerCommand("RunIntake", kIntake.intakeFuel());
     NamedCommands.registerCommand("RunIntakeReverse", kIntake.outtakeFuel());

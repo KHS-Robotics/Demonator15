@@ -28,10 +28,10 @@ public class Turret extends SubsystemBase {
         SmartDashboard.putData(this);
 
         
-        // waist.setDefaultCommand(waist.setDegreesCommand(getDesiredWaistAngle(currentShootingTarget(), false)));
-        // hood.setDefaultCommand(hood.setAngleCommand(getDesiredHoodAngle(currentShootingTarget(), false)));
-        // spitter.setDefaultCommand(spitter.startCommand());
-        // kicker.setDefaultCommand(kicker.startCommand());
+        waist.setDefaultCommand(waist.setDegreesCommand(getDesiredWaistAngle(currentShootingTarget(), false)));
+        hood.setDefaultCommand(hood.setAngleCommand(getDesiredHoodAngle(currentShootingTarget(), false)));
+        spitter.setDefaultCommand(spitter.startCommand());
+        kicker.setDefaultCommand(kicker.startCommand());
     }
 
     public void stop() {

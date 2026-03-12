@@ -45,10 +45,7 @@ public class Hood extends SubsystemBase {
 
   public Hood() {
 
-    var absoluteEncoderConfig = new AbsoluteEncoderConfig()
-      .positionConversionFactor(TurretConfig.HoodConfig.kHoodAnalogPositionConversionFactor)
-      .velocityConversionFactor(TurretConfig.HoodConfig.kHoodAnalogVelocityConversionFactor)
-      .inverted(false);
+    var absoluteEncoderConfig = new AbsoluteEncoderConfig();
 
     var relativeEncoderConfig = new EncoderConfig()
         .positionConversionFactor(TurretConfig.HoodConfig.kHoodEncoderPositionConversionFactor)
@@ -103,8 +100,14 @@ public class Hood extends SubsystemBase {
     return relativeEncoder.getPosition();
   }
 
-  public double getAbosluteAngle() {
+  public double getAbosluteVoltage() {
     return absoluteEncoder.getVoltage();
+  }
+
+  public double getAbsoluteAngle(){
+    return absoluteEncoder.getPosition()
+     * TurretConfig.HoodConfig.kHoodAnalogPositionConversionFactor
+     + TurretConfig.HoodConfig.kAbsoluteOffset;
   }
 
   public void calibrateRelativeEncoder() {
@@ -157,7 +160,8 @@ public class Hood extends SubsystemBase {
     builder.addDoubleProperty("Hood Angle", () -> this.getAngle(), null);
     builder.addDoubleProperty("Hood Error", () -> this.hoodError(), null);
     builder.addBooleanProperty("Is Hood At Setpoint?", () -> this.isAtSetpoint(), null);
-    builder.addDoubleProperty("Absolute Hood Voltage", () -> this.getAbosluteAngle(), null);
+    builder.addDoubleProperty("Absolute Hood Voltage", () -> this.getAbosluteVoltage(), null);
+    builder.addDoubleProperty("Absolute Hood Angle", () -> this.getAbsoluteAngle(), null);
   }
 }
 

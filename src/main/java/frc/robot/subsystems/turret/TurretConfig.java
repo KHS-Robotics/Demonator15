@@ -11,12 +11,19 @@ public class TurretConfig {
         
         public static final double kHoodEncoderPositionConversionFactor = 3.791;
         public static final double kHoodEncoderVelocityConversionFactor = kHoodEncoderPositionConversionFactor / 60.0;
-
-        public static final double kHoodAnalogPositionConversionFactor = 1.0;
-        public static final double kHoodAnalogVelocityConversionFactor = kHoodAnalogPositionConversionFactor / 60.0;
         
         public static final double kMinSoftLimit = 0;
         public static final double kMaxSoftLimit = 40;
+
+        public static final double kMaxAbsoluteDegrees = 39.986;
+        public static final double kMaxAbsoluteVolts = 1.577;
+        public static final double kMinAbsoluteDegrees = 0.0;
+        public static final double kMinAbsoluteVolts = 1.930;
+
+        public static final double kHoodAnalogPositionConversionFactor = 
+        (WaistConfig.kMinAbsoluteDegrees - WaistConfig.kMaxAbsoluteDegrees) / (WaistConfig.kMinAbsoluteVolts - WaistConfig.kMaxAbsoluteVolts);
+        public static final double kHoodAnalogVelocityConversionFactor = kHoodAnalogPositionConversionFactor / 60.0;
+        public static final double kAbsoluteOffset = 0.0;
 
         //I think we will need a conversion for rotations of motor to how many degrees the hood will change
         public static final double kRotationsToDegreesConversion = 3.791;
@@ -74,8 +81,15 @@ public class TurretConfig {
         public static final double kWaistEncoderPositionConversionFactor = 14.21;
         public static final double kWaistEncoderVelocityConversionFactor = kWaistEncoderPositionConversionFactor / 60.0;
         
-        public static final double kWaistAnalogPositionConversionFactor = 1.0;
+        public static final double kMaxAbsoluteDegrees = -100.147;
+        public static final double kMaxAbsoluteVolts = 1.934;
+        public static final double kMinAbsoluteDegrees = 20.300;
+        public static final double kMinAbsoluteVolts = 1.229;
+
+        public static final double kWaistAnalogPositionConversionFactor = 
+        (WaistConfig.kMinAbsoluteDegrees - WaistConfig.kMaxAbsoluteDegrees) / (WaistConfig.kMinAbsoluteVolts - WaistConfig.kMaxAbsoluteVolts);
         public static final double kWaistAnalogVelocityConversionFactor = kWaistAnalogPositionConversionFactor / 60.0;
+        public static final double kAbsoluteOffset = 0.0;
 
         public static final double kMinSoftLimit = -100;
         public static final double kMaxSoftLimit = 22;

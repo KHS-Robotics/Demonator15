@@ -1,0 +1,31 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "straight front'"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "STOPSwerve"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FireAutomatic"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Start Right",
+  "choreoAuto": false
+}

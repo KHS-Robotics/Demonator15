@@ -26,13 +26,13 @@
         {
           "type": "named",
           "data": {
-            "name": "DeployHopper"
+            "name": "STOPSwerve"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "STOPSwerve"
+            "name": "DeployHopper"
           }
         },
         {

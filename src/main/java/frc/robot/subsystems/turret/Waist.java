@@ -55,10 +55,7 @@ public class Waist extends SubsystemBase {
         .positionConversionFactor(TurretConfig.WaistConfig.kWaistEncoderPositionConversionFactor)
         .velocityConversionFactor(TurretConfig.WaistConfig.kWaistEncoderVelocityConversionFactor);
 
-    var absoluteEncoderConfig = new AbsoluteEncoderConfig()
-        .positionConversionFactor(TurretConfig.WaistConfig.kWaistAnalogPositionConversionFactor)
-        .velocityConversionFactor(TurretConfig.WaistConfig.kWaistAnalogVelocityConversionFactor)
-        .inverted(false);
+    var absoluteEncoderConfig = new AbsoluteEncoderConfig();
 
     var softLimitConfig = new SoftLimitConfig()
         .forwardSoftLimit(TurretConfig.WaistConfig.kMaxSoftLimit)
@@ -111,8 +108,14 @@ public class Waist extends SubsystemBase {
     return relativeEncoder.getPosition();
   }
 
-  public double getAbsoluteDegrees() {
+  public double getAbsoluteVoltage() {
     return absoluteEncoder.getVoltage();
+  }
+
+  public double getAbsoluteAngle(){
+    return absoluteEncoder.getPosition()
+     * TurretConfig.WaistConfig.kWaistAnalogPositionConversionFactor
+     + TurretConfig.WaistConfig.kAbsoluteOffset;
   }
 
   public double getSetpointRotationDegrees(){
@@ -172,11 +175,12 @@ public class Waist extends SubsystemBase {
     builder.addBooleanProperty("Is Waist At Setpoint?", () -> this.isAtSetpoint(), null);
     builder.addDoubleProperty("Waist Setpoint", () -> this.getSetpointRotationDegrees(), null);
     builder.addDoubleProperty("Waist Error", () -> this.waistError(), null);
-    builder.addDoubleProperty("Absolute Waist Voltage", () -> getAbsoluteDegrees(), null);
+    builder.addDoubleProperty("Absolute Waist Voltage", () -> getAbsoluteVoltage(), null);
+    builder.addDoubleProperty("Absolute Waist Angle", () -> getAbsoluteAngle(),null);
   }
 
 }
 // yaw adjustment
 // o–(•o•)–o
-// / \
-// o o yay!!!
+//    / \
+//    o o yay!!!
