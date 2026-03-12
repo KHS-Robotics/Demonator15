@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotContainer;
@@ -23,6 +24,9 @@ public class Turret extends SubsystemBase {
     private final Spitter spitter = new Spitter();
     private Supplier<Boolean> hoodCanMakeShot = () -> false;
     private Supplier<Boolean> waistCanMakeShot = () -> false;
+
+    private double overrideSetpointDegrees;
+    private boolean useOverride;
 
     public Turret() {
         SmartDashboard.putData(this);
@@ -324,9 +328,23 @@ public class Turret extends SubsystemBase {
      */
     private Supplier<Double> getDesiredWaistAngle(Supplier<Translation2d> towards, boolean useVelocity) {
         return () -> {
+            if (useOverride){
+                var angle = overrideSetpointDegrees;
+                return angle;
+            }
+            else{
             var angle = getWaistAimFinalRotation(towards, useVelocity);
             return angle;
+            }
         };
+    }
+
+    public Command setOverride(boolean override, double setpoint){
+        var cmd = Commands.runOnce(() -> {
+            this.overrideSetpointDegrees = setpoint;
+            this.useOverride = override;
+        });
+        return cmd.withName("SetOverride");
     }
 
     /**

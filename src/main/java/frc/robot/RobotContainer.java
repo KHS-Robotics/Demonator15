@@ -175,7 +175,7 @@ public class RobotContainer {
     INTAKE = A
     OUTTAKE = B
 
-    SHOOT (INDEX + LOAD TURRET) =
+    SHOOT (INDEX + LOAD TURRET) = R
     */
 
     kDriverController.stowIntake().onTrue(kIntake.stowDeployerBangBang());

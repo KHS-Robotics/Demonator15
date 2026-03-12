@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 
 public class Intake extends SubsystemBase {
     public final Deployer deployer = new Deployer();
@@ -26,8 +27,10 @@ public class Intake extends SubsystemBase {
     }
 
     public Command deployDeployerBangBang() {
-        var hopperCurrentlyRetracted = hopper.deployHopperCommand()
-                .andThen(deployer.bangBangControlDeploy());
+        var setTurretFollowHub = RobotContainer.kTurret.setOverride(false, 0);
+
+        var hopperCurrentlyRetracted = 
+                hopper.deployHopperCommand().andThen(deployer.bangBangControlDeploy());
         var hopperAlreadyDeployed = deployer.bangBangControlDeploy();
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
@@ -35,6 +38,8 @@ public class Intake extends SubsystemBase {
     }
 
     public Command stowDeployerBangBang() {
+        var setTurretDontFollowHub = RobotContainer.kTurret.setOverride(true, -90);
+        
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
                 .andThen(deployer.bangBangControlStow())
                 .andThen(hopper.retractHopperCommand());
