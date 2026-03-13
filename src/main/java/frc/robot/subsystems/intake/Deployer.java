@@ -93,6 +93,16 @@ public class Deployer extends SubsystemBase {
     return cmd.withTimeout(0.67/*six seven */);
   }
 
+  public Command bangBangControlAgitate(){
+    var cmd = startEnd(() -> motor.setVoltage(3), this::stop);
+    return cmd.withTimeout(0.2);
+  }
+
+  public Command bangBangControlUnagitate(){
+    var cmd = startEnd(() -> motor.setVoltage(-1.3), this::stop);
+    return cmd.withTimeout(0.2);
+  }
+
   public void keepDeployerDown() {
     motor.setVoltage(-1.0);
   }

@@ -44,6 +44,10 @@ public class DemonCommandXboxController extends CommandXboxController {
     return this.povUp();
   }
 
+  public Trigger agitateIntake(){
+    return this.povLeft();
+  }
+
   public Trigger shootFuel(){
     return this.rightTrigger();
   }

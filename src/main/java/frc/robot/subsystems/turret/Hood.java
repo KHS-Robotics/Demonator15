@@ -111,7 +111,7 @@ public class Hood extends SubsystemBase {
   }
 
   public void calibrateRelativeEncoder() {
-    double absolutePosition = absoluteEncoder.getPosition() * 1;
+    double absolutePosition = getAbsoluteAngle();
     relativeEncoder.setPosition(absolutePosition);
   }
 

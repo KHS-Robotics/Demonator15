@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.5548359486447931,
-        "y": 3.7050641940085596
+        "x": 2.1067710843373493,
+        "y": 2.2428554216867465
       },
       "prevControl": {
-        "x": 1.8117228915662649,
-        "y": 4.056855421686747
+        "x": 2.363658027258821,
+        "y": 2.5946466493649343
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "To Tower (Not From Start) No Vision",

@@ -17,7 +17,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "DeployHopper"
+                  "name": "BangBangControlDeploy"
                 }
               }
             ]
@@ -33,6 +33,24 @@
           "type": "named",
           "data": {
             "name": "DeployHopper"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Leave Outpost no climb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "STOPSwerve"
           }
         },
         {

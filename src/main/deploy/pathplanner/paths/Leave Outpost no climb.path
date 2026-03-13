@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.5,
-        "y": 5.051
+        "x": 0.5973751783166898,
+        "y": 0.5609700427960058
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.019349397590361,
-        "y": 5.575807228915662
+        "x": 1.363686746987951,
+        "y": 1.2265783132530124
       },
       "isLocked": false,
-      "linkedName": "After Depot Top Pickup"
+      "linkedName": "Outpost Pickup"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 2.2428554216867465
       },
       "prevControl": {
-        "x": 3.1067423646082193,
-        "y": 2.277743034907102
+        "x": 1.7461566265060235,
+        "y": 1.9587349397590366
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "To Tower (Not From Start) No Vision",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

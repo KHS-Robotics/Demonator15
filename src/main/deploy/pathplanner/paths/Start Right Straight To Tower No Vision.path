@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.5548359486447931,
-        "y": 3.7050641940085596
+        "x": 2.1067710843373493,
+        "y": 2.2428554216867465
       },
       "prevControl": {
-        "x": 2.6313012048192768,
-        "y": 3.2919156626506028
+        "x": 3.183236340511833,
+        "y": 1.8297068903287896
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Start Right No Vision",

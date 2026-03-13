@@ -127,7 +127,7 @@ public class Waist extends SubsystemBase {
   }
 
   public void calibrateRelativeEncoder() {
-    double absolutePosition = absoluteEncoder.getPosition() * 1;
+    double absolutePosition = getAbsoluteAngle();
     relativeEncoder.setPosition(absolutePosition);
   }
 

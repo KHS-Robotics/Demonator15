@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
@@ -27,26 +28,29 @@ public class Intake extends SubsystemBase {
     }
 
     public Command deployDeployerBangBang() {
-        var setTurretFollowHub = RobotContainer.kTurret.setOverride(false, 0);
-
         var hopperCurrentlyRetracted = 
                 hopper.deployHopperCommand()
-                .andThen(RobotContainer.kTurret.setOverride(false, 0))
-                .andThen(deployer.bangBangControlDeploy());
-        var hopperAlreadyDeployed = RobotContainer.kTurret.setOverride(false, 0)
-        .andThen(deployer.bangBangControlDeploy());
+                .andThen(deployer.bangBangControlDeploy())
+                .andThen(RobotContainer.kTurret.setOverride(false, 0));
+        var hopperAlreadyDeployed = deployer.bangBangControlDeploy()
+        .andThen(RobotContainer.kTurret.setOverride(false, 0));
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
         return cmd.withName("SetDeployerStateDeployBang");
     }
 
+    public Command agitateDeployerBangBang(){
+        var cmd = deployer.bangBangControlAgitate().andThen(Commands.waitSeconds(2));
+        return cmd;
+    }
+
     public Command stowDeployerBangBang() {
-        var hopperCurrentlyRetracted = hopper.deployHopperCommand()
-                .andThen(RobotContainer.kTurret.setOverride(true, -90))
+        var hopperCurrentlyRetracted = RobotContainer.kTurret.setOverride(true, -90)
+                .andThen(hopper.deployHopperCommand())
                 .andThen(deployer.bangBangControlStow())
                 .andThen(hopper.retractHopperCommand());
-        var hopperAlreadyDeployed = deployer.bangBangControlStow()
-            .andThen(RobotContainer.kTurret.setOverride(true, -90))
+        var hopperAlreadyDeployed = RobotContainer.kTurret.setOverride(true, -90)
+            .andThen(deployer.bangBangControlStow())
             .andThen(hopper.retractHopperCommand());
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());

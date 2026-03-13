@@ -65,7 +65,7 @@ public class Turret extends SubsystemBase {
     }
 
     public Command feed() {
-        var cmd = belt.startEnd(belt::start, belt::stop);
+        var cmd = belt.runEnd(belt::start, belt::stop);
         cmd.addRequirements(belt);
         return cmd.withName("FeedFuel");
     }
@@ -345,6 +345,11 @@ public class Turret extends SubsystemBase {
             this.useOverride = override;
         });
         return cmd.withName("SetOverride");
+    }
+
+    public void calibrateRelativeEncoders() {
+        waist.calibrateRelativeEncoder();
+        hood.calibrateRelativeEncoder();
     }
 
     /**

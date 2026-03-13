@@ -15,15 +15,15 @@ public class TurretConfig {
         public static final double kMinSoftLimit = 0;
         public static final double kMaxSoftLimit = 40;
 
-        public static final double kMaxAbsoluteDegrees = 39.986;
+        public static final double kMaxAbsoluteDegrees = 40.076;
         public static final double kMaxAbsoluteVolts = 1.577;
-        public static final double kMinAbsoluteDegrees = 0.0;
-        public static final double kMinAbsoluteVolts = 1.930;
+        public static final double kMinAbsoluteDegrees = 0.090;
+        public static final double kMinAbsoluteVolts = 1.934;
 
         public static final double kHoodAnalogPositionConversionFactor = 
-        (WaistConfig.kMinAbsoluteDegrees - WaistConfig.kMaxAbsoluteDegrees) / (WaistConfig.kMinAbsoluteVolts - WaistConfig.kMaxAbsoluteVolts);
+        (HoodConfig.kMinAbsoluteDegrees - HoodConfig.kMaxAbsoluteDegrees) / (HoodConfig.kMinAbsoluteVolts - HoodConfig.kMaxAbsoluteVolts);
         public static final double kHoodAnalogVelocityConversionFactor = kHoodAnalogPositionConversionFactor / 60.0;
-        public static final double kAbsoluteOffset = -331.531;
+        public static final double kAbsoluteOffset = 114.491 + 102.9840670899196;
 
         //I think we will need a conversion for rotations of motor to how many degrees the hood will change
         public static final double kRotationsToDegreesConversion = 3.791;
@@ -89,7 +89,7 @@ public class TurretConfig {
         public static final double kWaistAnalogPositionConversionFactor = 
         (WaistConfig.kMinAbsoluteDegrees - WaistConfig.kMaxAbsoluteDegrees) / (WaistConfig.kMinAbsoluteVolts - WaistConfig.kMaxAbsoluteVolts);
         public static final double kWaistAnalogVelocityConversionFactor = kWaistAnalogPositionConversionFactor / 60.0;
-        public static final double kAbsoluteOffset = -229.647;
+        public static final double kAbsoluteOffset = 229.647;
 
         public static final double kMinSoftLimit = -100;
         public static final double kMaxSoftLimit = 22;

@@ -46,7 +46,7 @@ public class Indexer extends SubsystemBase {
   }
 
   public Command forwardCommand() {
-    var cmd = startEnd(this::forward, this::stop);
+    var cmd = runEnd(this::forward, this::stop);
     return cmd.withName("ForwardIndexer");
   }
 

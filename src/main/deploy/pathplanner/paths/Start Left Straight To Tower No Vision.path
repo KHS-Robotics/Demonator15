@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.5548359486447931,
-        "y": 3.7050641940085596
+        "x": 2.1067710843373493,
+        "y": 2.2428554216867465
       },
       "prevControl": {
-        "x": 2.4236746987951805,
-        "y": 3.652530120481928
+        "x": 2.9756098344877366,
+        "y": 2.190321348160115
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Start Left No Vision",

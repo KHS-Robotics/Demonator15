@@ -12,8 +12,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
   private final RobotContainer m_robotContainer;
+
+  private final boolean resetWithAbsEncoders = true;
+  private void calibrateRelativeEncoders() {
+    if (this.resetWithAbsEncoders) {
+      RobotContainer.kTurret.calibrateRelativeEncoders();
+    }
+  }
 
   public Robot() {
     // silence disconnected joystick warnings when not FMS attached
@@ -37,6 +43,7 @@ public class Robot extends TimedRobot {
     });
 
     m_robotContainer = new RobotContainer();
+    calibrateRelativeEncoders();
   }
 
   @Override
@@ -72,6 +79,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    calibrateRelativeEncoders();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
@@ -89,6 +97,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    calibrateRelativeEncoders();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

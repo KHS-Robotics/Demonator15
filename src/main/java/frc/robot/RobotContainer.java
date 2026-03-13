@@ -103,8 +103,8 @@ public class RobotContainer {
   // public static final DemonPhotonCamera kPhotonCamera3 = new DemonPhotonCamera(
   //     PhotonVisionConfig.PhotonCamera3Name, PhotonVisionConfig.RobotToPhotonCamera3);
   // //limelight
-  // public static final DemonLimelightCamera kLimelightCamera = new DemonLimelightCamera(
-  //     LimelightConfig.LimelightCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+  public static final DemonLimelightCamera kLimelightCamera = new DemonLimelightCamera(
+      LimelightConfig.LimelightCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
 
   // Subsystems - LED indicators
   // public static final LEDStrip kLedStrip = new LEDStrip(
@@ -141,10 +141,10 @@ public class RobotContainer {
     //             estimate.estimatedRobotPose.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs);
     //       }));
 
-    // kLimelightCamera.setDefaultCommand(
-    //     kLimelightCamera
-    //         .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
-    //             estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
+    kLimelightCamera.setDefaultCommand(
+        kLimelightCamera
+            .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
+                estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
   }
 
   /**
@@ -180,6 +180,8 @@ public class RobotContainer {
 
     kDriverController.stowIntake().onTrue(kIntake.stowDeployerBangBang());
     kDriverController.deployIntake().onTrue(kIntake.deployDeployerBangBang());
+    kDriverController.agitateIntake().onTrue(kIntake.agitateDeployerBangBang());
+
     kDriverController.runIntake().whileTrue(kIntake.intakeFuel());
     kDriverController.runIntakeReverse().whileTrue(kIntake.outtakeFuel());
 
