@@ -32,10 +32,10 @@ public class Turret extends SubsystemBase {
         SmartDashboard.putData(this);
 
         
-        waist.setDefaultCommand(waist.setDegreesCommand(getDesiredWaistAngle(currentShootingTarget(), false)));
-        hood.setDefaultCommand(hood.setAngleCommand(getDesiredHoodAngle(currentShootingTarget(), false)));
-        spitter.setDefaultCommand(spitter.startCommand());
-        kicker.setDefaultCommand(kicker.startCommand());
+        // waist.setDefaultCommand(waist.setDegreesCommand(getDesiredWaistAngle(currentShootingTarget(), false)));
+        // hood.setDefaultCommand(hood.setAngleCommand(getDesiredHoodAngle(currentShootingTarget(), false)));
+        // spitter.setDefaultCommand(spitter.startCommand());
+        // kicker.setDefaultCommand(kicker.startCommand());
     }
 
     public void stop() {
@@ -403,7 +403,7 @@ public class Turret extends SubsystemBase {
 
             double distanceToPoint = phantomPitchPosition.getDistance(towards.get());
             double pitchAngle = Math.toDegrees(solvePitch(distanceToPoint));
-            var angle = 90 - pitchAngle + 2;
+            var angle = 90 - pitchAngle; //fudge factor (2)
             if ((pitchAngle > 90) || (distanceToPoint > TurretConfig.TurretFieldAndRobotInfo.kMaxDistance)) {
                 angle = TurretConfig.HoodConfig.kMaxSoftLimit + 1;
             }

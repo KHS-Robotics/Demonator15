@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "DeployHopper"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "straight front'"
@@ -17,9 +23,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "FireAutomatic"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "FireAutomatic"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 7.0
+                }
+              }
+            ]
           }
         }
       ]

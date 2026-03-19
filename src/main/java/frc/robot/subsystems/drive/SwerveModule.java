@@ -92,6 +92,7 @@ public class SwerveModule extends SubsystemBase {
 
     var pivotMotorConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
+        .openLoopRampRate(405)
         .smartCurrentLimit(30);
     pivotMotor = new SparkMax(pivotMotorChannel, MotorType.kBrushless);
     pivotMotor.configure(pivotMotorConfig, ResetMode.kResetSafeParameters,

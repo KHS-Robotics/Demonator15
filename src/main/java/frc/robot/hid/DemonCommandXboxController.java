@@ -56,6 +56,10 @@ public class DemonCommandXboxController extends CommandXboxController {
     return this.a();
   }
 
+  public Trigger reverseIndexer(){
+    return this.y();
+  }
+
   public Trigger runIntakeReverse(){
     return this.b();
   }
