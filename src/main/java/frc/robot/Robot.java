@@ -44,6 +44,7 @@ public class Robot extends TimedRobot {
 
     m_robotContainer = new RobotContainer();
     calibrateRelativeEncoders();
+    RobotContainer.kTurret.setOverrideDirect(true, -90);
   }
 
   @Override

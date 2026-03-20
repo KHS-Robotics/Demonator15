@@ -34,7 +34,7 @@ public class TurretConfig {
         public static final double kSpitterI = 0.000001;
         public static final double kSpitterD = 0.04;
 
-        public static final double kSpitterRPM = 4200;
+        public static final double kSpitterRPM = 3000;
     }
 
     protected final class TurretFieldAndRobotInfo {
@@ -89,7 +89,7 @@ public class TurretConfig {
         public static final double kWaistAnalogPositionConversionFactor = 
         (WaistConfig.kMinAbsoluteDegrees - WaistConfig.kMaxAbsoluteDegrees) / (WaistConfig.kMinAbsoluteVolts - WaistConfig.kMaxAbsoluteVolts);
         public static final double kWaistAnalogVelocityConversionFactor = kWaistAnalogPositionConversionFactor / 60.0;
-        public static final double kAbsoluteOffset = 161.794;
+        public static final double kAbsoluteOffset = 161.794 + 109.570;
 
         public static final double kMinSoftLimit = -100;
         public static final double kMaxSoftLimit = 22;

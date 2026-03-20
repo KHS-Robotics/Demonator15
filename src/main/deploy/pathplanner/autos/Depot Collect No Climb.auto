@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Start Right Head Outpost No Vision"
+                  "pathName": "Start Left Head Depot No Vision"
                 }
               },
               {
@@ -24,27 +24,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "STOPSwerve"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "DeployHopper"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 5.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Leave Outpost no climb"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Depot Pick Up From Top"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RunIntake"
+                }
+              }
+            ]
           }
         },
         {
@@ -76,6 +71,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Start Right",
+  "folder": "Start Depot",
   "choreoAuto": false
 }

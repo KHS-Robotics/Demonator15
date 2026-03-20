@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig.Behavior;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
+import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.config.LimitSwitchConfig;
 
@@ -32,7 +34,7 @@ public class Deployer extends SubsystemBase {
   private double setpointAngleDegrees;
   // ^ There are two seperate motors for the intake pivot,
   // might want to change right/left names to avoid confusion
-  private final RelativeEncoder encoder;
+  private final AbsoluteEncoder encoder;
   private final PIDController pid;
   private final SparkLimitSwitch sensor;
   private final SparkMax motor;
@@ -47,17 +49,19 @@ public class Deployer extends SubsystemBase {
     var limitSwitchConfig = new LimitSwitchConfig()
         .forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor);
 
+    var absoluteEncoderConfig = new EncoderConfig();
+
     var motorConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(30)
+        .smartCurrentLimit(30, 10)
         .inverted(true)
-        .apply(encoderConfig)
+        .apply(absoluteEncoderConfig)
         .apply(limitSwitchConfig);
     motor = new SparkMax(RobotMap.INTAKE_DEPLOYER_ID, MotorType.kBrushless);
     motor.configure(motorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
-    encoder = motor.getEncoder();
+    encoder = motor.getAbsoluteEncoder();
     sensor = motor.getForwardLimitSwitch();
 
     pid = new PIDController(DeployerConfig.kDeployerP, DeployerConfig.kDeployerI, DeployerConfig.kDeployerD);
@@ -68,9 +72,8 @@ public class Deployer extends SubsystemBase {
   }
 
   public void periodic() {
-    // TODO: re-add once we have reliable absolute encoder or no slop?
-    //setMotorOutputForSetpoint();
-    //updateSetpointsForDisabledMode();
+    setMotorOutputForSetpoint();
+    updateSetpointsForDisabledMode();
   }
 
   public Command setAngleCommand(double angleDegrees) {
@@ -94,7 +97,7 @@ public class Deployer extends SubsystemBase {
   }
 
   public Command bangBangControlAgitate(){
-    var cmd = startEnd(() -> motor.setVoltage(3), this::stop);
+    var cmd = startEnd(() -> motor.setVoltage(4.5), this::stop);
     return cmd.withTimeout(0.2);
   }
 
@@ -129,12 +132,16 @@ public class Deployer extends SubsystemBase {
     return cmd;
   }
 
-  public double getAngle() {
-    return encoder.getPosition() + IntakeConfig.DeployerConfig.kDeployerOffsetAngle;
+  public double getRotations() {
+    return encoder.getPosition();
+  }
+
+  public double getAbsoluteAngle(){
+    return Units.rotationsToDegrees(getRotations()) + IntakeConfig.DeployerConfig.kDeployerOffsetAngle;
   }
 
   public boolean isAtSetpoint() {
-    var error = Math.abs(setpointAngleDegrees - getAngle());
+    var error = Math.abs(setpointAngleDegrees - getAbsoluteAngle());
     return (error < 10);
   }
 
@@ -144,27 +151,27 @@ public class Deployer extends SubsystemBase {
   }
 
   private void setMotorOutputForSetpoint() {
-    var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
+    var pidOutput = pid.calculate(getAbsoluteAngle(), setpointAngleDegrees);
 
-    var angle = Math.sin(Math.toRadians(getAngle()));
+    var angle = Math.sin(Math.toRadians(getAbsoluteAngle()));
     var ffGravity = 0;//DeployerConfig.kDeployerKG * angle;
 
     var output = pidOutput + ffGravity;
-    output = MathUtil.clamp(output, -6, 6);
-    motor.setVoltage(output);
+    output = MathUtil.clamp(output, -3, 3);
+    motor.setVoltage(-output);
   }
 
   /** Updates the setpoint to the current position. */
   private void updateSetpointsForDisabledMode() {
     if (RobotState.isDisabled()) {
-      setSetpointAngle(getAngle());
+      setSetpointAngle(getAbsoluteAngle());
     }
   }
 
   public void stop() {
     motor.stopMotor();
     pid.reset();
-    setSetpointAngle(getAngle());
+    setSetpointAngle(getAbsoluteAngle());
   }
 
   @Override
@@ -172,8 +179,9 @@ public class Deployer extends SubsystemBase {
       super.initSendable(builder);
       builder.setSmartDashboardType("Deployer");
       builder.addBooleanProperty("Intake At Setpoint?", () -> this.isAtSetpoint(), null);
-      builder.addDoubleProperty("Intake Angle", () -> this.getAngle(), null);
+      builder.addDoubleProperty("Deployer Absolute Angle", () -> this.getAbsoluteAngle(), null);
       builder.addDoubleProperty("Intake Setpoint Angle", () -> this.setpointAngleDegrees, null);
+      builder.addDoubleProperty("Intake-AppliedOutput", () -> motor.getAppliedOutput(), null);
   }
 
 }

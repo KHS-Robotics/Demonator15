@@ -20,8 +20,10 @@ public class Intake extends SubsystemBase {
 
     public Command deployDeployer() {
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
-                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY));
-        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY);
+        .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY))
+        .andThen(RobotContainer.kTurret.setOverride(false, 0));
+        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY)
+        .andThen(RobotContainer.kTurret.setOverride(false, 0));
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
         return cmd.withName("SetDeployerStateDeploy");
@@ -58,10 +60,13 @@ public class Intake extends SubsystemBase {
     }
 
     public Command stowDeployer() {
-        var hopperCurrentlyRetracted = hopper.deployHopperCommand().andThen(
-                deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW).andThen(hopper.retractHopperCommand()));
-        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW)
-                .andThen(hopper.retractHopperCommand());
+        var hopperCurrentlyRetracted = RobotContainer.kTurret.setOverride(true, -90)
+            .andThen(hopper.deployHopperCommand())
+            .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW)
+            .andThen(hopper.retractHopperCommand()));
+        var hopperAlreadyDeployed = RobotContainer.kTurret.setOverride(true, -90)
+            .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW))
+            .andThen(hopper.retractHopperCommand());
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
         return cmd.withName("SetDeployerStateStow");

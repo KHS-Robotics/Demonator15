@@ -79,7 +79,7 @@ public class SwerveModule extends SubsystemBase {
         .pid(driveP, driveI, driveD, ClosedLoopSlot.kSlot0);
     var driveMotorConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(45)
+        .smartCurrentLimit(40)
         .inverted(reversed)
         .apply(driveEncoderConfig)
         .apply(driveClosedLoopConfig);

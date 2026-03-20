@@ -178,9 +178,9 @@ public class RobotContainer {
     SHOOT (INDEX + LOAD TURRET) = R
     */
 
-    kDriverController.stowIntake().onTrue(kIntake.stowDeployerBangBang());
-    kDriverController.deployIntake().onTrue(kIntake.deployDeployerBangBang());
-    kDriverController.agitateIntake().onTrue(kIntake.agitateDeployerBangBang());
+    kDriverController.stowIntake().onTrue(kIntake.stowDeployer());
+    kDriverController.deployIntake().onTrue(kIntake.deployDeployer());
+    kDriverController.agitateIntake().whileTrue(kIntake.agitateDeployer().repeatedly());
 
     kDriverController.runIntake().whileTrue(kIntake.intakeFuel());
     kDriverController.runIntakeReverse().whileTrue(kIntake.outtakeFuel());
@@ -268,8 +268,8 @@ public class RobotContainer {
     // Intake
     NamedCommands.registerCommand("STOPIntake", kIntake.stopCommand());
 
-    // NamedCommands.registerCommand("DeployIntake", kIntake.deployDeployer());
-    // NamedCommands.registerCommand("StowIntake", kIntake.stowDeployer());
+    NamedCommands.registerCommand("DeployIntake", kIntake.deployDeployer());
+    NamedCommands.registerCommand("StowIntake", kIntake.stowDeployer());
     //NamedCommands.registerCommand("ExtendIntake", kIntake.extendDeployer());
     NamedCommands.registerCommand("BangBangControlDeploy",kIntake.deployDeployerBangBang());
     NamedCommands.registerCommand("BangBangControlStow", kIntake.stowDeployerBangBang());

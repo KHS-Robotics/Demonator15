@@ -11,8 +11,9 @@
     "To Tower (Not From Start) No Vision"
   ],
   "autoFolders": [
-    "Start Right",
-    "Start Left"
+    "Start Hub",
+    "Start Depot",
+    "Start Outpost"
   ],
   "defaultMaxVel": 1.0,
   "defaultMaxAccel": 2.0,
@@ -26,7 +27,7 @@
   "driveGearing": 6.75,
   "maxDriveSpeed": 3.5,
   "driveMotorType": "NEO",
-  "driveCurrentLimit": 45.0,
+  "driveCurrentLimit": 40.0,
   "wheelCOF": 1.0,
   "flModuleX": 0.23495,
   "flModuleY": 0.29845,
