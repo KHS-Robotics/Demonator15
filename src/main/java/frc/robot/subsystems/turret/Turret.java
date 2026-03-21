@@ -407,7 +407,7 @@ public class Turret extends SubsystemBase {
 
             double distanceToPoint = phantomPitchPosition.getDistance(towards.get());
             double pitchAngle = Math.toDegrees(solvePitch(distanceToPoint));
-            var angle = 90 - pitchAngle + 2; //fudge factor (2)
+            var angle = 90 - pitchAngle + TurretConfig.TurretFieldAndRobotInfo.kHoodFudgeFactor;
             if ((pitchAngle > 90) || (distanceToPoint > TurretConfig.TurretFieldAndRobotInfo.kMaxDistance)) {
                 angle = TurretConfig.HoodConfig.kMaxSoftLimit + 1;
             }
