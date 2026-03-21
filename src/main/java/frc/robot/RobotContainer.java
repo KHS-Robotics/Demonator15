@@ -94,6 +94,7 @@ public class RobotContainer {
   public static final Intake kIntake = new Intake();
   public static final Indexer kIndexer = new Indexer();
   // public static final Climber kClimber = new Climber();
+
   // Subsystems - Cameras
   // //photon
   // public static final DemonPhotonCamera kPhotonCamera1 = new DemonPhotonCamera(
@@ -103,8 +104,11 @@ public class RobotContainer {
   // public static final DemonPhotonCamera kPhotonCamera3 = new DemonPhotonCamera(
   //     PhotonVisionConfig.PhotonCamera3Name, PhotonVisionConfig.RobotToPhotonCamera3);
   // //limelight
-  public static final DemonLimelightCamera kLimelightCamera = new DemonLimelightCamera(
-      LimelightConfig.LimelightCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+  public static final DemonLimelightCamera kLimelightCameraOne = new DemonLimelightCamera(
+      LimelightConfig.LimelightCamera1Name, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+  
+  // public static final DemonLimelightCamera kLimelightCameraTwo = new DemonLimelightCamera(
+  //     LimelightConfig.LimelightCamera2Name, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);  
 
   // Subsystems - LED indicators
   // public static final LEDStrip kLedStrip = new LEDStrip(
@@ -141,10 +145,15 @@ public class RobotContainer {
     //             estimate.estimatedRobotPose.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs);
     //       }));
 
-    kLimelightCamera.setDefaultCommand(
-        kLimelightCamera
+    kLimelightCameraOne.setDefaultCommand(
+        kLimelightCameraOne
             .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
                 estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
+    
+    // kLimelightCameraTwo.setDefaultCommand(
+    //     kLimelightCameraTwo
+    //         .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
+    //             estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
   }
 
   /**

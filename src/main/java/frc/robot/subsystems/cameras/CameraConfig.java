@@ -86,13 +86,21 @@ public final class CameraConfig {
 
     //offsets from the robot to the cameras for the transform3ds
 
-    //limelight
-    public static final double kLimelightTranslationX = Units.inchesToMeters(0);
-    public static final double kLimelightTranslationY = Units.inchesToMeters(0);
-    public static final double kLimelightTranslationZ = Units.inchesToMeters(0);
-    public static final double kLimelightRoll = Math.toRadians(0);
-    public static final double kLimelightPitch = Math.toRadians(0);
-    public static final double kLimelightYaw = Math.toRadians(0);
+    //limelight 1
+    public static final double kLimelight1TranslationX = Units.inchesToMeters(0);
+    public static final double kLimelight1TranslationY = Units.inchesToMeters(0);
+    public static final double kLimelight1TranslationZ = Units.inchesToMeters(0);
+    public static final double kLimelight1Roll = Math.toRadians(0);
+    public static final double kLimelight1Pitch = Math.toRadians(0);
+    public static final double kLimelight1Yaw = Math.toRadians(0);
+
+    //limelight 2
+    public static final double kLimelight2TranslationX = Units.inchesToMeters(0);
+    public static final double kLimelight2TranslationY = Units.inchesToMeters(0);
+    public static final double kLimelight2TranslationZ = Units.inchesToMeters(0);
+    public static final double kLimelight2Roll = Math.toRadians(0);
+    public static final double kLimelight2Pitch = Math.toRadians(0);
+    public static final double kLimelight2Yaw = Math.toRadians(0);
 
     //photon 1
     public static final double kPhoton1TranslationX = Units.inchesToMeters(-12.5);
@@ -150,7 +158,8 @@ public final class CameraConfig {
 
   public class LimelightConfig {
     /** The name of the camera from the UI. */
-    public static final String LimelightCameraName = "limelight-rear";
+    public static final String LimelightCamera1Name = "limelight-rear";
+    public static final String LimelightCamera2Name = "limelight-front";
     /** The pose estimation algorithm to use, */
     public static final LimelightPoseEstimateAlgorithm kPoseAlgorithm = LimelightPoseEstimateAlgorithm.Megatag2;
     /**
@@ -161,6 +170,8 @@ public final class CameraConfig {
      * <p>
      * <b>This must be configured in the Limelight UI too under 3-D.</b>
      */
-    public static final Transform3d kRobotToLimelightCamera = new Transform3d(kLimelightTranslationX, kLimelightTranslationY, kLimelightTranslationZ, new Rotation3d(kLimelightRoll, kLimelightPitch, kLimelightYaw));
+    public static final Transform3d kRobotToLimelightCameraOne = new Transform3d(kLimelight1TranslationX, kLimelight1TranslationY, kLimelight1TranslationZ, new Rotation3d(kLimelight1Roll, kLimelight1Pitch, kLimelight1Yaw));
+    public static final Transform3d kRobotToLimelightCameraTwo = new Transform3d(kLimelight2TranslationX, kLimelight2TranslationY, kLimelight2TranslationZ, new Rotation3d(kLimelight2Roll, kLimelight2Pitch, kLimelight2Yaw));
+
   }
 }

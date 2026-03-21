@@ -48,7 +48,7 @@ public class Hopper extends SubsystemBase {
     public Hopper() {
 
         var motorConfig = new SparkFlexConfig()
-                .idleMode(IdleMode.kCoast)
+                .idleMode(IdleMode.kBrake)
                 .smartCurrentLimit(30);
         motor = new SparkFlex(RobotMap.HOPPER_EXTENDER_ID, MotorType.kBrushless);
         motor.configure(motorConfig, ResetMode.kResetSafeParameters,
