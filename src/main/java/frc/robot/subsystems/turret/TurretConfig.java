@@ -56,23 +56,24 @@ public class TurretConfig {
 
         public static final double kGravity = 9.8;
 
-        public static final double kShooterVelocity = 7.6;
-
         //offset between navX zero and turret zero
         public static final double kDegreeOffsetOfTurret = 180;
         public static final double kTurretDistanceToNavX = 0;
         //in meters, at ground level
         public static final double kHeightBetweenShooterAndHub = 1.5;
-        //presets: 8 shooter velocity - 4.88 max distance
+        
+        public static final double kShooterVelocity = 7.8;
+        // presets:
         // 8.5 shooter velocity - 5.95 max distance
         // 8.25 shooter velocity - 5.38 max distance
         // 8.1 shooter velocity - 5.11 max distance
-        // 7.7 shooter velocity - 4.335 max distance
-        // 7.6 shooter velocity - 
-        // 7.5 shooter velocity - 4.2 max distance
+        // 8 shooter velocity - 4.88 max distance
         // 7.9 shooter velocity - 4.78 max distance
         // 7.8 shooter velocity - 4.66 max distance
-        public static final double kMaxDistance = 4.2;
+        // 7.7 shooter velocity - 4.335 max distance
+        // 7.6 shooter velocity - 4.286 max distance
+        // 7.5 shooter velocity - 4.2 max distance
+        public static final double kMaxDistance = 4.66;
 
         public static final double kHoodFudgeFactor = 0.0;
     }
