@@ -104,11 +104,11 @@ public class RobotContainer {
   // public static final DemonPhotonCamera kPhotonCamera3 = new DemonPhotonCamera(
   //     PhotonVisionConfig.PhotonCamera3Name, PhotonVisionConfig.RobotToPhotonCamera3);
   // //limelight
-  public static final DemonLimelightCamera kLimelightCameraOne = new DemonLimelightCamera(
+  public static final DemonLimelightCamera kLimelightCameraRear = new DemonLimelightCamera(
       LimelightConfig.LimelightCamera1Name, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
   
-  // public static final DemonLimelightCamera kLimelightCameraTwo = new DemonLimelightCamera(
-  //     LimelightConfig.LimelightCamera2Name, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);  
+  public static final DemonLimelightCamera kLimelightCameraFront = new DemonLimelightCamera(
+      LimelightConfig.LimelightCamera2Name, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);  
 
   // Subsystems - LED indicators
   // public static final LEDStrip kLedStrip = new LEDStrip(
@@ -145,15 +145,15 @@ public class RobotContainer {
     //             estimate.estimatedRobotPose.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs);
     //       }));
 
-    kLimelightCameraOne.setDefaultCommand(
-        kLimelightCameraOne
+    kLimelightCameraRear.setDefaultCommand(
+        kLimelightCameraRear
             .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
                 estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
     
-    // kLimelightCameraTwo.setDefaultCommand(
-    //     kLimelightCameraTwo
-    //         .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
-    //             estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
+    kLimelightCameraFront.setDefaultCommand(
+        kLimelightCameraFront
+            .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
+                estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
   }
 
   /**

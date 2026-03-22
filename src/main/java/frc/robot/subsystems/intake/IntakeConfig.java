@@ -4,7 +4,7 @@ public class IntakeConfig {
 
     protected final class DeployerSetpoints {
         public static final double STOW = -37.853;
-        public static final double AGITATE_HIGH = 30.0;
+        public static final double AGITATE_HIGH = 0;
         public static final double AGITATE_LOW = 90.0;
         public static final double DEPLOY = 108.287;
         public static final double EXTEND = 90;

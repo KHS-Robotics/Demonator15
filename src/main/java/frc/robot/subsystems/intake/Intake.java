@@ -11,7 +11,7 @@ import frc.robot.RobotContainer;
 public class Intake extends SubsystemBase {
     public final Deployer deployer = new Deployer();
     private final GrabbyWheels grabbyWheels = new GrabbyWheels();
-    private final Hopper hopper = new Hopper();
+    public final Hopper hopper = new Hopper();
 
 
     public Intake() {
@@ -20,9 +20,9 @@ public class Intake extends SubsystemBase {
 
     public Command deployDeployer() {
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
-        .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY))
+        .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY).withTimeout(1))
         .andThen(RobotContainer.kTurret.setOverride(false, 0));
-        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY)
+        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY).withTimeout(1)
         .andThen(RobotContainer.kTurret.setOverride(false, 0));
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
@@ -85,12 +85,16 @@ public class Intake extends SubsystemBase {
      * to make sure it agitates continuously rather than just once. 
      */
     public Command agitateDeployer() {
-        var hopperCurrentlyRetracted = hopper.deployHopperCommand()
-                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_LOW)
-                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_HIGH)));
-        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_LOW)
-                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_HIGH));
-        var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
+        // var hopperCurrentlyRetracted = hopper.deployHopperCommand()
+        //         .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_LOW).withTimeout(1))
+        //         .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_HIGH).withTimeout(1));
+        // var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_LOW).withTimeout(1)
+        //         .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_HIGH).withTimeout(1));
+        // var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
+        var agitateDeployer = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_HIGH).withTimeout(1)
+            .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_LOW).withTimeout(1));
+        var keepHopperDeployed = hopper.primitiveSetVoltage();
+        var cmd = (agitateDeployer.alongWith(keepHopperDeployed).alongWith(grabbyWheels.intakeCommand())).andThen(grabbyWheels.stopCommand());
         return cmd.withName("AgitateIntake");
     }
 
