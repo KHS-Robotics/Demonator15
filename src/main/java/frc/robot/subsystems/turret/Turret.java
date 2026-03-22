@@ -1,5 +1,7 @@
 package frc.robot.subsystems.turret;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
@@ -12,9 +14,12 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotContainer;
+import frc.robot.hid.OperatorStick;
 
 public class Turret extends SubsystemBase {
     private final Belt belt = new Belt();
@@ -25,15 +30,20 @@ public class Turret extends SubsystemBase {
     private Supplier<Boolean> hoodCanMakeShot = () -> false;
     private Supplier<Boolean> waistCanMakeShot = () -> false;
 
+
     private double overrideSetpointDegrees;
+    public double waistManualOverride;
+    public double hoodManualOverride;
     private boolean useOverride;
     private TurretControlMode controlMode;
+    BooleanSupplier manualControlOn = () -> controlMode != TurretControlMode.AUTOMATIC;
+    BooleanSupplier automaticControlOn = () -> controlMode != TurretControlMode.MANUAL;
 
     public Turret() {
         SmartDashboard.putData(this);
 
         controlMode = TurretControlMode.AUTOMATIC;
-        waist.setDefaultCommand(waist.setDegreesCommand(getDesiredWaistAngle(currentShootingTarget(), false)));
+        waist.setDefaultCommand(waistDefaultCommand());
         hood.setDefaultCommand(hood.setAngleCommand(getDesiredHoodAngle(currentShootingTarget(), false)));
         spitter.setDefaultCommand(spitter.startCommand());
         kicker.setDefaultCommand(kicker.startCommand());
@@ -47,10 +57,38 @@ public class Turret extends SubsystemBase {
         belt.stop();
     }
 
-    public Command turretDefaultCommand(){
-         boolean automaticAimOn = controlMode == TurretControlMode.AUTOMATIC || controlMode == TurretControlMode.ASSISTED;
-
+    public void setWaistManualOverride(double amount){
+        waistManualOverride = amount;
     }
+
+    public void setHoodManualOverride(double amount){
+        hoodManualOverride = amount;
+    }
+
+    public void switchControlMode(){
+        //ik this is sloppy but so is the entire codebase
+        setHoodManualOverride(0);
+        setWaistManualOverride(0);
+        if (controlMode == TurretControlMode.AUTOMATIC){
+            controlMode = TurretControlMode.ASSISTED;
+        }
+        else{
+            if (controlMode == TurretControlMode.ASSISTED){
+                controlMode = TurretControlMode.MANUAL;
+            }
+            else{
+                controlMode = TurretControlMode.AUTOMATIC;
+            }
+        }
+    }
+
+    public Command waistDefaultCommand(){
+        Command automaticAim = waist.setDegreesCommand(getDesiredWaistAngle(currentShootingTarget(), false));
+        Command manualAim = waist.setDegreesCommand(() -> {return MathUtil.clamp(waistManualOverride, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);});
+        ConditionalCommand defaultCommand = new ConditionalCommand(automaticAim, manualAim, automaticControlOn);
+        return defaultCommand;
+    }
+
     public enum TurretControlMode {
     AUTOMATIC("Automatic"),
     ASSISTED("Assisted"),
@@ -355,6 +393,9 @@ public class Turret extends SubsystemBase {
             }
             else{
             var angle = getWaistAimFinalRotation(towards, useVelocity);
+            if (manualControlOn.getAsBoolean()){
+                angle += waistManualOverride;
+            }
             return angle;
             }
         };
