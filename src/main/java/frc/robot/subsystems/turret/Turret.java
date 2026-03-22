@@ -27,11 +27,12 @@ public class Turret extends SubsystemBase {
 
     private double overrideSetpointDegrees;
     private boolean useOverride;
+    private TurretControlMode controlMode;
 
     public Turret() {
         SmartDashboard.putData(this);
 
-        
+        controlMode = TurretControlMode.AUTOMATIC;
         waist.setDefaultCommand(waist.setDegreesCommand(getDesiredWaistAngle(currentShootingTarget(), false)));
         hood.setDefaultCommand(hood.setAngleCommand(getDesiredHoodAngle(currentShootingTarget(), false)));
         spitter.setDefaultCommand(spitter.startCommand());
@@ -45,6 +46,26 @@ public class Turret extends SubsystemBase {
         kicker.stop();
         belt.stop();
     }
+
+    public Command turretDefaultCommand(){
+         boolean automaticAimOn = controlMode == TurretControlMode.AUTOMATIC || controlMode == TurretControlMode.ASSISTED;
+
+    }
+    public enum TurretControlMode {
+    AUTOMATIC("Automatic"),
+    ASSISTED("Assisted"),
+    MANUAL("Manual");
+
+    private final String state;
+
+    private TurretControlMode(String s) {
+      state = s;
+    }
+
+    public String toString() {
+      return this.state;
+    }
+  }
 
     public Command stopCommand() {
         var cmd = runOnce(this::stop);

@@ -94,7 +94,7 @@ public class Intake extends SubsystemBase {
         var agitateDeployer = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_HIGH).withTimeout(1)
             .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_LOW).withTimeout(1));
         var keepHopperDeployed = hopper.primitiveSetVoltage();
-        var cmd = (agitateDeployer.alongWith(keepHopperDeployed).alongWith(grabbyWheels.intakeCommand())).andThen(grabbyWheels.stopCommand());
+        var cmd = (agitateDeployer.alongWith(keepHopperDeployed).alongWith(grabbyWheels.intakeCommand()));
         return cmd.withName("AgitateIntake");
     }
 
