@@ -1,5 +1,6 @@
 package frc.robot.subsystems.turret;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
@@ -22,8 +23,12 @@ public class Turret extends SubsystemBase {
     private final Waist waist = new Waist();
     private final Kicker kicker = new Kicker();
     private final Spitter spitter = new Spitter();
-    private Supplier<Boolean> hoodCanMakeShot = () -> false;
-    private Supplier<Boolean> waistCanMakeShot = () -> false;
+
+    private boolean hoodCanMakeShot = false;
+    private BooleanSupplier hoodCanMakeShotSupplier = () -> this.hoodCanMakeShot;
+
+    private Boolean waistCanMakeShot = false;
+    private BooleanSupplier waistCanMakeShotSupplier = () -> this.waistCanMakeShot;
 
     private double overrideSetpointDegrees;
     private boolean useOverride;
@@ -376,8 +381,8 @@ public class Turret extends SubsystemBase {
         // clamping the value because our turret only goes 240(?) degrees
         angle = Units.radiansToDegrees(MathUtil.angleModulus(angle + TurretConfig.WaistConfig.kWaistRadiansOffset));
         if (angle > TurretConfig.WaistConfig.kMaxSoftLimit || angle < TurretConfig.WaistConfig.kMinSoftLimit) {
-                waistCanMakeShot = () -> false;
-        }else {waistCanMakeShot = () -> true;}
+                waistCanMakeShot = false;
+        }else {waistCanMakeShot = true;}
         angle = MathUtil.clamp(angle, TurretConfig.WaistConfig.kMinSoftLimit, TurretConfig.WaistConfig.kMaxSoftLimit);
         // + TurretConfig.WaistConfig.kWaistDegreesOffset);
         return angle;
@@ -414,8 +419,8 @@ public class Turret extends SubsystemBase {
             // add radial velocity calcs
             // clamp to the physical limits of our hood
             if (angle > TurretConfig.HoodConfig.kMaxSoftLimit || angle < TurretConfig.HoodConfig.kMinSoftLimit) {
-                hoodCanMakeShot = () -> false;
-            }else {hoodCanMakeShot = () -> true;}
+                hoodCanMakeShot = false;
+            }else {hoodCanMakeShot = true;}
             angle = MathUtil.clamp(angle, TurretConfig.HoodConfig.kMinSoftLimit, TurretConfig.HoodConfig.kMaxSoftLimit);
             // this will be part of the relative / absolute hybrid incorporation +
             // TurretConfig.HoodConfig.kHoodDegreesOffset;
@@ -521,8 +526,8 @@ public class Turret extends SubsystemBase {
         builder.setSmartDashboardType(getName());
         builder.setSafeState(this::stop);
         builder.addBooleanProperty("Is Turret At Setpoint?", () -> hood.isAtSetpoint() && waist.isAtSetpoint(), null);
-        builder.addBooleanProperty("Hood Can Hit", () -> hoodCanMakeShot.get(), null);
-        builder.addBooleanProperty("Waist Can Hit", () -> waistCanMakeShot.get(), null);
+        builder.addBooleanProperty("Hood Can Hit", () -> hoodCanMakeShotSupplier.getAsBoolean(), null);
+        builder.addBooleanProperty("Waist Can Hit", () -> waistCanMakeShotSupplier.getAsBoolean(), null);
         builder.addDoubleProperty("hood insurace angle", () -> getDesiredHoodAngle(currentShootingTarget(), false).get(), null);
         builder.addDoubleProperty("waist insurace angle", () -> getDesiredWaistAngle(currentShootingTarget(), false).get(), null);
         builder.addDoubleProperty("current shooting target x",() -> currentShootingTarget().get().getX(), null);
