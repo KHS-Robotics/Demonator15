@@ -63,6 +63,16 @@ public class GrabbyWheels extends SubsystemBase {
     return cmd.withName("StartIntake");
   }
 
+  public void intakeSlow() {
+    intakeState = IntakeState.INTAKING;
+    motor.setVoltage(4);
+  }
+
+  public Command intakeSlowCommand() {
+    var cmd = startEnd(this::intakeSlow, this::stop);
+    return cmd.withName("intakeSlow");
+  }
+
   public void outtake() {
     intakeState = IntakeState.OUTTAKING;
     motor.setVoltage(-6);

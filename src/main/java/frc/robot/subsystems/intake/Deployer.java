@@ -168,6 +168,10 @@ public class Deployer extends SubsystemBase {
     }
   }
 
+  private double getDeployerError() {
+    return Math.abs(getAbsoluteAngle() - setpointAngleDegrees);
+  }
+
   public void stop() {
     motor.stopMotor();
     pid.reset();
@@ -182,6 +186,7 @@ public class Deployer extends SubsystemBase {
       builder.addDoubleProperty("Deployer Absolute Angle", () -> this.getAbsoluteAngle(), null);
       builder.addDoubleProperty("Intake Setpoint Angle", () -> this.setpointAngleDegrees, null);
       builder.addDoubleProperty("Intake-AppliedOutput", () -> motor.getAppliedOutput(), null);
+      builder.addDoubleProperty("error", () -> getDeployerError(), null);
   }
 
 }

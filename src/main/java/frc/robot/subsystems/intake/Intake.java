@@ -17,7 +17,7 @@ public class Intake extends SubsystemBase {
     public Intake() {
         SmartDashboard.putData(this);
     }
-
+   
     public Command deployDeployer() {
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
         .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.DEPLOY).withTimeout(1))
@@ -62,10 +62,10 @@ public class Intake extends SubsystemBase {
     public Command stowDeployer() {
         var hopperCurrentlyRetracted = RobotContainer.kTurret.setOverride(true, -90)
             .andThen(hopper.deployHopperCommand())
-            .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW)
-            .andThen(hopper.retractHopperCommand()));
+            .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW).alongWith(grabbyWheels.intakeSlowCommand().withTimeout(0.4)))
+            .andThen(hopper.retractHopperCommand());
         var hopperAlreadyDeployed = RobotContainer.kTurret.setOverride(true, -90)
-            .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW))
+            .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.STOW).alongWith(grabbyWheels.intakeSlowCommand().withTimeout(0.4)))
             .andThen(hopper.retractHopperCommand());
 
         var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
@@ -93,8 +93,8 @@ public class Intake extends SubsystemBase {
         // var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
         var agitateDeployer = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_HIGH).withTimeout(1)
             .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_LOW).withTimeout(1));
-        var keepHopperDeployed = hopper.primitiveSetVoltage();
-        var cmd = agitateDeployer.alongWith(keepHopperDeployed).alongWith(grabbyWheels.intakeCommand());
+        var keepHopperDeployed = hopper.primitiveSetVoltage().withTimeout(1.2);
+        var cmd = agitateDeployer.alongWith(keepHopperDeployed).alongWith(grabbyWheels.intakeSlowCommand().withTimeout(1.2));
         return cmd.withName("AgitateIntake");
     }
 
