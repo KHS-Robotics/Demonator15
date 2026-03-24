@@ -48,6 +48,10 @@ public class DemonCommandXboxController extends CommandXboxController {
     return this.povLeft();
   }
 
+  public Trigger fuelDump() {
+    return this.povRight();
+  }
+
   public Trigger shootFuel(){
     return this.rightTrigger();
   }

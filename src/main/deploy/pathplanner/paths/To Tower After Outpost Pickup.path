@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.0114122681883024,
-        "y": 0.6256633380884444
+        "x": 0.6491298145506419,
+        "y": 0.794
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9638098585472832,
-        "y": 1.2830729766403426
+        "x": 1.6015274049096226,
+        "y": 1.4514096385518982
       },
       "isLocked": false,
       "linkedName": "Outpost Pickup"
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -135.82126662196723
   },
   "reversed": false,
   "folder": "To Tower (Not From Start) No Vision",

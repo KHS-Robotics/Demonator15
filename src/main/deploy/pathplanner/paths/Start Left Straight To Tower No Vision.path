@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -135.82126662196723
   },
   "reversed": false,
   "folder": "Start Left No Vision",

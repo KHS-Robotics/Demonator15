@@ -5,15 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "DeployIntake"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Back Up From Hub"
+            "pathName": "Copy of Start Hub Head Outpost No Vision"
           }
         },
         {
@@ -23,19 +17,19 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "FireAutomatic"
+                  "name": "DeployHopper"
                 }
               },
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 20.0
+                  "waitTime": 5.0
                 }
               }
             ]

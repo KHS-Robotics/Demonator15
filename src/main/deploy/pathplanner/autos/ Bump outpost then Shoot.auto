@@ -5,21 +5,34 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "DeployIntake"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Back Up From Hub"
+            "pathName": "Start Right bump to outpost"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "STOPSwerve"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "KeepHopperExtended"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 5.0
+                }
+              }
+            ]
           }
         },
         {
@@ -35,7 +48,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 20.0
+                  "waitTime": 15.0
                 }
               }
             ]
@@ -45,6 +58,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Start Hub",
+  "folder": "Start Bump",
   "choreoAuto": false
 }

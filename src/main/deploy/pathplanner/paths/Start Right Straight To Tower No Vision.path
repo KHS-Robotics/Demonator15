@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.69,
-        "y": 0.794
+        "x": 3.5862054208273886,
+        "y": 0.9232524964336677
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.434602409638554,
-        "y": 0.559987951807229
+        "x": 2.6028673323823104,
+        "y": 0.9361911554921553
       },
       "isLocked": false,
       "linkedName": null
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -135.82126662196723
   },
   "reversed": false,
   "folder": "Start Right No Vision",

@@ -74,10 +74,10 @@ public class Intake extends SubsystemBase {
 
     public Command extendDeployer() {
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
-                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.EXTEND));
-        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.EXTEND);
+                .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.EXTEND).withTimeout(1));
+        var hopperAlreadyDeployed = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.EXTEND).withTimeout(1);
 
-        var cmd = new ConditionalCommand(hopperCurrentlyRetracted, hopperAlreadyDeployed, hopper.isBlockingIntake());
+        var cmd = new ConditionalCommand(hopperCurrentlyRetracted.alongWith(grabbyWheels.intakeCommand()), hopperAlreadyDeployed.alongWith(grabbyWheels.intakeCommand()), hopper.isBlockingIntake());
         return cmd.withName("SetDeployerStateExtend");
     }
     /*
@@ -94,7 +94,7 @@ public class Intake extends SubsystemBase {
         var agitateDeployer = deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_HIGH).withTimeout(1)
             .andThen(deployer.setAngleCommand(IntakeConfig.DeployerSetpoints.AGITATE_LOW).withTimeout(1));
         var keepHopperDeployed = hopper.primitiveSetVoltage();
-        var cmd = (agitateDeployer.alongWith(keepHopperDeployed).alongWith(grabbyWheels.intakeCommand())).andThen(grabbyWheels.stopCommand());
+        var cmd = agitateDeployer.alongWith(keepHopperDeployed).alongWith(grabbyWheels.intakeCommand());
         return cmd.withName("AgitateIntake");
     }
 

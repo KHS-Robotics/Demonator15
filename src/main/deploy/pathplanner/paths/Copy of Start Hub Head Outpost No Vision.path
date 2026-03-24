@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5831943351150675,
-        "y": 2.9631022463606214
+        "x": 2.719315263908701,
+        "y": 2.838174037089873
       },
       "isLocked": false,
       "linkedName": "Start Hub"
@@ -20,8 +20,8 @@
         "y": 0.5997860199714706
       },
       "prevControl": {
-        "x": 2.0853209700427957,
-        "y": 1.5831241084165488
+        "x": 2.033566333808844,
+        "y": 1.7383880171184023
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,9 +29,30 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.07832545577312527,
+      "maxWaypointRelativePos": 0.3943281566508984,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 180.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "FireAutomatic",
+      "waypointRelativePos": 0.36461850101283555,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 1.0,
     "maxAcceleration": 2.0,

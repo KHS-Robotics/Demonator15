@@ -5,21 +5,27 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "DeployIntake"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Back Up From Hub"
+            "pathName": "Start Right Straight To Tower No Vision"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "STOPSwerve"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DeployHopper"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DeployIntake"
           }
         },
         {
@@ -35,7 +41,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 20.0
+                  "waitTime": 6.0
                 }
               }
             ]
@@ -45,6 +51,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Start Hub",
+  "folder": "Start Trench",
   "choreoAuto": false
 }

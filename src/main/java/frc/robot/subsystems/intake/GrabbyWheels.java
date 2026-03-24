@@ -59,7 +59,7 @@ public class GrabbyWheels extends SubsystemBase {
   }
 
   public Command intakeCommand() {
-    var cmd = runOnce(this::intake);
+    var cmd = startEnd(this::intake, this::stop);
     return cmd.withName("StartIntake");
   }
 

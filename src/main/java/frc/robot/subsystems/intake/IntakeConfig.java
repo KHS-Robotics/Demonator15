@@ -16,7 +16,7 @@ public class IntakeConfig {
         public static final double kDeployerD = 0;
 
         public static final double kDeployerKG = 1.0313;
-        public static final double kDeployerOffsetAngle = -261.654 + 90;
+        public static final double kDeployerOffsetAngle = -201.654 + 90;
 
         public static final double kDeployerEncoderPositionConversionFactor = 360.0;
         public static final double kDeployerEncoderVelocityConversionFactor = kDeployerEncoderPositionConversionFactor / 60.0;

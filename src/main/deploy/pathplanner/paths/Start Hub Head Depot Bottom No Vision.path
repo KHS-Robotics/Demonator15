@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5929397590361445,
-        "y": 4.045927710843373
+        "x": 3.508573466476462,
+        "y": 3.9897146932952925
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.806144578313253,
-        "y": 5.062204819277108
+        "x": 2.7217782857535706,
+        "y": 5.005991801729027
       },
       "isLocked": false,
       "linkedName": "Start Hub"
@@ -48,7 +48,7 @@
   "folder": "Start Hub No Vision",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }
