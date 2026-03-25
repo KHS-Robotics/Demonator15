@@ -1,0 +1,50 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "start left, to depot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "depot to hub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "STOPSwerve"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "FireAutomatic"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 10.0
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Start Bump",
+  "choreoAuto": false
+}

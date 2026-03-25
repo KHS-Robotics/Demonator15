@@ -74,14 +74,15 @@ public class Turret extends SubsystemBase {
     }
 
     public Command feed() {
-        var cmd = belt.runEnd(belt::start, belt::stop);
+        var cmd = belt.runEnd(() -> {
+            if (waistCanMakeShotSupplier.getAsBoolean()){
+                belt.start();
+            } else{
+                belt.stop();
+            }
+        }, belt::stop);
         cmd.addRequirements(belt);
         return cmd.withName("FeedFuel");
-    }
-
-    public Command checkFeed() {
-        var cmd = new ConditionalCommand(this.feed(), belt.stopCommand(), waistCanMakeShotSupplier);
-        return cmd.withName("FeedFuelWithTurretCheck");
     }
 
     public Command reload() {

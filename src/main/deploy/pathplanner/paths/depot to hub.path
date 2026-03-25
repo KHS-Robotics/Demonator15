@@ -1,0 +1,67 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.766,
+        "y": 6.073
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.6065905848787443,
+        "y": 5.490599144079885
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.4217261055634807,
+        "y": 3.9767760342368046
+      },
+      "prevControl": {
+        "x": 1.7489158345221114,
+        "y": 5.5811697574893016
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "RunIntake",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "STOPIntaking",
+      "waypointRelativePos": 0.3457123565158497,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 1.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 180.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Start Left No Vision",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 179.28384005452972
+  },
+  "useDefaultConstraints": true
+}

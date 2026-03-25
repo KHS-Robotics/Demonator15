@@ -195,8 +195,8 @@ public class RobotContainer {
     kDriverController.runIntake().whileTrue(kIntake.intakeFuel());
     kDriverController.reverseIndexer().whileTrue(kIndexer.reverseCommand());
 
-    kDriverController.shootFuel().whileTrue(kTurret.feed().alongWith(kIndexer.forwardCommand()));
-    kDriverController.x().whileTrue(kTurret.checkFeed().alongWith(kIndexer.checkForwardCommand()));
+    //kDriverController.shootFuel().whileTrue(kTurret.feed().alongWith(kIndexer.forwardCommand()));
+    kDriverController.shootFuel().whileTrue(kTurret.feed().alongWith(kIndexer.checkForwardCommand()));
 
     // // give driver ability to limit speeds for when elevator is high up to
     // // help prevent tipping over - useful for slight alignment adjustments too

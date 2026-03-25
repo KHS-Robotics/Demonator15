@@ -75,7 +75,7 @@ public class TurretConfig {
         // 7.5 shooter velocity - 4.2 max distance
         public static final double kMaxDistance = 4.66;
 
-        public static final double kHoodFudgeFactor = 0.0;
+        public static final double kHoodFudgeFactor = -1.5;
     }
 
 
@@ -97,8 +97,7 @@ public class TurretConfig {
         public static final double kWaistAnalogPositionConversionFactor = 
         (WaistConfig.kMinAbsoluteDegrees - WaistConfig.kMaxAbsoluteDegrees) / (WaistConfig.kMinAbsoluteVolts - WaistConfig.kMaxAbsoluteVolts);
         public static final double kWaistAnalogVelocityConversionFactor = kWaistAnalogPositionConversionFactor / 60.0;
-        public static final double kAbsoluteOffset = 161.794 + 109.570;
-
+        public static final double kAbsoluteOffset = 161.794 + 109.570 + 15.3;
         public static final double kMinSoftLimit = -100;
         public static final double kMaxSoftLimit = 22;
     }

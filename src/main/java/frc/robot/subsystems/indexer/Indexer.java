@@ -53,8 +53,14 @@ public class Indexer extends SubsystemBase {
   }
 
   public Command checkForwardCommand() {
-    var cmd = new ConditionalCommand(forwardCommand(), stopCommand(), RobotContainer.kTurret.waistCanMakeShotSupplier);
-    return cmd.withName("ForwardIndexerWithTurretCheck");
+     var cmd = runEnd(() -> {
+      if( RobotContainer.kTurret.waistCanMakeShotSupplier.getAsBoolean()){
+        this.forward();
+      } else{
+        this.stop();
+      }
+     }, this::stop);
+    return cmd.withName("ForwardIndexer");
   }
 
   public void reverse() {
