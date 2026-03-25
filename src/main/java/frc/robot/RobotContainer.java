@@ -34,6 +34,7 @@ import frc.robot.subsystems.drive.SwerveDrive;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Indexer.IndexerState;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.led.LEDStrip;
 // import frc.robot.subsystems.led.LEDStrip;
 import frc.robot.subsystems.turret.Turret;
 
@@ -111,9 +112,9 @@ public class RobotContainer {
       LimelightConfig.LimelightCamera2Name, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);  
 
   // Subsystems - LED indicators
-  // public static final LEDStrip kLedStrip = new LEDStrip(
-    
-  // );
+  public static final LEDStrip kLedStrip = new LEDStrip(
+    kTurret.hoodCanMakeShotSupplier, kTurret.waistCanMakeShotSupplier, kTurret.aimingAtHubSupplier
+  );
 
   /**
    * The container for the robot. Contains subsystems, operator interface devices,

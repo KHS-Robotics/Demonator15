@@ -25,13 +25,13 @@ public class Turret extends SubsystemBase {
     private final Kicker kicker = new Kicker();
     private final Spitter spitter = new Spitter();
 
-    private Boolean hoodCanMakeShot = false;
+    private boolean hoodCanMakeShot = false;
     public BooleanSupplier hoodCanMakeShotSupplier = () -> this.hoodCanMakeShot;
 
-    private Boolean waistCanMakeShot = false;
+    private boolean waistCanMakeShot = false;
     public BooleanSupplier waistCanMakeShotSupplier = () -> this.waistCanMakeShot;
 
-    private Boolean aimingAtHub = false;
+    private boolean aimingAtHub = false;
     public BooleanSupplier aimingAtHubSupplier = () -> aimingAtHub;
 
     private double overrideSetpointDegrees;

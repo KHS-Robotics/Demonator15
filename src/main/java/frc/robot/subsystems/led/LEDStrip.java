@@ -204,8 +204,6 @@ public class LEDStrip {
   }
 
   public void runEnabled() {
-    Color defaultColor = Color.white;
-
     if (aimingAtHub.getAsBoolean()) {
       if (hoodCanHit.getAsBoolean() && waistCanHit.getAsBoolean()) {
         setSolidColor(Color.green);
