@@ -26,14 +26,12 @@ public class LEDStrip {
   float currentPosition = 0f;
   Color[] pixelArray;
 
-  private final BooleanSupplier isAbleToAlignLeft, isAbleToAlignRight, isAbleToAlignCoralStation, hasCoral, isClimberEngaged;
+  private final BooleanSupplier hoodCanHit, waistCanHit, aimingAtHub;
 
-  public LEDStrip(BooleanSupplier isAbleToAlignLeft, BooleanSupplier isAbleToAlignRight, BooleanSupplier isAbleToAlignCoralStation, BooleanSupplier hasCoral, BooleanSupplier isClimberEngaged) {
-    this.isAbleToAlignLeft = isAbleToAlignLeft;
-    this.isAbleToAlignRight = isAbleToAlignRight;
-    this.isAbleToAlignCoralStation = isAbleToAlignCoralStation;
-    this.hasCoral = hasCoral;
-    this.isClimberEngaged = isClimberEngaged;
+  public LEDStrip(BooleanSupplier hoodCanHit, BooleanSupplier waistCanHit, BooleanSupplier aimingAtHub) {
+    this.hoodCanHit = hoodCanHit;
+    this.waistCanHit = waistCanHit;
+    this.aimingAtHub = aimingAtHub;
 
     pixelArray = new Color[LEDConfig.LED_LENGTH];
     for (int i = 0; i < pixelArray.length; i++) {
@@ -202,34 +200,27 @@ public class LEDStrip {
   }
 
   public void runDisabled() {
-    if (isClimberEngaged.getAsBoolean()) {
-      runRainbow();
-    } else {
       runAllianceColor();
-    }
   }
 
   public void runEnabled() {
     Color defaultColor = Color.white;
 
-    if (isClimberEngaged.getAsBoolean()) {
-      runRainbow();
-    }
-    else if (hasCoral.getAsBoolean()) {
-      if (isAbleToAlignLeft.getAsBoolean() && isAbleToAlignRight.getAsBoolean()) {
-        setSolidColor(Color.magenta);
-      } else if(isAbleToAlignLeft.getAsBoolean()) {
-        setSolidColor(Color.blue);
-      } else if(isAbleToAlignRight.getAsBoolean()) {
-        setSolidColor(Color.red);
-      } else {
+    if (aimingAtHub.getAsBoolean()) {
+      if (hoodCanHit.getAsBoolean() && waistCanHit.getAsBoolean()) {
         setSolidColor(Color.green);
+      } else if (waistCanHit.getAsBoolean()) {
+        setSolidColor(new Color(125, 250, 0));
+      } else if (hoodCanHit.getAsBoolean()) {
+        setSolidColor(Color.yellow);
+      } else {
+        setSolidColor(Color.magenta);
       }
     } else {
-      if(isAbleToAlignCoralStation.getAsBoolean()) {
-        setSolidColor(Color.orange);
-      } else {
-        setSolidColor(defaultColor);
+      if (waistCanHit.getAsBoolean()) {
+        setSolidColor(Color.green);
+      }else {
+        setSolidColor(Color.magenta);
       }
     }
   }

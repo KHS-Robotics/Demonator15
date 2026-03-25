@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotContainer;
@@ -24,11 +25,14 @@ public class Turret extends SubsystemBase {
     private final Kicker kicker = new Kicker();
     private final Spitter spitter = new Spitter();
 
-    private boolean hoodCanMakeShot = false;
-    private BooleanSupplier hoodCanMakeShotSupplier = () -> this.hoodCanMakeShot;
+    private Boolean hoodCanMakeShot = false;
+    public BooleanSupplier hoodCanMakeShotSupplier = () -> this.hoodCanMakeShot;
 
     private Boolean waistCanMakeShot = false;
-    private BooleanSupplier waistCanMakeShotSupplier = () -> this.waistCanMakeShot;
+    public BooleanSupplier waistCanMakeShotSupplier = () -> this.waistCanMakeShot;
+
+    private Boolean aimingAtHub = false;
+    public BooleanSupplier aimingAtHubSupplier = () -> aimingAtHub;
 
     private double overrideSetpointDegrees;
     private boolean useOverride;
@@ -73,6 +77,11 @@ public class Turret extends SubsystemBase {
         var cmd = belt.runEnd(belt::start, belt::stop);
         cmd.addRequirements(belt);
         return cmd.withName("FeedFuel");
+    }
+
+    public Command checkFeed() {
+        var cmd = new ConditionalCommand(this.feed(), belt.stopCommand(), waistCanMakeShotSupplier);
+        return cmd.withName("FeedFuelWithTurretCheck");
     }
 
     public Command reload() {
@@ -140,19 +149,23 @@ public class Turret extends SubsystemBase {
                     && RobotContainer.kSwerveDrive.getPose().getTranslation()
                     .getX() <= TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionX) {
                 target = currentPassingTranslation().get();
+                aimingAtHub = false;
 
             }else if ((alliance.isPresent() && alliance.get() == Alliance.Red)
                     && RobotContainer.kSwerveDrive.getPose().getTranslation()
                     .getX() > TurretConfig.TurretFieldAndRobotInfo.kRedHubPositionX) {
                 target = currentHubTranslation().get();
+                aimingAtHub = true;
 
             }else if ((alliance.isPresent() && alliance.get() == Alliance.Blue)
                     && RobotContainer.kSwerveDrive.getPose().getTranslation()
                     .getX() >= TurretConfig.TurretFieldAndRobotInfo.kBlueHubPositionX) {
                 target = currentPassingTranslation().get();
+                aimingAtHub = false;
 
             }else{
                 target = currentHubTranslation().get();
+                aimingAtHub = true;
             }
             return target;
         };

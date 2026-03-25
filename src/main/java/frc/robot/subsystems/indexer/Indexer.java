@@ -8,7 +8,9 @@ import com.revrobotics.ResetMode;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -48,6 +50,11 @@ public class Indexer extends SubsystemBase {
   public Command forwardCommand() {
     var cmd = runEnd(this::forward, this::stop);
     return cmd.withName("ForwardIndexer");
+  }
+
+  public Command checkForwardCommand() {
+    var cmd = new ConditionalCommand(forwardCommand(), stopCommand(), RobotContainer.kTurret.waistCanMakeShotSupplier);
+    return cmd.withName("ForwardIndexerWithTurretCheck");
   }
 
   public void reverse() {
