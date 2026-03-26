@@ -11,11 +11,10 @@
     "To Tower (Not From Start) No Vision"
   ],
   "autoFolders": [
-    "Start Trench",
-    "Start Bump",
     "Start Depot",
     "Start Hub",
-    "Start Outpost"
+    "Start Outpost",
+    "Start Trench"
   ],
   "defaultMaxVel": 1.0,
   "defaultMaxAccel": 2.0,

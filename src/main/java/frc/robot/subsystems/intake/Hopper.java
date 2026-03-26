@@ -91,7 +91,10 @@ public class Hopper extends SubsystemBase {
     public Command retractHopperCommand() {
         var setHopperState = runOnce(() -> setpointState = HopperState.Stowed);
 
-        var cmd = (this.run(() -> moveHopper(HopperState.Stowed)).withTimeout(0.5)).andThen(setHopperState)
+        var cmd = (this.run(() -> {
+            moveHopper(HopperState.Stowed);
+            setpointState = HopperState.Stowed;
+        }).withTimeout(0.5)).andThen(setHopperState)
                 .andThen(this::stop);
         return cmd;
     }
@@ -99,7 +102,10 @@ public class Hopper extends SubsystemBase {
     public Command deployHopperCommand() {
         var setHopperState = runOnce(() -> setpointState = HopperState.Deployed);
 
-        var cmd = ((this.run(() -> moveHopper(HopperState.Deployed)).withTimeout(0.6)).andThen(setHopperState))
+        var cmd = ((this.run(() -> {
+            moveHopper(HopperState.Deployed);
+            setpointState = HopperState.Deployed;
+        }).withTimeout(0.6)).andThen(setHopperState))
                 .andThen(this::stop);
         return cmd;
     }

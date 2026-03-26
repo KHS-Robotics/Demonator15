@@ -194,6 +194,7 @@ public class RobotContainer {
     kDriverController.fuelDump().whileTrue(kIntake.extendDeployer());
 
     kDriverController.runIntake().whileTrue(kIntake.intakeFuel());
+    kDriverController.runIntakeReverse().whileTrue(kIntake.outtakeFuel());
     kDriverController.reverseIndexer().whileTrue(kIndexer.reverseCommand());
 
     //kDriverController.shootFuel().whileTrue(kTurret.feed().alongWith(kIndexer.forwardCommand()));
@@ -288,6 +289,8 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("RunIntake", kIntake.intakeFuel());
     NamedCommands.registerCommand("RunIntakeReverse", kIntake.outtakeFuel());
+    NamedCommands.registerCommand("AgitateIntake",kIntake.agitateDeployer().repeatedly());
+    
 
     NamedCommands.registerCommand("DeployHopper", kIntake.deployHopper());
     NamedCommands.registerCommand("RetractHopper", kIntake.retractHopper());
@@ -310,6 +313,7 @@ public class RobotContainer {
 
     // turret
     NamedCommands.registerCommand("FireAutomatic", kTurret.feed().alongWith(kIndexer.forwardCommand()));
+    NamedCommands.registerCommand("FireAutomaticWithAgitate", kTurret.feed().alongWith((kIndexer.forwardCommand()).alongWith(kIntake.agitateDeployer().repeatedly())).withTimeout(5));
     NamedCommands.registerCommand("FireManual", kTurret.shoot());
     NamedCommands.registerCommand("Reload", kTurret.kick());
 
