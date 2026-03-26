@@ -19,7 +19,7 @@ public class LEDStrip {
   AddressableLEDBuffer buffer;
   int numberSections;
   int counter;
-  int ticksPerSecond = 20;
+  int ticksPerSecond = 5;
 
   float speedFactor = 1f;
   float sections = 5f;

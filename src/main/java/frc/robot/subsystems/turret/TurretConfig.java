@@ -23,7 +23,7 @@ public class TurretConfig {
         public static final double kHoodAnalogPositionConversionFactor = 
         (HoodConfig.kMinAbsoluteDegrees - HoodConfig.kMaxAbsoluteDegrees) / (HoodConfig.kMinAbsoluteVolts - HoodConfig.kMaxAbsoluteVolts);
         public static final double kHoodAnalogVelocityConversionFactor = kHoodAnalogPositionConversionFactor / 60.0;
-        public static final double kAbsoluteOffset = 114.491 + 102.9840670899196;
+        public static final double kAbsoluteOffset = 114.491 + 102.984 ;
 
         //I think we will need a conversion for rotations of motor to how many degrees the hood will change
         public static final double kRotationsToDegreesConversion = 3.791;
