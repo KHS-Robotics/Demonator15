@@ -1,6 +1,7 @@
 package frc.robot.subsystems.turret;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
@@ -37,21 +38,32 @@ public class Turret extends SubsystemBase {
     private double overrideSetpointDegrees;
     private boolean useOverride;
 
+    private double hoodCalcSetPoint = 0.0;
+    private DoubleSupplier hoodCalcSetPointSupplier = () -> hoodCalcSetPoint;
+    private double waistCalcSetPoint = 0.0;
+    private DoubleSupplier waistCalcSetPointSupplier = () -> waistCalcSetPoint;
+
     public Turret() {
         SmartDashboard.putData(this);
 
         
-        waist.setDefaultCommand(waist.setDegreesCommand(getDesiredWaistAngle(currentShootingTarget(), false)));
-        hood.setDefaultCommand(hood.setAngleCommand(getDesiredHoodAngle(currentShootingTarget(), false)));
+        waist.setDefaultCommand(waist.setDegreesCommand(waistCalcSetPointSupplier));
+        hood.setDefaultCommand(hood.setAngleCommand(hoodCalcSetPointSupplier));
         spitter.setDefaultCommand(spitter.startCommand());
         kicker.setDefaultCommand(kicker.startCommand());
     }
-
+    int count = 0;
     @Override
     public void periodic() {
         // TODO
         // every 100ms update calculations here to set them to a variable
         // have current usage of calculations pull from that variable
+        if (count % 10 == 0) {
+            count = 0;
+            hoodCalcSetPoint = getDesiredHoodAngle(currentShootingTarget(), false).getAsDouble();
+            waistCalcSetPoint = getDesiredWaistAngle(currentShootingTarget(), false).getAsDouble();
+        }
+        count++;
     }
 
     public void stop() {
@@ -352,7 +364,7 @@ public class Turret extends SubsystemBase {
      * @return the angle that the waist should be to hit the position towards based
      *         on the current position and velocity of the robot
      */
-    private Supplier<Double> getDesiredWaistAngle(Supplier<Translation2d> towards, boolean useVelocity) {
+    private DoubleSupplier getDesiredWaistAngle(Supplier<Translation2d> towards, boolean useVelocity) {
         return () -> {
             if (useOverride){
                 var angle = overrideSetpointDegrees;
@@ -387,7 +399,7 @@ public class Turret extends SubsystemBase {
      * @return the angle that the waist should be to score in the hub based on the
      *         current position and velocity of the robot
      */
-    private Supplier<Double> getDesiredWaistAngle(boolean useVelocity) {
+    private DoubleSupplier getDesiredWaistAngle(boolean useVelocity) {
         return getDesiredWaistAngle(currentHubTranslation(), useVelocity);
     }
 
@@ -454,7 +466,7 @@ public class Turret extends SubsystemBase {
      * @return the angle that the hood should be to hit the position towards based
      *         on the current position and velocity of the robot
      */
-    private Supplier<Double> getDesiredHoodAngle(Supplier<Translation2d> towards, boolean useVelocity) {
+    private DoubleSupplier getDesiredHoodAngle(Supplier<Translation2d> towards, boolean useVelocity) {
         return () -> {
             double angle = getHoodAimFinalAngle(towards, useVelocity).get();
             return angle;
@@ -466,21 +478,21 @@ public class Turret extends SubsystemBase {
      * @return the angle that the hood should be to score in the hub based on the
      *         current position and velocity of the robot
      */
-    private Supplier<Double> getDesiredHoodAngle(boolean useVelocity) {
+    private DoubleSupplier getDesiredHoodAngle(boolean useVelocity) {
         return getDesiredHoodAngle(currentHubTranslation(), useVelocity);
     }
 
     public Command aimTowardsHubWithVelocity() {
-        var aimHood = hood.runEnd(() -> hood.setSetpointAngle(getDesiredHoodAngle(true).get()), hood::stop);
-        var aimWaist = waist.runEnd(() -> waist.setSetpointDegrees(getDesiredWaistAngle(true).get()), waist::stop);
+        var aimHood = hood.runEnd(() -> hood.setSetpointAngle(getDesiredHoodAngle(true).getAsDouble()), hood::stop);
+        var aimWaist = waist.runEnd(() -> waist.setSetpointDegrees(getDesiredWaistAngle(true).getAsDouble()), waist::stop);
         var cmd = aimWaist.alongWith(aimHood);
         cmd.addRequirements(hood, waist);
         return cmd.withName("TurretAimTowardsHubWithVelocity");
     }
 
     public Command aimTowardsHub() {
-        var aimHood = hood.runEnd(() -> hood.setSetpointAngle(getDesiredHoodAngle(false).get()), hood::stop);
-        var aimWaist = waist.runEnd(() -> waist.setSetpointDegrees(getDesiredWaistAngle(false).get()), waist::stop);
+        var aimHood = hood.runEnd(() -> hood.setSetpointAngle(getDesiredHoodAngle(false).getAsDouble()), hood::stop);
+        var aimWaist = waist.runEnd(() -> waist.setSetpointDegrees(getDesiredWaistAngle(false).getAsDouble()), waist::stop);
         var cmd = aimWaist.alongWith(aimHood);
         cmd.addRequirements(hood, waist);
         return cmd.withName("TurretAimTowardsHub");
@@ -506,9 +518,9 @@ public class Turret extends SubsystemBase {
 
     public Command aimForPassing() {
         var aimHood = hood.runEnd(
-                () -> hood.setSetpointAngle(getDesiredHoodAngle(currentPassingTranslation(), false).get()), hood::stop);
+                () -> hood.setSetpointAngle(getDesiredHoodAngle(currentPassingTranslation(), false).getAsDouble()), hood::stop);
         var aimWaist = waist.runEnd(
-                () -> waist.setSetpointDegrees(getDesiredWaistAngle(currentPassingTranslation(), false).get()),
+                () -> waist.setSetpointDegrees(getDesiredWaistAngle(currentPassingTranslation(), false).getAsDouble()),
                 waist::stop);
         var cmd = aimWaist.alongWith(aimHood);
         cmd.addRequirements(this);
@@ -549,8 +561,8 @@ public class Turret extends SubsystemBase {
         builder.addBooleanProperty("Is Turret At Setpoint?", () -> hood.isAtSetpoint() && waist.isAtSetpoint(), null);
         builder.addBooleanProperty("Hood Can Hit", () -> hoodCanMakeShotSupplier.getAsBoolean(), null);
         builder.addBooleanProperty("Waist Can Hit", () -> waistCanMakeShotSupplier.getAsBoolean(), null);
-        builder.addDoubleProperty("hood insurace angle", () -> getDesiredHoodAngle(currentShootingTarget(), false).get(), null);
-        builder.addDoubleProperty("waist insurace angle", () -> getDesiredWaistAngle(currentShootingTarget(), false).get(), null);
+        builder.addDoubleProperty("hood insurace angle", () -> hoodCalcSetPointSupplier.getAsDouble(), null);
+        builder.addDoubleProperty("waist insurace angle", () -> waistCalcSetPointSupplier.getAsDouble(), null);
         builder.addDoubleProperty("current shooting target x",() -> currentShootingTarget().get().getX(), null);
         builder.addDoubleProperty("current shooting target y",() -> currentShootingTarget().get().getY(), null);
         // hood.aimHoodSimpleAngle(getCurrentHubPosition()), null);

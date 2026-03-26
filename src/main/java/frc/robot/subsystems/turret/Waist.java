@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.revrobotics.AbsoluteEncoder;
@@ -93,9 +94,9 @@ public class Waist extends SubsystemBase {
 
   }
 
-  public Command setDegreesCommand(Supplier<Double> angleDegrees) {
+  public Command setDegreesCommand(DoubleSupplier angleDegrees) {
     // 0 degrees should be perpendicular with the back
-    var cmd = this.run(() -> setSetpointDegrees(angleDegrees.get())).until(this::isAtSetpoint);
+    var cmd = this.run(() -> setSetpointDegrees(angleDegrees.getAsDouble())).until(this::isAtSetpoint);
     return cmd.withName("SetWaistSetpoint");
   }
 
