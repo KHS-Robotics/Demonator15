@@ -47,6 +47,13 @@ public class Turret extends SubsystemBase {
         kicker.setDefaultCommand(kicker.startCommand());
     }
 
+    @Override
+    public void periodic() {
+        // TODO
+        // every 100ms update calculations here to set them to a variable
+        // have current usage of calculations pull from that variable
+    }
+
     public void stop() {
         hood.stop();
         waist.stop();
@@ -352,8 +359,8 @@ public class Turret extends SubsystemBase {
                 return angle;
             }
             else{
-            var angle = getWaistAimFinalRotation(towards, useVelocity);
-            return angle;
+                var angle = getWaistAimFinalRotation(towards, useVelocity);
+                return angle;
             }
         };
     }

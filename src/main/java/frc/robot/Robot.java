@@ -28,17 +28,17 @@ public class Robot extends TimedRobot {
     // for debugging when not FMS attached
     CommandScheduler.getInstance().onCommandInitialize((cmd) -> {
       if (!DriverStation.isFMSAttached()) {
-        System.out.println(cmd.getName() + " started.");
+        // System.out.println(cmd.getName() + " started.");
       }
     });
     CommandScheduler.getInstance().onCommandInterrupt((cmd) -> {
       if (!DriverStation.isFMSAttached()) {
-        System.out.println(cmd.getName() + " interrupted.");
+        // System.out.println(cmd.getName() + " interrupted.");
       }
     });
     CommandScheduler.getInstance().onCommandFinish((cmd) -> {
       if (!DriverStation.isFMSAttached()) {
-        System.out.println(cmd.getName() + " ended.");
+        // System.out.println(cmd.getName() + " ended.");
       }
     });
 
