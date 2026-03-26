@@ -223,11 +223,11 @@ public class RobotContainer {
     //kOperatorStick.stowIntake().onTrue(kIntake.stowDeployer());
 
 
-    //Indexer
-    kOperatorStick.stowIntake().onTrue(kIntake.deployer.bangBangControlStow());
-    kOperatorStick.deployIntake().onTrue(kIntake.deployer.bangBangControlDeploy());
-    kOperatorStick.forwardIndex().whileTrue(kIndexer.forwardCommand());
-    kOperatorStick.reverseIndex().whileTrue(kIndexer.reverseCommand());
+    // Indexer
+    // kOperatorStick.stowIntake().onTrue(kIntake.deployer.bangBangControlStow());
+    // kOperatorStick.deployIntake().onTrue(kIntake.deployer.bangBangControlDeploy());
+    // kOperatorStick.forwardIndex().whileTrue(kIndexer.forwardCommand());
+    // kOperatorStick.reverseIndex().whileTrue(kIndexer.reverseCommand());
 
     //Climber
     // kOperatorStick.autoClimb().onTrue(kClimber.climbL1());
@@ -236,7 +236,9 @@ public class RobotContainer {
 
     //Turret
     //we want this to (eventually) only turn on the belt, everything else should be defaultcommand
-    kOperatorStick.shoot().whileTrue(kTurret.shootContinuously());
+    // kOperatorStick.shoot().whileTrue(kTurret.shootContinuously());
+    kOperatorStick.setHoodAim().whileTrue(kTurret.goToSetHoodAngle());
+    kOperatorStick.setWaistAim().whileTrue(kTurret.setOverride(true, 0));
   }
 
   /** https://pathplanner.dev/home.html */

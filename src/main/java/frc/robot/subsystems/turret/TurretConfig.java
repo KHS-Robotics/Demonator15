@@ -97,7 +97,7 @@ public class TurretConfig {
         public static final double kWaistAnalogPositionConversionFactor = 
         (WaistConfig.kMinAbsoluteDegrees - WaistConfig.kMaxAbsoluteDegrees) / (WaistConfig.kMinAbsoluteVolts - WaistConfig.kMaxAbsoluteVolts);
         public static final double kWaistAnalogVelocityConversionFactor = kWaistAnalogPositionConversionFactor / 60.0;
-        public static final double kAbsoluteOffset = 312.152 + 9.721;
+        public static final double kAbsoluteOffset = 312.152 + 16.471;
         public static final double kMinSoftLimit = -100;
         public static final double kMaxSoftLimit = 22;
     }

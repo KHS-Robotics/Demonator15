@@ -5,9 +5,9 @@ public class ButtonMap {
     public static final int INTAKE_BUTTON = 0;
     public static final int OUTTAKE_BUTTON = 0;
 
-    public static final int DEPLOY_INTAKE_BUTTON = 3;
+    public static final int DEPLOY_INTAKE_BUTTON = 1;
     public static final int AGITATE_INTAKE_BUTTON = 0;
-    public static final int STOW_INTAKE_BUTTON = 4;
+    public static final int STOW_INTAKE_BUTTON = 2;
 
 
     //Indexer
@@ -21,6 +21,6 @@ public class ButtonMap {
 
 
     //Turret
-    public static final int FIRE_BUTTON = 1;
-    public static final int MANUAL_AIM = 8;
+    public static final int SET_WAIST_AIM = 3;
+    public static final int SET_HOOD_AIM = 4;
 }
