@@ -107,7 +107,7 @@ public class LEDv2 {
       }
       else {
        if (waistCanHit.getAsBoolean()){
-         LEDPattern.solid(Color.kAquamarine);
+         LEDPattern.solid(Color.kDarkMagenta);
 
         } else {
          LEDPattern.solid(Color.kLavender);
