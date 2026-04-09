@@ -188,6 +188,8 @@ public class RobotContainer {
     SHOOT (INDEX + LOAD TURRET) = R
     */
 
+    kDriverController.x().onTrue(kTurret.calibrateHoodEncoder());
+
     kDriverController.stowIntake().onTrue(kIntake.stowDeployer());
     kDriverController.deployIntake().onTrue(kIntake.deployDeployer());
     kDriverController.agitateIntake().whileTrue(kIntake.agitateDeployer().repeatedly());
@@ -198,7 +200,7 @@ public class RobotContainer {
     kDriverController.reverseIndexer().whileTrue(kIndexer.reverseCommand());
 
     //kDriverController.shootFuel().whileTrue(kTurret.feed().alongWith(kIndexer.forwardCommand()));
-    kDriverController.shootFuel().whileTrue(kTurret.feed().alongWith(kIndexer.checkForwardCommand()));
+    //kDriverController.shootFuel().whileTrue(kTurret.feed().alongWith(kIndexer.checkForwardCommand()));<- use this one
 
     // // give driver ability to limit speeds for when elevator is high up to
     // // help prevent tipping over - useful for slight alignment adjustments too

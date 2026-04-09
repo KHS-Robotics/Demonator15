@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.6491298145506419,
-        "y": 0.9491298145506415
+        "x": 3.5820120481927713,
+        "y": 3.958506024096385
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6015274049096226,
-        "y": 1.6065394531025396
+        "x": 3.0028433734939757,
+        "y": 3.9694337349397593
       },
       "isLocked": false,
-      "linkedName": "Outpost Pickup"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.1067710843373493,
-        "y": 2.2428554216867465
+        "x": 2.809885877318117,
+        "y": 3.958506024096385
       },
       "prevControl": {
-        "x": 2.3964411597864768,
-        "y": 2.037333396350568
+        "x": 3.4436931062403433,
+        "y": 3.958506024096385
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Tower"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -135.82126662196723
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "To Tower (Not From Start) No Vision",
+  "folder": "Start Hub No Vision",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

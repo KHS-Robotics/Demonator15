@@ -47,10 +47,10 @@ public class Turret extends SubsystemBase {
         SmartDashboard.putData(this);
 
         
-        waist.setDefaultCommand(waist.setDegreesCommand(waistCalcSetPointSupplier));
-        hood.setDefaultCommand(hood.setAngleCommand(hoodCalcSetPointSupplier));
-        spitter.setDefaultCommand(spitter.startCommand());
-        kicker.setDefaultCommand(kicker.startCommand());
+        // waist.setDefaultCommand(waist.setDegreesCommand(waistCalcSetPointSupplier));
+        // hood.setDefaultCommand(hood.setAngleCommand(hoodCalcSetPointSupplier));
+        // spitter.setDefaultCommand(spitter.startCommand());
+        // kicker.setDefaultCommand(kicker.startCommand());
     }
     int count = 0;
     @Override
@@ -390,7 +390,8 @@ public class Turret extends SubsystemBase {
     }
 
     public void calibrateRelativeEncoders() {
-        waist.calibrateRelativeEncoder();
+        //REMOVED DUE TO ISSUES AT BENSALEM
+        //waist.calibrateRelativeEncoder();
         hood.calibrateRelativeEncoder();
     }
 
@@ -552,6 +553,10 @@ public class Turret extends SubsystemBase {
         var cmd = waist.setDegreesCommand(() -> 0.0);
         cmd.addRequirements(waist);
         return cmd.withName("GoToWaistAngle");
+    }
+
+    public Command calibrateHoodEncoder(){
+        return hood.calibrateRelativeEncoderCommand();
     }
 
     public void initSendable(SendableBuilder builder) {

@@ -45,7 +45,7 @@ import com.revrobotics.ResetMode;
 public class Waist extends SubsystemBase {
   private final SparkMax motor;
   private final SparkClosedLoopController pid;
-  private final SparkAnalogSensor absoluteEncoder;
+  private final SparkAnalogSensor absoluteEncoder;  
   private final RelativeEncoder relativeEncoder;
 
   private double setpointRotationDegrees;

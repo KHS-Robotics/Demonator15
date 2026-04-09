@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 0.6491298145506419,
-        "y": 0.794
+        "y": 0.9491298145506415
       },
       "prevControl": null,
       "nextControl": {
         "x": 1.415441383221903,
-        "y": 1.4596082704570066
+        "y": 1.6147380850076478
       },
       "isLocked": false,
       "linkedName": "Outpost Pickup"
