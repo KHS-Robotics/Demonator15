@@ -30,7 +30,7 @@ import frc.robot.RobotMap;
 /** motor used in a rack and pinion to deploy the hopper **/
 
 public class Hopper extends SubsystemBase {
-    private enum HopperState {
+    public enum HopperState {
         Deployed(IntakeConfig.HopperSetPoints.DEPLOY),
         Stowed(IntakeConfig.HopperSetPoints.STOW);
 
@@ -71,6 +71,10 @@ public class Hopper extends SubsystemBase {
     public Command primitiveSetVoltage() {
         var cmd = runEnd(() -> motor.setVoltage(4.0), this::stop);
         return cmd;
+    }
+
+    public void setHopperState(HopperState state) {
+        moveHopper(state);
     }
 
     public void moveHopper(HopperState setpointState) {

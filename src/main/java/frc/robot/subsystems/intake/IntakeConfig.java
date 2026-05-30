@@ -2,6 +2,20 @@ package frc.robot.subsystems.intake;
 
 public class IntakeConfig {
 
+    public enum DeployerState{
+        kStow(-37.853),
+        kAgitateHigh(20.0),
+        kAgitateLow(50.0),
+        kDeploy(108.287),
+        kExtend(30.0);
+
+        public final double degrees;
+
+        DeployerState(double degrees){
+            this.degrees = degrees;
+        }
+    }
+
     protected final class DeployerSetpoints {
         public static final double STOW = -37.853;
         public static final double AGITATE_HIGH = 20.0;

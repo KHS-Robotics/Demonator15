@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -7,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.intake.Hopper.HopperState;
+import frc.robot.subsystems.intake.IntakeConfig.DeployerState;
 
 public class Intake extends SubsystemBase {
     public final Deployer deployer = new Deployer();
@@ -16,6 +20,22 @@ public class Intake extends SubsystemBase {
 
     public Intake() {
         SmartDashboard.putData(this);
+    }
+
+    public void setDeployerState(DeployerState state) {
+        deployer.setDeployerState(state);
+    }
+
+    public void setHopperState(HopperState state) {
+        hopper.setHopperState(state);
+    }
+
+    public boolean deployerIsAtSetpoint() {
+        return deployer.isAtSetpoint();
+    }
+
+    public BooleanSupplier hopperBlockingIntake() {
+        return hopper.isBlockingIntake();
     }
    
     public Command deployDeployer() {

@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.intake.IntakeConfig.DeployerConfig;
+import frc.robot.subsystems.intake.IntakeConfig.DeployerState;
 
 public class Deployer extends SubsystemBase {
   private double setpointAngleDegrees;
@@ -108,6 +109,10 @@ public class Deployer extends SubsystemBase {
 
   public void keepDeployerDown() {
     motor.setVoltage(-1.0);
+  }
+
+  public void setDeployerState(DeployerState state) {
+    setSetpointAngle(state.degrees);
   }
 
   public void setSetpointAngle(double setpointDegrees) {
