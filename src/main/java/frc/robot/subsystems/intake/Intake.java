@@ -37,6 +37,10 @@ public class Intake extends SubsystemBase {
     public BooleanSupplier hopperBlockingIntake() {
         return hopper.isBlockingIntake();
     }
+
+    public Command intakeSlow() {
+        return grabbyWheels.intakeSlowCommand().withTimeout(0.4);
+    }
    
     public Command deployDeployer() {
         var hopperCurrentlyRetracted = hopper.deployHopperCommand()
