@@ -52,10 +52,6 @@ public class DemonCommandXboxController extends CommandXboxController {
     return this.povRight();
   }
 
-  // public Trigger shootFuel(){
-  //   return this.rightTrigger();
-  // }
-
   public Trigger runIntake(){
     return this.a();
   }
@@ -68,9 +64,9 @@ public class DemonCommandXboxController extends CommandXboxController {
     return this.b();
   }
 
-  // public Trigger shootFuel(){
-  //   return this.rightTrigger();
-  // }
+  public Trigger shootFuel(){
+    return this.rightTrigger();
+  }
 
   // public Trigger robotRelative() {
   //   return this.a();

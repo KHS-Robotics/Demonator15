@@ -20,12 +20,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.cameras.CameraConfig.PhotonVisionConfig;
-import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.Elevator;
 import frc.robot.subsystems.cameras.CameraConfig.LimelightConfig;
 import frc.robot.subsystems.cameras.CameraConfig;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
@@ -176,8 +173,8 @@ public class RobotContainer {
     // reset robot heading - ALWAYS FACE RED ALLIANCE WHEN DOING THIS - this is
     // // useful during driver practice to reset for field oriented driving direction
     // // or a rare odd scenario on the field during a match
-    // kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading(() -> 1.016, () -> 4.0));
-    kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading(() -> kSwerveDrive.getPose().getX(), () -> kSwerveDrive.getPose().getY()));
+    kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading(() -> 1.016, () -> 4.0));
+    // kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading(() -> kSwerveDrive.getPose().getX(), () -> kSwerveDrive.getPose().getY()));
 
     /*
     STOW INTAKE = DOWN BUTTON
@@ -199,8 +196,7 @@ public class RobotContainer {
     kDriverController.runIntakeReverse().whileTrue(kIntake.outtakeFuel());
     kDriverController.reverseIndexer().whileTrue(kIndexer.reverseCommand());
 
-    //kDriverController.shootFuel().whileTrue(kTurret.feed().alongWith(kIndexer.forwardCommand()));
-    //kDriverController.shootFuel().whileTrue(kTurret.feed().alongWith(kIndexer.checkForwardCommand()));<- use this one
+    kDriverController.shootFuel().whileTrue(kTurret.feed().alongWith(kIndexer.checkForwardCommand()));
 
     // // give driver ability to limit speeds for when elevator is high up to
     // // help prevent tipping over - useful for slight alignment adjustments too

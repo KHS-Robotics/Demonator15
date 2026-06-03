@@ -47,8 +47,8 @@ public class Turret extends SubsystemBase {
         SmartDashboard.putData(this);
 
         
-        // waist.setDefaultCommand(waist.setDegreesCommand(waistCalcSetPointSupplier));
-        // hood.setDefaultCommand(hood.setAngleCommand(hoodCalcSetPointSupplier));
+        waist.setDefaultCommand(waist.setDegreesCommand(waistCalcSetPointSupplier));
+        hood.setDefaultCommand(hood.setAngleCommand(hoodCalcSetPointSupplier));
         // spitter.setDefaultCommand(spitter.startCommand());
         // kicker.setDefaultCommand(kicker.startCommand());
     }
@@ -390,8 +390,8 @@ public class Turret extends SubsystemBase {
     }
 
     public void calibrateRelativeEncoders() {
-        //REMOVED DUE TO ISSUES AT BENSALEM
-        //waist.calibrateRelativeEncoder();
+        
+        waist.calibrateRelativeEncoder();
         hood.calibrateRelativeEncoder();
     }
 
