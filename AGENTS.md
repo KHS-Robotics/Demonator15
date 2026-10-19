@@ -8,55 +8,32 @@ chmod +x gradlew
 ./gradlew build   # full compile + tests (matches GitHub Actions CI)
 ```
 
-CI runs the same `build` task in the WPILib cross container. Use Java **17** (Gradle toolchain in `build.gradle`).
+CI uses the same `build` task (WPILib cross container, Java 17 per `build.gradle`).
 
 ## Cloud agent environment
 
-Config is **as code**: `.cursor/environment.json` runs `.cursor/cloud-install.sh`, which:
+Environment is **config as code**: `.cursor/environment.json` runs `.cursor/cloud-install.sh` (JDK, `./gradlew classes`, and desktop **PathPlanner** / **Elastic** on the agent VM for the Desktop tab). There is no boot service. After changing the install script, merge to `main` and run a new team environment **build**.
 
-- Installs OpenJDK 17 and runs `./gradlew classes`
-- Installs **PathPlanner** (`pathplanner`, 2026.1.2) and **Elastic** WPILib (`elastic`, 2026.1.2) for the agent **Desktop** tab
-
-There is no long-running boot service; this is a Gradle robot project. After changing `cloud-install.sh`, merge to `main` and refresh the team environment **build**.
-
-**Desktop sim workflow (optional verification):**
-
-1. `./gradlew simulateJava` — enable the robot in Driver Station sim
-2. `elastic` — connect to NT; import layout from `src/main/deploy/elastic/elastic-layout.json`
-3. `pathplanner` — **Open Robot Project** at the repo root (`src/main/deploy/pathplanner/`)
-
-Vendor REV/Phoenix libraries come from Gradle `vendordeps` for compile/sim; no separate vendor desktop tools are installed in the cloud image.
+For manual checks on Desktop: start WPILib sim (`./gradlew simulateJava`), enable the robot in Driver Station sim, then use `elastic` (NT dashboard) and `pathplanner` (open the **repo root** as the robot project). Deploy assets live under `src/main/deploy/`. Vendor libraries for sim/build come from Gradle `vendordeps`, not separate vendor desktop installers.
 
 ## Architecture
 
-WPILib **command-based** layout:
+WPILib **command-based** robot:
 
-| Layer | Location | Responsibility |
-| --- | --- | --- |
-| Robot / container | `Robot.java`, `RobotContainer.java` | Scheduler, subsystem instances, bindings, PathPlanner named commands |
-| Subsystems | `subsystems/**` | Hardware, `periodic()`, imperative APIs (`SwerveDrive.drive()`, setpoints, odometry) |
-| Commands | `commands/**` | Command factories (`DriveCommands`, mechanism commands) — no CAN IDs here |
-| Constants | `constants/`, `*Config`, `RobotMap` | Field poses (`FieldConstants`), tuning, CAN IDs |
-| Deploy | `src/main/deploy/` | PathPlanner paths/autos, Elastic layout |
+- **`Robot` / `RobotContainer`** — subsystem instances, default commands, button bindings, PathPlanner named commands.
+- **`subsystems/`** — hardware, `periodic()`, and imperative control APIs (no Xbox wiring when avoidable).
+- **`commands/`** — command factories grouped by mechanism (e.g. drive teleop and utilities under `commands/drive/`).
+- **`constants/`**, **`*Config`**, **`RobotMap`** — field/season poses, tuning, CAN IDs.
+- **`src/main/deploy/`** — PathPlanner paths/autos, Elastic layout, other deploy files.
 
-**Swerve (current structure):**
+**Swerve:** drivetrain code under `subsystems/drive/`; operator-facing drive commands under `commands/drive/`. PathPlanner autos integrate through `SwerveDrive`’s pose and chassis-speed APIs—keep that contract stable when refactoring.
 
-- `subsystems/drive/` — `SwerveDrive`, modules, `SwerveDynamics`, `SwerveModuleOptimization`, `SwerveDriveConfig`
-- `commands/drive/` — `DriveCommands`, `SwerveTeleopInputs` (teleop, go-slow, heading hold, reset pose, stop)
-- PathPlanner `AutoBuilder` stays on `SwerveDrive`; do not break `getPose`, `resetPose`, `getChassisSpeeds`, or the module-state consumer without updating PathPlanner.
+## Tests and conventions
 
-## Tests
-
-- Run `./gradlew test` after drive or command changes.
-- Pure logic: `SwerveDynamics`, `SwerveModuleOptimization`, `SwerveTeleopInputs`, `AngleUtils` (see `.cursor/rules/frc-unit-tests.mdc`).
-- Do not construct full `SwerveDrive` in unit tests (`RobotContainer` static init); use package-visible helpers or module-level sim tests.
-
-## Cursor rules
-
-See `.cursor/rules/*.mdc` for FRC-specific conventions (subsystems vs commands, PathPlanner naming, unit tests).
+Run `./gradlew test` (or `build`) when changing behavior. Testing patterns and scope live in `.cursor/rules/frc-unit-tests.mdc`. Other FRC conventions: `.cursor/rules/*.mdc`.
 
 ## PR expectations
 
-- Keep robot behavior changes scoped; describe **driver** and **auto** impact in the PR.
-- PathPlanner named command strings in Java must **exactly** match the PathPlanner GUI.
-- Ensure CI (`build`) passes before merge.
+- Scope changes narrowly; note **driver** and **auto** impact.
+- PathPlanner named commands in Java must match the PathPlanner GUI strings exactly.
+- CI `build` should pass before merge.
