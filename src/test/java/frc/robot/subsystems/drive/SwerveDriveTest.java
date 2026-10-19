@@ -3,7 +3,7 @@ package frc.robot.subsystems.drive;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -33,22 +33,15 @@ class SwerveDriveTest {
 
   private SwerveDriveTestFixture fixture;
 
-  @AfterAll
-  void destroyFixture() {
-    SwerveDriveTestFixture.closeActive();
-    fixture = null;
+  @BeforeEach
+  void setUp() {
+    fixture = SwerveDriveTestFixture.open();
+    fixture.resetBetweenTests();
   }
 
-  @BeforeEach
-  void resetSwerveBetweenTests() {
-    fixture = SwerveDriveTestFixture.open();
-    CommandScheduler.getInstance().cancelAll();
-    SwerveDrive swerve = fixture.swerve();
-    swerve.stop();
-    fixture.setHeading(Rotation2d.kZero);
-    swerve.resetPose(FieldConstants.kDefaultOdometryPose);
-    swerve.seedSimulationPivotEncodersZero();
-    SimHooks.stepTiming(0.02);
+  @AfterEach
+  void tearDown() {
+    fixture.resetBetweenTests();
   }
 
   @Test
