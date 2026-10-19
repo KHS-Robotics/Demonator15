@@ -6,15 +6,18 @@ alwaysApply: false
 
 # Subsystems vs commands
 
-- **Subsystems** (`subsystems/**`): hardware, `periodic()`, pose/closed-loop APIs (`drive()`, `stop()`, setpoints). No Xbox bindings or `Command` factories on subsystems when avoidable — use `commands/**` factories (e.g. `DriveCommands`).
+- **Subsystems** (`subsystems/**`): hardware, `periodic()`, pose/closed-loop APIs (`drive()`, `stop()`, setpoints). No Xbox bindings or `Command` factories on subsystems when avoidable.
+- **HID** (`hid/**`): custom controllers, button maps, and shared axis helpers (`HIDUtils`). Driver stick scaling and Xbox drive axes live on `DemonCommandXboxController`, not in `commands/`.
+- **Commands** (`commands/**`): wire subsystems to operator intent using HID APIs (e.g. `DriveCommands` + `DemonCommandXboxController`).
 - **RobotContainer:** wire default commands, triggers, and `NamedCommands.registerCommand` only; keep binding logic thin.
-- **Commands:** use `run` / `runOnce` / `runEnd` / `Commands.sequence` with subsystem requirements. Name commands with `.withName(...)` for Shuffleboard and debugging.
+- Command bodies: use `run` / `runOnce` / `runEnd` / `Commands.sequence` with subsystem requirements. Name commands with `.withName(...)` for Shuffleboard and debugging.
 - **Constants:** season field poses and practice coordinates in `constants/FieldConstants`, not buried in subsystems.
 - **Autos:** PathPlanner integrates through the drive subsystem (`AutoBuilder`: field pose, reset, chassis speeds, module outputs). Keep that integration contract stable when refactoring drive code.
 
 ```java
 // Prefer: factory in commands/, subsystem API stays imperative
-DriveCommands.driveWithXboxController(swerve, controller, () -> true, deadband, sensitivity);
+DriveCommands.driveWithXboxController(swerve, driverController, () -> true, deadband, sensitivity);
+// driverController: DemonCommandXboxController — use getDriveTranslation() / getDriveRotation()
 
 // Avoid: long teleop runEnd blocks inside SwerveDrive
 ```

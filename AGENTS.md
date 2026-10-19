@@ -22,7 +22,8 @@ WPILib **command-based** robot:
 
 - **`Robot` / `RobotContainer`** — subsystem instances, default commands, button bindings, PathPlanner named commands.
 - **`subsystems/`** — hardware, `periodic()`, and imperative control APIs (no Xbox wiring when avoidable).
-- **`commands/`** — command factories grouped by mechanism (e.g. drive teleop and utilities under `commands/drive/`).
+- **`commands/`** — command factories grouped by mechanism (e.g. drive utilities under `commands/drive/`).
+- **`hid/`** — driver HID wrappers (`DemonCommandXboxController`, `OperatorStick`), shared axis math in `HIDUtils`; put stick/button semantics here, not in commands.
 - **`constants/`**, **`*Config`**, **`RobotMap`** — field/season poses, tuning, CAN IDs.
 - **`src/main/deploy/`** — PathPlanner paths/autos, Elastic layout, other deploy files.
 

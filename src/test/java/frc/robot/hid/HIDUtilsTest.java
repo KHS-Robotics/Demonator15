@@ -33,6 +33,16 @@ class HIDUtilsTest {
   }
 
   @Test
+  void scaledStickAxis_belowDeadband_isZero() {
+    assertEquals(0.0, HIDUtils.scaledStickAxis(0.02, 0.05, 0.0, 4.0), 1e-9);
+  }
+
+  @Test
+  void scaledStickAxis_fullDeflection_scalesToMax() {
+    assertEquals(4.0, HIDUtils.scaledStickAxis(1.0, 0.05, 0.0, 4.0), 1e-9);
+  }
+
+  @Test
   void smoothInputWithCubic_zeroInput_isZero() {
     // Arrange
     double input = 0.0;

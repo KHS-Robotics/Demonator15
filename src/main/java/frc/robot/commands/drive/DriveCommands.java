@@ -7,8 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
+import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.subsystems.drive.SwerveDrive;
 
 /**
@@ -37,15 +36,21 @@ public final class DriveCommands {
    */
   public static Command driveWithXboxController(
       SwerveDrive swerve,
-      CommandXboxController controller,
+      DemonCommandXboxController controller,
       BooleanSupplier fieldRelative,
       double joystickDeadband,
       double joystickSensitivity) {
     return swerve.runEnd(
         () -> {
-          var translation = SwerveTeleopInputs.readTranslation(controller, joystickDeadband, joystickSensitivity);
-          double rotationSpeed = SwerveTeleopInputs.readRotation(controller, joystickDeadband, joystickSensitivity);
-          int sign = SwerveTeleopInputs.fieldRelativeAllianceSign(fieldRelative);
+          var translation = controller.getDriveTranslation(
+              joystickDeadband,
+              joystickSensitivity,
+              SwerveDrive.maxTranslationalSpeedMetersPerSecond);
+          double rotationSpeed = controller.getDriveRotation(
+              joystickDeadband,
+              joystickSensitivity,
+              SwerveDrive.maxAngularSpeedRadiansPerSecond);
+          int sign = DemonCommandXboxController.fieldRelativeAllianceSign(fieldRelative);
           swerve.drive(sign * translation.xMetersPerSecond(), sign * translation.yMetersPerSecond(), rotationSpeed,
               fieldRelative.getAsBoolean());
         },
@@ -58,7 +63,7 @@ public final class DriveCommands {
    */
   public static Command holdCurrentHeadingWhileDriving(
       SwerveDrive swerve,
-      CommandXboxController controller,
+      DemonCommandXboxController controller,
       BooleanSupplier fieldRelative,
       double joystickDeadband,
       double joystickSensitivity) {
@@ -66,8 +71,11 @@ public final class DriveCommands {
     Command setHeading = swerve.runOnce(() -> headingToHold[0] = swerve.getPose().getRotation());
     Command holdHeading = swerve.runEnd(
         () -> {
-          var translation = SwerveTeleopInputs.readTranslation(controller, joystickDeadband, joystickSensitivity);
-          int sign = SwerveTeleopInputs.fieldRelativeAllianceSign(fieldRelative);
+          var translation = controller.getDriveTranslation(
+              joystickDeadband,
+              joystickSensitivity,
+              SwerveDrive.maxTranslationalSpeedMetersPerSecond);
+          int sign = DemonCommandXboxController.fieldRelativeAllianceSign(fieldRelative);
           swerve.holdAngleWhileDriving(
               sign * translation.xMetersPerSecond(),
               sign * translation.yMetersPerSecond(),
