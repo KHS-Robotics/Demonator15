@@ -4,11 +4,11 @@
 
 ```bash
 chmod +x gradlew
-./gradlew test    # local / Cursor Cloud install script
+./gradlew test    # local verification
 ./gradlew build   # full compile + tests (matches GitHub Actions CI)
 ```
 
-Cloud environment config: `.cursor/environment.json` (runs `cloud-install.sh` → `./gradlew test`).
+Cloud install (`.cursor/environment.json` → `cloud-install.sh`) installs OpenJDK 17 at `/usr/lib/jvm/java-17-openjdk-amd64` and compiles with `./gradlew classes`. There is no boot service; this is a Gradle robot project. Verify with `./gradlew test` and `./gradlew build`.
 
 ## Architecture
 
