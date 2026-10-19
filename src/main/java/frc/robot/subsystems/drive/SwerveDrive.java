@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems.drive;
 
+import java.util.function.Supplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -26,12 +28,13 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.simulation.SimHooks;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.constants.FieldConstants;
 import frc.robot.util.AngleUtils;
@@ -85,28 +88,45 @@ public class SwerveDrive extends SubsystemBase {
    */
   public static final Matrix<N3, N1> kDefaultVisionMeasurementStdDevs = VecBuilder.fill(0.7, 0.7, Double.MAX_VALUE);
 
-  private final SwerveDrivePoseEstimator kPoseEstimator = new SwerveDrivePoseEstimator(
-      kSwerveKinematics,
-      getAngleForOdometry(),
-      getSwerveModulePositions(),
-      new Pose2d(),
-      kDefaultStateStdDevs,
-      kDefaultVisionMeasurementStdDevs);
+  private final SwerveDrivePoseEstimator kPoseEstimator;
+
+  private final Supplier<Rotation2d> headingSupplier;
 
   private final PIDController thetaPid = new PIDController(
       SwerveDriveConfig.DRIVE_ANGLE_P,
       SwerveDriveConfig.DRIVE_ANGLE_I,
       SwerveDriveConfig.DRIVE_ANGLE_D);
 
-  /** Constructs modules, pose estimator, PathPlanner AutoBuilder, and initial field pose. */
-  public SwerveDrive() {
+  /**
+   * Constructs modules, pose estimator, optional PathPlanner AutoBuilder, and initial field pose.
+   *
+   * @param headingSupplier robot heading for wheel odometry fusion (e.g. NavX from {@link frc.robot.RobotContainer})
+   * @param configurePathPlanner when false, skips {@link AutoBuilder} setup (use in unit tests to avoid global side effects)
+   */
+  public SwerveDrive(Supplier<Rotation2d> headingSupplier, boolean configurePathPlanner) {
+    this.headingSupplier = headingSupplier;
     thetaPid.enableContinuousInput(-180.0, 180.0);
     thetaPid.setTolerance(3);
 
-    configurePathPlannerAutoBuilder();
+    kPoseEstimator = new SwerveDrivePoseEstimator(
+        kSwerveKinematics,
+        getAngleForOdometry(),
+        getSwerveModulePositions(),
+        new Pose2d(),
+        kDefaultStateStdDevs,
+        kDefaultVisionMeasurementStdDevs);
+
+    if (configurePathPlanner) {
+      configurePathPlannerAutoBuilder();
+    }
     resetPose(FieldConstants.kDefaultOdometryPose);
 
     SmartDashboard.putData(this);
+  }
+
+  /** @see #SwerveDrive(Supplier, boolean) with PathPlanner enabled */
+  public SwerveDrive(Supplier<Rotation2d> headingSupplier) {
+    this(headingSupplier, true);
   }
 
   private static SwerveModule createModule(
@@ -239,7 +259,56 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   private Rotation2d getAngleForOdometry() {
-    return RobotContainer.kNavx.getRotation2d();
+    return headingSupplier.get();
+  }
+
+  /** Releases module CAN devices; for simulation unit tests only. */
+  void closeModulesForTest() {
+    kFrontLeft.close();
+    kFrontRight.close();
+    kRearLeft.close();
+    kRearRight.close();
+  }
+
+  /** Seeds pivot CANcoder sim at 0° on all modules (sim unit tests). */
+  void seedSimulationPivotEncodersZero() {
+    seedSimulationPivotEncoder(kFrontLeft);
+    seedSimulationPivotEncoder(kFrontRight);
+    seedSimulationPivotEncoder(kRearLeft);
+    seedSimulationPivotEncoder(kRearRight);
+  }
+
+  private static void seedSimulationPivotEncoder(SwerveModule module) {
+    module.pivotEncoderSimState().setSupplyVoltage(12.0);
+    module.pivotEncoderSimState().setRawPosition(Units.Rotations.of(0.0));
+    module.refreshPivotAbsolutePosition();
+    SimHooks.stepTiming(0.02);
+  }
+
+  /** Largest absolute pivot motor output across modules (sim unit tests). */
+  double maxAbsPivotMotorOutput() {
+    return Math.max(
+        Math.max(absAppliedOutput(kFrontLeft.pivotSparkSim()), absAppliedOutput(kFrontRight.pivotSparkSim())),
+        Math.max(absAppliedOutput(kRearLeft.pivotSparkSim()), absAppliedOutput(kRearRight.pivotSparkSim())));
+  }
+
+  /** Largest absolute drive motor output across modules (sim unit tests). */
+  double maxAbsDriveMotorOutput() {
+    return Math.max(
+        Math.max(absAppliedOutput(kFrontLeft.driveSparkSim()), absAppliedOutput(kFrontRight.driveSparkSim())),
+        Math.max(absAppliedOutput(kRearLeft.driveSparkSim()), absAppliedOutput(kRearRight.driveSparkSim())));
+  }
+
+  private static double absAppliedOutput(com.revrobotics.sim.SparkMaxSim sim) {
+    return sim == null ? 0.0 : Math.abs(sim.getAppliedOutput());
+  }
+
+  /** Steps module physics sim {@code iterations} times (sim unit tests). */
+  void runSimulationSteps(int iterations) {
+    for (int i = 0; i < iterations; i++) {
+      simulationPeriodic();
+      SimHooks.stepTiming(0.02);
+    }
   }
 
   /**

@@ -207,6 +207,11 @@ public class SwerveModule extends SubsystemBase {
     return pivotSim;
   }
 
+  /** @return drive {@link SparkMaxSim}, or null on the roboRIO */
+  SparkMaxSim driveSparkSim() {
+    return driveSim;
+  }
+
   /**
    * Closes Spark and CANcoder handles. Call from sim tests so CAN IDs can be reused in the same JVM.
    */

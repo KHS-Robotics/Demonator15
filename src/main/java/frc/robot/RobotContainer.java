@@ -89,7 +89,7 @@ public class RobotContainer {
   // https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html
 
   // Subsystems - Mechanisms
-  public static final SwerveDrive kSwerveDrive = new SwerveDrive();
+  public static final SwerveDrive kSwerveDrive = new SwerveDrive(() -> kNavx.getRotation2d());
   public static final Turret kTurret = new Turret();
   public static final Intake kIntake = new Intake();
   public static final Indexer kIndexer = new Indexer();
