@@ -1,0 +1,27 @@
+# Builds robot code and runs unit tests on push/PR to main.
+# https://docs.wpilib.org/en/stable/docs/software/advanced-gradlerio/robot-code-ci.html
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    # 2025 image is correct for 2026 per WPILib CI docs (JDK + roboRIO toolchains unchanged).
+    container: wpilib/roborio-cross-ubuntu:2025-22.04
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Add repository to git safe directories
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Compile and run tests on robot code
+        run: ./gradlew build

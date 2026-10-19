@@ -78,6 +78,10 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+    // WPILib vendor JNI is validated on Java 17 (WPILib installer JDK).
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 // Simulation configuration (e.g. environment variables).
