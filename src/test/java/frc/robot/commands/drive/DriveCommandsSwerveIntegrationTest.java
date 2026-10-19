@@ -14,8 +14,12 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.simulation.SimHooks;
 import edu.wpi.first.wpilibj.simulation.XboxControllerSim;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -72,6 +76,8 @@ class DriveCommandsSwerveIntegrationTest {
     controllerSim.setLeftX(0.0);
     controllerSim.setRightX(0.0);
     controllerSim.notifyNewData();
+    DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
+    DriverStationSim.notifyNewData();
     SimHooks.stepTiming(0.02);
   }
 
@@ -209,9 +215,28 @@ class DriveCommandsSwerveIntegrationTest {
       fixture.runSimulationSteps(1);
     }
 
-    // Assert — sequence started; heading capture is unchanged until driver resets pose
-    assertTrue(CommandScheduler.getInstance().isScheduled(defense)
-        || defense.isFinished());
+    // Assert
+    assertTrue(CommandScheduler.getInstance().isScheduled(defense) || defense.isFinished());
     assertEquals(headingBefore.getDegrees(), swerve.getPose().getRotation().getDegrees(), DELTA);
+  }
+
+  @Test
+  @Order(7)
+  void fieldRelativeAllianceSign_readsDriverStationSimAlliance() {
+    // Arrange & Act — red
+    DriverStationSim.setAllianceStationId(AllianceStationID.Red1);
+    DriverStationSim.notifyNewData();
+
+    // Assert
+    assertEquals(Alliance.Red, DriverStation.getAlliance().orElse(Alliance.Blue));
+    assertEquals(-1, DemonCommandXboxController.fieldRelativeAllianceSign(() -> true));
+
+    // Arrange & Act — blue
+    DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
+    DriverStationSim.notifyNewData();
+
+    // Assert
+    assertEquals(Alliance.Blue, DriverStation.getAlliance().orElse(Alliance.Blue));
+    assertEquals(1, DemonCommandXboxController.fieldRelativeAllianceSign(() -> true));
   }
 }

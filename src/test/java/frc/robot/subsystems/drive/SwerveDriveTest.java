@@ -14,6 +14,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -206,6 +207,44 @@ class SwerveDriveTest {
     // Assert
     assertEquals(0.0, swerve.maxAbsDriveMotorOutput(), DELTA);
     assertEquals(0.0, swerve.maxAbsPivotMotorOutput(), DELTA);
+  }
+
+  @Test
+  void getSwerveModulePositions_returnsFourZeroedModulesAtRest() {
+    SwerveDrive swerve = fixture.swerve();
+
+    // Arrange & Act
+    SwerveModulePosition[] positions = swerve.getSwerveModulePositions();
+
+    // Assert
+    assertEquals(4, positions.length);
+    for (SwerveModulePosition position : positions) {
+      assertEquals(0.0, position.distanceMeters, DELTA);
+    }
+  }
+
+  @Test
+  void addVisionMeasurement_ignoresVisionHeadingWithDefaultStdDevs() {
+    SwerveDrive swerve = fixture.swerve();
+
+    // Arrange
+    swerve.resetPose(Pose2d.kZero);
+    fixture.setHeading(Rotation2d.kZero);
+    for (int i = 0; i < 5; i++) {
+      SimHooks.stepTiming(0.02);
+      swerve.periodic();
+    }
+    double timestamp = Timer.getFPGATimestamp() - 0.01;
+    Pose2d visionPose = new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(90));
+
+    // Act
+    swerve.addVisionMeasurementForOdometry(visionPose, timestamp, SwerveDrive.kDefaultVisionMeasurementStdDevs);
+    SimHooks.stepTiming(0.02);
+    swerve.periodic();
+
+    // Assert — theta std dev is Double.MAX_VALUE, so heading stays on gyro/odometry
+    assertEquals(0.0, swerve.getPose().getRotation().getDegrees(), 1.0);
+    assertTrue(swerve.getPose().getX() > 0.1);
   }
 
   @Test

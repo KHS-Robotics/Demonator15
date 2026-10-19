@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import frc.robot.hid.HIDUtils;
 import frc.robot.subsystems.drive.SwerveDrive;
 import frc.robot.testsupport.WpilibSimulationExtension;
 
@@ -56,6 +57,29 @@ class DriveCommandsTest {
     // Assert — normal limits restored
     assertEquals(4.6, SwerveDrive.maxTranslationalSpeedMetersPerSecond, 1e-9);
     assertEquals(Math.toRadians(540), SwerveDrive.maxAngularSpeedRadiansPerSecond, 1e-9);
+  }
+
+  @Test
+  void goSlow_lowersStaticMaxUsedForStickScaling() {
+    // Arrange
+    Command goSlow = DriveCommands.goSlow(null);
+
+    // Act — start
+    CommandScheduler.getInstance().schedule(goSlow);
+    CommandScheduler.getInstance().run();
+    // Assert — teleop scales sticks with this static max (linear sticks, full forward)
+    assertEquals(0.5, SwerveDrive.maxTranslationalSpeedMetersPerSecond, 1e-9);
+    assertEquals(
+        0.5,
+        HIDUtils.smoothInputWithCubic(1.0, 0.0) * SwerveDrive.maxTranslationalSpeedMetersPerSecond,
+        1e-9);
+
+    // Act — end
+    CommandScheduler.getInstance().cancel(goSlow);
+    CommandScheduler.getInstance().run();
+
+    // Assert — restored
+    assertEquals(4.6, SwerveDrive.maxTranslationalSpeedMetersPerSecond, 1e-9);
   }
 
   @Test
