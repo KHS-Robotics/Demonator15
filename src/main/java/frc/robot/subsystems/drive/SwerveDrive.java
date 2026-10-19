@@ -255,9 +255,7 @@ public class SwerveDrive extends SubsystemBase {
       double vyMetersPerSecond,
       double omegaRadiansPerSecond,
       boolean fieldRelative) {
-    if (Math.abs(omegaRadiansPerSecond) < kDriveOmegaDeadband
-        && Math.abs(vxMetersPerSecond) < kDriveVelocityDeadband
-        && Math.abs(vyMetersPerSecond) < kDriveVelocityDeadband) {
+    if (shouldCoastSwerveModules(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond)) {
       stopModulesButHoldPivotAngle();
       return;
     }
@@ -328,11 +326,34 @@ public class SwerveDrive extends SubsystemBase {
       Rotation2d setpointAngle,
       double maxSpeed,
       boolean fieldOriented) {
-    double rotateOutput = MathUtil.clamp(
-        thetaPid.calculate(getPose().getRotation().getDegrees(), AngleUtils.normalizeDegrees(setpointAngle.getDegrees())),
-        -maxSpeed,
-        maxSpeed) * maxAngularSpeedRadiansPerSecond;
-    drive(xSpeed, ySpeed, rotateOutput, fieldOriented);
+    drive(xSpeed, ySpeed, computeHeadingHoldOmegaRadians(thetaPid, getPose().getRotation(), setpointAngle, maxSpeed,
+        maxAngularSpeedRadiansPerSecond), fieldOriented);
+  }
+
+  /**
+   * True when teleop inputs are below {@link #kDriveVelocityDeadband} / {@link #kDriveOmegaDeadband} so modules
+   * coast with pivots held (package-visible for unit tests).
+   */
+  static boolean shouldCoastSwerveModules(double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond) {
+    return Math.abs(omegaRadiansPerSecond) < kDriveOmegaDeadband
+        && Math.abs(vxMetersPerSecond) < kDriveVelocityDeadband
+        && Math.abs(vyMetersPerSecond) < kDriveVelocityDeadband;
+  }
+
+  /**
+   * Rotation rate from heading-hold PID (package-visible for unit tests).
+   */
+  static double computeHeadingHoldOmegaRadians(
+      PIDController thetaPid,
+      Rotation2d currentHeading,
+      Rotation2d setpointAngle,
+      double maxSpeedFraction,
+      double maxAngularSpeedRadiansPerSecond) {
+    return MathUtil.clamp(
+        thetaPid.calculate(
+            currentHeading.getDegrees(), AngleUtils.normalizeDegrees(setpointAngle.getDegrees())),
+        -maxSpeedFraction,
+        maxSpeedFraction) * maxAngularSpeedRadiansPerSecond;
   }
 
 }

@@ -51,6 +51,37 @@ class SwerveModuleOptimizationTest {
   }
 
   @Test
+  void shortestPivotTarget_deltaExactly90_doesNotFlipDrive() {
+    // Arrange — boundary: flip when delta > 90, not when delta == 90
+
+    // Act
+    SwerveModuleOptimization.PivotTarget result =
+        SwerveModuleOptimization.shortestPivotTarget(0, 90);
+
+    // Assert
+    assertFalse(result.driveInverted());
+    assertEquals(90, result.angleDegrees(), 1e-9);
+  }
+
+  @Test
+  void shortestPivotTarget_deltaJustAbove90_flipsDrive() {
+    SwerveModuleOptimization.PivotTarget result =
+        SwerveModuleOptimization.shortestPivotTarget(0, 91);
+
+    assertTrue(result.driveInverted());
+    assertEquals(-89, result.angleDegrees(), 1e-9);
+  }
+
+  @Test
+  void shortestPivotTarget_negativeAngles_usesShortestPath() {
+    SwerveModuleOptimization.PivotTarget result =
+        SwerveModuleOptimization.shortestPivotTarget(-10, -170);
+
+    assertTrue(result.driveInverted());
+    assertEquals(10, result.angleDegrees(), 1e-9);
+  }
+
+  @Test
   void cosineScale_perpendicularModule_isZero() {
     // Arrange
     double currentAngleDegrees = 0;
