@@ -7,7 +7,7 @@ alwaysApply: false
 # Unit tests
 
 - **Runner:** JUnit 5 (`org.junit.jupiter`). Use **Arrange / Act / Assert** comments in non-trivial tests.
-- **Pure logic:** test helpers and math without HAL (`SwerveDynamics`, `SwerveModuleOptimization`, `SwerveTeleopInputs` package helpers, `AngleUtils`, `HIDUtils`).
-- **HAL / vendor sim:** `@ExtendWith(WpilibSimulationExtension.class)` for Xbox sim, SparkMaxSim, etc. Use isolated CAN IDs in tests; call `SwerveModule.close()` in `@AfterEach` when constructing real modules.
-- **Do not** instantiate full `Robot` or `SwerveDrive` in unit tests unless building a dedicated test fixture — prefer testing extracted pure functions.
+- **Pure logic:** prefer tests that do not need HAL — package-visible helpers, small util/math types, command input mapping, drive kinematics/optimization helpers. No CAN, no full robot graph.
+- **HAL / vendor sim:** `@ExtendWith(WpilibSimulationExtension.class)` when tests touch WPILib sim or vendor sim (joysticks, Spark, CTRE). Use isolated CAN IDs; close module/hardware handles in `@AfterEach` when tests construct real devices.
+- **Do not** instantiate `Robot` or a full drivetrain subsystem graph in unit tests unless you add a dedicated fixture — extract testable logic instead (see `testsupport/` for shared sim setup).
 - After changes, run `./gradlew test` (Java 17 toolchain from `build.gradle`).

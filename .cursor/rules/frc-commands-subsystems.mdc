@@ -10,7 +10,7 @@ alwaysApply: false
 - **RobotContainer:** wire default commands, triggers, and `NamedCommands.registerCommand` only; keep binding logic thin.
 - **Commands:** use `run` / `runOnce` / `runEnd` / `Commands.sequence` with subsystem requirements. Name commands with `.withName(...)` for Shuffleboard and debugging.
 - **Constants:** season field poses and practice coordinates in `constants/FieldConstants`, not buried in subsystems.
-- **Autos:** PathPlanner uses `SwerveDrive` via `AutoBuilder` (pose, reset, chassis speeds). Do not break those method signatures without updating PathPlanner integration.
+- **Autos:** PathPlanner integrates through the drive subsystem (`AutoBuilder`: field pose, reset, chassis speeds, module outputs). Keep that integration contract stable when refactoring drive code.
 
 ```java
 // Prefer: factory in commands/, subsystem API stays imperative
