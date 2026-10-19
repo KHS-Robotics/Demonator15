@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.drive.DriveCommands;
+import frc.robot.constants.FieldConstants;
 import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.cameras.CameraConfig.PhotonVisionConfig;
@@ -132,8 +134,12 @@ public class RobotContainer {
    */
   private void configureSubsystemDefaultCommands() {
     // control swerve drive with the xbox controller by default
-    kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> true,
-       DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
+    kSwerveDrive.setDefaultCommand(DriveCommands.driveWithXboxController(
+        kSwerveDrive,
+        kDriverController,
+        () -> true,
+        DemonCommandXboxController.kJoystickDeadband,
+        DemonCommandXboxController.kJoystickSensitivity));
 
     // AprilTag updates for odometry
     // kPhotonCamera1.setDefaultCommand(
@@ -173,8 +179,10 @@ public class RobotContainer {
     // reset robot heading - ALWAYS FACE RED ALLIANCE WHEN DOING THIS - this is
     // // useful during driver practice to reset for field oriented driving direction
     // // or a rare odd scenario on the field during a match
-    kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading(() -> 1.016, () -> 4.0));
-    // kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading(() -> kSwerveDrive.getPose().getX(), () -> kSwerveDrive.getPose().getY()));
+    kDriverController.resetRobotHeading().onTrue(DriveCommands.resetHeading(
+        kSwerveDrive,
+        () -> FieldConstants.kDriverPracticeResetX,
+        () -> FieldConstants.kDriverPracticeResetY));
 
     /*
     STOW INTAKE = DOWN BUTTON
@@ -200,12 +208,15 @@ public class RobotContainer {
 
     // // give driver ability to limit speeds for when elevator is high up to
     // // help prevent tipping over - useful for slight alignment adjustments too
-    kDriverController.goSlow().whileTrue(kSwerveDrive.goSlow());
+    kDriverController.goSlow().whileTrue(DriveCommands.goSlow(kSwerveDrive));
 
-    // // For defense / to make the robot harder to move
     kDriverController.lockHeadingForDefense()
-      .whileTrue(kSwerveDrive.holdCurrentHeadingWhileDriving(kDriverController, () -> true,
-        DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
+        .whileTrue(DriveCommands.holdCurrentHeadingWhileDriving(
+            kSwerveDrive,
+            kDriverController,
+            () -> true,
+            DemonCommandXboxController.kJoystickDeadband,
+            DemonCommandXboxController.kJoystickSensitivity));
   }
 
 
@@ -275,7 +286,7 @@ public class RobotContainer {
 
 
     // Swerve Drive
-    NamedCommands.registerCommand("STOPSwerve", kSwerveDrive.stopCommand());
+    NamedCommands.registerCommand("STOPSwerve", DriveCommands.stop(kSwerveDrive));
 
 
     // Intake

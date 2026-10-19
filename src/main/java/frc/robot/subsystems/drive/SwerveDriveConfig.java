@@ -7,7 +7,13 @@ package frc.robot.subsystems.drive;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
+/**
+ * Mechanical and control constants for the swerve drivetrain (gains, module positions, encoder scaling).
+ *
+ * <p>Tune PID and feedforward here; CAN IDs live in {@link frc.robot.RobotMap}.
+ */
 public final class SwerveDriveConfig {
+  private SwerveDriveConfig() {}
   public static final double kDriveWheelRadiusMeters = Units.inchesToMeters(2);
   public static final double SDS_L2_DRIVE_GEARING = 6.75;
   public static final double kDriveEncoderPositionConversionFactor = (2 * Math.PI * kDriveWheelRadiusMeters)
@@ -23,15 +29,7 @@ public final class SwerveDriveConfig {
   public static final Translation2d kRearRightModuleOffset = new Translation2d(Units.inchesToMeters(-11.75),
       Units.inchesToMeters(-9.25));
 
-  // April Tags
-  public static final double VISION_X_P = 1.25;
-  public static final double VISION_Y_P = 2;
-  public static final double VISION_REEF_TARGET_X_DISTANCE_METERS = 0.15;
-  public static final double VISION_REEF_TARGET_Y_DISTANCE_METERS = 0.02;
-  public static final double VISION_CORAL_STATION_TARGET_X_DISTANCE_METERS = 0.7;
-  public static final double VISION_CORAL_STATION_TARGET_Y_DISTANCE_METERS = -0.18;
-
-  // individual offsets after calibrating each module
+  // Individual pivot encoder offsets after calibrating each module
   public static final double kFrontLeftPivotOffsetDegrees = 225;
   public static final double kFrontRightPivotOffsetDegrees = 135;
   public static final double kRearLeftPivotOffsetDegrees = 315;
@@ -51,14 +49,6 @@ public final class SwerveDriveConfig {
   public static final double DRIVE_ANGLE_P = 0.005;
   public static final double DRIVE_ANGLE_I = 0;
   public static final double DRIVE_ANGLE_D = 0;
-
-  public static final double DRIVE_X_P = 0.3;
-  public static final double DRIVE_X_I = 0;
-  public static final double DRIVE_X_D = 0;
-
-  public static final double DRIVE_Y_P = 0.3;
-  public static final double DRIVE_Y_I = 0;
-  public static final double DRIVE_Y_D = 0;
 
   public static final double DRIVE_PATHING_TRANSLATION_P = 4.0;
   public static final double DRIVE_PATHING_TRANSLATION_I = 0.0;

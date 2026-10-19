@@ -117,6 +117,12 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
   }
 
+  /** Runs vendor physics sim (REV Spark) for swerve modules during desktop simulation. */
+  @Override
+  public void simulationPeriodic() {
+    RobotContainer.kSwerveDrive.simulationPeriodic();
+  }
+
   @Override
   public void testPeriodic() {
   }
