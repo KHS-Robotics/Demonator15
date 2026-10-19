@@ -20,16 +20,20 @@ class DriveCommandsTest {
 
   @BeforeEach
   void setUp() {
-    savedTranslationalMax = SwerveDrive.maxTranslationalSpeedMetersPerSecond;
-    savedAngularMax = SwerveDrive.maxAngularSpeedRadiansPerSecond;
     CommandScheduler.getInstance().cancelAll();
+    CommandScheduler.getInstance().run();
+    SwerveDrive.maxTranslationalSpeedMetersPerSecond = 4.6;
+    SwerveDrive.maxAngularSpeedRadiansPerSecond = Math.toRadians(540);
+    savedTranslationalMax = 4.6;
+    savedAngularMax = Math.toRadians(540);
   }
 
   @AfterEach
   void tearDown() {
     CommandScheduler.getInstance().cancelAll();
-    SwerveDrive.maxTranslationalSpeedMetersPerSecond = savedTranslationalMax;
-    SwerveDrive.maxAngularSpeedRadiansPerSecond = savedAngularMax;
+    CommandScheduler.getInstance().run();
+    SwerveDrive.maxTranslationalSpeedMetersPerSecond = 4.6;
+    SwerveDrive.maxAngularSpeedRadiansPerSecond = Math.toRadians(540);
   }
 
   @Test

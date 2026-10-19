@@ -311,6 +311,22 @@ public class SwerveDrive extends SubsystemBase {
     }
   }
 
+  /** Sum of absolute drive motor outputs across modules (sim unit tests). */
+  double sumAbsDriveMotorOutputs() {
+    return absAppliedOutput(kFrontLeft.driveSparkSim())
+        + absAppliedOutput(kFrontRight.driveSparkSim())
+        + absAppliedOutput(kRearLeft.driveSparkSim())
+        + absAppliedOutput(kRearRight.driveSparkSim());
+  }
+
+  /** Whether any module is on the inverted-drive optimization path after the last setpoint. */
+  boolean isAnyModuleOptimizingAngle() {
+    return kFrontLeft.isOptimizingAngle()
+        || kFrontRight.isOptimizingAngle()
+        || kRearLeft.isOptimizingAngle()
+        || kRearRight.isOptimizingAngle();
+  }
+
   /**
    * Sets chassis motion from teleop, heading hold, or internal callers.
    *

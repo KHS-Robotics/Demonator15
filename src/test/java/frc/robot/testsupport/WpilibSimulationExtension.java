@@ -19,10 +19,15 @@ import edu.wpi.first.wpilibj.simulation.SimHooks;
  * @see <a href="https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/unit-testing.html">WPILib unit testing</a>
  */
 public final class WpilibSimulationExtension implements BeforeEachCallback {
+  private static boolean halInitialized;
+
   /** {@inheritDoc} */
   @Override
   public void beforeEach(ExtensionContext context) {
-    assertTrue(HAL.initialize(500, 0), "HAL.initialize failed");
+    if (!halInitialized) {
+      assertTrue(HAL.initialize(500, 0), "HAL.initialize failed");
+      halInitialized = true;
+    }
     DriverStationSim.resetData();
     DriverStationSim.setDsAttached(true);
     DriverStationSim.setEnabled(true);

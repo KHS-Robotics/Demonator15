@@ -25,5 +25,6 @@ Rules of thumb:
 - **Pure logic:** prefer tests that do not need HAL — package-visible helpers, small util/math types, command input mapping, drive kinematics/optimization helpers. No CAN, no full robot graph.
 - **HAL / vendor sim:** `@ExtendWith(WpilibSimulationExtension.class)` when tests touch WPILib sim or vendor sim (joysticks, Spark, CTRE). Use isolated CAN IDs; close module/hardware handles in `@AfterEach` when tests construct real devices.
 - **Do not** instantiate `Robot` or `RobotContainer` in unit tests. `SwerveDrive` takes a `Supplier<Rotation2d>` heading (NavX in production) so tests can use `new SwerveDrive(() -> Rotation2d.kZero, false)` without the static init cycle; prefer `configurePathPlanner = false` in tests.
+- **Sim `SwerveDrive`:** use `SwerveDriveTestFixture` and `@TestInstance(Lifecycle.PER_CLASS)` so the same four modules are not constructed on every test method (CAN reuse in one JVM).
 - Extract pure logic to package-visible static helpers when a full subsystem instance is still too heavy (see `testsupport/` for HAL sim setup).
 - After changes, run `./gradlew test` (Java 17 toolchain from `build.gradle`).
