@@ -2,8 +2,8 @@ import org.gradle.internal.os.OperatingSystem
 
 pluginManagement {
     repositories {
-        mavenLocal()
         gradlePluginPortal()
+        mavenLocal()
         String frcYear = '2026'
         File frcHome
         if (OperatingSystem.current().isWindows()) {
@@ -24,6 +24,13 @@ pluginManagement {
             url = frcHomeMaven
         }
     }
+    plugins {
+        id "org.gradle.toolchains.foojay-resolver-convention" version "0.9.0"
+    }
+}
+
+plugins {
+    id "org.gradle.toolchains.foojay-resolver-convention"
 }
 
 Properties props = System.getProperties();

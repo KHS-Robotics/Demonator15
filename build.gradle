@@ -78,6 +78,10 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+    // WPILib vendor JNI is validated on Java 17 (WPILib installer JDK).
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 // Simulation configuration (e.g. environment variables).
@@ -101,7 +105,8 @@ deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
 
-// Configure string concat to always inline compile
-tasks.withType(JavaCompile) {
+// Configure string concat to always inline compile; UTF-8 for CI/Linux (US-ASCII breaks on Unicode in comments).
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
     options.compilerArgs.add '-XDstringConcat=inline'
 }
