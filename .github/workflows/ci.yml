@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-22.04
     # 2025 image is correct for 2026 per WPILib CI docs (JDK + roboRIO toolchains unchanged).
     container: wpilib/roborio-cross-ubuntu:2025-22.04
+    env:
+      LANG: C.UTF-8
+      JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
 
     steps:
       - uses: actions/checkout@v6
