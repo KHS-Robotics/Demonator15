@@ -1,0 +1,20 @@
+---
+description: Command-based structure for FRC robot Java
+globs: src/main/java/**/*.java
+alwaysApply: false
+---
+
+# Subsystems vs commands
+
+- **Subsystems** (`subsystems/**`): hardware, `periodic()`, pose/closed-loop APIs (`drive()`, `stop()`, setpoints). No Xbox bindings or `Command` factories on subsystems when avoidable — use `commands/**` factories (e.g. `DriveCommands`).
+- **RobotContainer:** wire default commands, triggers, and `NamedCommands.registerCommand` only; keep binding logic thin.
+- **Commands:** use `run` / `runOnce` / `runEnd` / `Commands.sequence` with subsystem requirements. Name commands with `.withName(...)` for Shuffleboard and debugging.
+- **Constants:** season field poses and practice coordinates in `constants/FieldConstants`, not buried in subsystems.
+- **Autos:** PathPlanner uses `SwerveDrive` via `AutoBuilder` (pose, reset, chassis speeds). Do not break those method signatures without updating PathPlanner integration.
+
+```java
+// Prefer: factory in commands/, subsystem API stays imperative
+DriveCommands.driveWithXboxController(swerve, controller, () -> true, deadband, sensitivity);
+
+// Avoid: long teleop runEnd blocks inside SwerveDrive
+```

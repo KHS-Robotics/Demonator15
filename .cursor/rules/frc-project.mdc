@@ -1,0 +1,13 @@
+---
+description: Demonator15 FRC repo conventions (WPILib, Gradle, CI, safety)
+alwaysApply: true
+---
+
+# Demonator15 — project
+
+- **Stack:** WPILib 2026, GradleRIO, Java **17** for compile and tests. Run `./gradlew test` or `./gradlew build` (CI uses the WPILib cross container).
+- **Layout:** `src/main/java/frc/robot/` — `Robot`, `RobotContainer`, `subsystems/`, `commands/`, `constants/`, `hid/`, `util/`. CAN IDs in `RobotMap`; mechanism tuning in subsystem `*Config` classes.
+- **Scope:** Prefer small, reviewable diffs. Do not refactor unrelated subsystems in the same change unless asked.
+- **Secrets:** Never commit API keys, tokens, or `.env`. Use Cursor/GitHub secrets for cloud only when needed.
+- **PathPlanner:** Autos and paths live under `src/main/deploy/pathplanner/`. Named command strings in Java must **exactly** match the PathPlanner GUI.
+- **Docs:** [WPILib command-based](https://docs.wpilib.org/en/stable/docs/software/commandbased/index.html), [GradleRIO CI](https://docs.wpilib.org/en/stable/docs/software/advanced-gradlerio/robot-code-ci.html).

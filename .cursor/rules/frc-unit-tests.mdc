@@ -1,0 +1,13 @@
+---
+description: JUnit and WPILib simulation tests for robot code
+globs: src/test/**/*.java
+alwaysApply: false
+---
+
+# Unit tests
+
+- **Runner:** JUnit 5 (`org.junit.jupiter`). Use **Arrange / Act / Assert** comments in non-trivial tests.
+- **Pure logic:** test helpers and math without HAL (`SwerveDynamics`, `SwerveModuleOptimization`, `SwerveTeleopInputs` package helpers, `AngleUtils`, `HIDUtils`).
+- **HAL / vendor sim:** `@ExtendWith(WpilibSimulationExtension.class)` for Xbox sim, SparkMaxSim, etc. Use isolated CAN IDs in tests; call `SwerveModule.close()` in `@AfterEach` when constructing real modules.
+- **Do not** instantiate full `Robot` or `SwerveDrive` in unit tests unless building a dedicated test fixture — prefer testing extracted pure functions.
+- After changes, run `./gradlew test` (Java 17 toolchain from `build.gradle`).
