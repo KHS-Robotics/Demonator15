@@ -31,7 +31,7 @@ WPILib **command-based** robot:
 
 ## Tests and conventions
 
-Run `./gradlew test` (or `build`) when changing behavior. Testing patterns and scope live in `.cursor/rules/frc-unit-tests.mdc`. Other FRC conventions: `.cursor/rules/*.mdc`.
+Run `./gradlew test` (or `build`) when changing behavior. Use **Arrange / Act / Assert** section comments in tests (`// Arrange`, `// Act`, `// Assert`); details in `.cursor/rules/frc-unit-tests.mdc`. Other FRC conventions: `.cursor/rules/*.mdc`.
 
 ## PR expectations
 

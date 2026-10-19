@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 class FieldConstantsTest {
   @Test
   void defaultOdometryPose_isExpectedStartPose() {
-    // Arrange
+    // Arrange & Act
     var pose = FieldConstants.kDefaultOdometryPose;
 
     // Assert
@@ -21,8 +21,12 @@ class FieldConstantsTest {
 
   @Test
   void driverPracticeReset_hasExpectedFieldCoordinates() {
-    // Act & Assert
-    assertEquals(1.016, FieldConstants.kDriverPracticeResetX, 1e-9);
-    assertEquals(4.0, FieldConstants.kDriverPracticeResetY, 1e-9);
+    // Arrange & Act — season constants (no mutation)
+    double resetX = FieldConstants.kDriverPracticeResetX;
+    double resetY = FieldConstants.kDriverPracticeResetY;
+
+    // Assert
+    assertEquals(1.016, resetX, 1e-9);
+    assertEquals(4.0, resetY, 1e-9);
   }
 }

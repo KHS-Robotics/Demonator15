@@ -65,18 +65,30 @@ class SwerveModuleOptimizationTest {
 
   @Test
   void shortestPivotTarget_deltaJustAbove90_flipsDrive() {
-    SwerveModuleOptimization.PivotTarget result =
-        SwerveModuleOptimization.shortestPivotTarget(0, 91);
+    // Arrange
+    double currentAngleDegrees = 0;
+    double targetAngleDegrees = 91;
 
+    // Act
+    SwerveModuleOptimization.PivotTarget result =
+        SwerveModuleOptimization.shortestPivotTarget(currentAngleDegrees, targetAngleDegrees);
+
+    // Assert
     assertTrue(result.driveInverted());
     assertEquals(-89, result.angleDegrees(), 1e-9);
   }
 
   @Test
   void shortestPivotTarget_negativeAngles_usesShortestPath() {
-    SwerveModuleOptimization.PivotTarget result =
-        SwerveModuleOptimization.shortestPivotTarget(-10, -170);
+    // Arrange
+    double currentAngleDegrees = -10;
+    double targetAngleDegrees = -170;
 
+    // Act
+    SwerveModuleOptimization.PivotTarget result =
+        SwerveModuleOptimization.shortestPivotTarget(currentAngleDegrees, targetAngleDegrees);
+
+    // Assert
     assertTrue(result.driveInverted());
     assertEquals(10, result.angleDegrees(), 1e-9);
   }

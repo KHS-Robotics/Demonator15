@@ -56,6 +56,10 @@ class DriveCommandsTest {
 
   @Test
   void goSlow_hasExpectedCommandName() {
-    assertEquals("SwerveGoSlow", DriveCommands.goSlow(null).getName());
+    // Arrange & Act
+    Command goSlow = DriveCommands.goSlow(null);
+
+    // Assert
+    assertEquals("SwerveGoSlow", goSlow.getName());
   }
 }

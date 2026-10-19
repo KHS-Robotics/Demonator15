@@ -55,8 +55,11 @@ class SwerveDynamicsTest {
 
   @Test
   void poseLog_zeroTransform_isZeroTwist() {
+    // Arrange
+    Pose2d delta = Pose2d.kZero;
+
     // Act
-    Twist2d twist = SwerveDynamics.poseLog(Pose2d.kZero);
+    Twist2d twist = SwerveDynamics.poseLog(delta);
 
     // Assert
     assertEquals(0.0, twist.dx, 1e-9);

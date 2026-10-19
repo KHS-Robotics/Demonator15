@@ -24,15 +24,26 @@ class SwerveDriveMotionTest {
 
   @Test
   void shouldCoastSwerveModules_allBelowDeadband_isTrue() {
-    assertTrue(SwerveDrive.shouldCoastSwerveModules(0.0, 0.0, 0.0));
-    assertTrue(SwerveDrive.shouldCoastSwerveModules(0.004, -0.004, 0.004));
+    // Arrange & Act
+    boolean atZero = SwerveDrive.shouldCoastSwerveModules(0.0, 0.0, 0.0);
+    boolean nearZero = SwerveDrive.shouldCoastSwerveModules(0.004, -0.004, 0.004);
+
+    // Assert
+    assertTrue(atZero);
+    assertTrue(nearZero);
   }
 
   @Test
   void shouldCoastSwerveModules_anyAxisAboveDeadband_isFalse() {
-    assertFalse(SwerveDrive.shouldCoastSwerveModules(0.006, 0.0, 0.0));
-    assertFalse(SwerveDrive.shouldCoastSwerveModules(0.0, -0.006, 0.0));
-    assertFalse(SwerveDrive.shouldCoastSwerveModules(0.0, 0.0, 0.006));
+    // Arrange & Act
+    boolean xAbove = SwerveDrive.shouldCoastSwerveModules(0.006, 0.0, 0.0);
+    boolean yAbove = SwerveDrive.shouldCoastSwerveModules(0.0, -0.006, 0.0);
+    boolean omegaAbove = SwerveDrive.shouldCoastSwerveModules(0.0, 0.0, 0.006);
+
+    // Assert
+    assertFalse(xAbove);
+    assertFalse(yAbove);
+    assertFalse(omegaAbove);
   }
 
   @Test

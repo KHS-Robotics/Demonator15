@@ -6,7 +6,22 @@ alwaysApply: false
 
 # Unit tests
 
-- **Runner:** JUnit 5 (`org.junit.jupiter`). Use **Arrange / Act / Assert** comments in non-trivial tests.
+- **Runner:** JUnit 5 (`org.junit.jupiter`).
+
+## Arrange–Act–Assert (AAA)
+
+Structure every `@Test` (and each logical block in parameterized tests) with section comments:
+
+- `// Arrange` — inputs, fakes, sim state, and anything set in the test body (shared `@BeforeEach` setup counts as arrange; repeat here only when test-specific).
+- `// Act` — the single call or short sequence under test (command schedule/run, kinematics step, sim tick loop).
+- `// Assert` — `assert*` / `assertTrue` / `assertEquals` only; no new mutations.
+
+Rules of thumb:
+
+- Prefer **one** primary Act per test. Stateful lifecycle tests may use multiple **Act → Assert** pairs (e.g. schedule then cancel).
+- One-liner tests: use `// Arrange & Act` then `// Assert`, or split if it stays readable.
+- `@ParameterizedTest`: `// Arrange` may note `@CsvSource` / provider; Act and Assert stay explicit.
+- Do not omit AAA on “small” tests — consistency beats brevity.
 - **Pure logic:** prefer tests that do not need HAL — package-visible helpers, small util/math types, command input mapping, drive kinematics/optimization helpers. No CAN, no full robot graph.
 - **HAL / vendor sim:** `@ExtendWith(WpilibSimulationExtension.class)` when tests touch WPILib sim or vendor sim (joysticks, Spark, CTRE). Use isolated CAN IDs; close module/hardware handles in `@AfterEach` when tests construct real devices.
 - **Do not** instantiate `Robot` or a full drivetrain subsystem graph in unit tests unless you add a dedicated fixture — extract testable logic instead (see `testsupport/` for shared sim setup).

@@ -27,24 +27,30 @@ class DemonCommandXboxControllerSimulationTest {
 
   @Test
   void getDriveTranslation_usesSimulatedJoystickAxes() {
+    // Arrange
     controllerSim.setLeftY(-1.0);
     controllerSim.notifyNewData();
     SimHooks.stepTiming(0.02);
 
+    // Act
     DemonCommandXboxController.DriveTranslation speeds = controller.getDriveTranslation(0.05, 0.0, 4.0);
 
+    // Assert
     assertEquals(4.0, speeds.xMetersPerSecond(), DELTA);
     assertEquals(0.0, speeds.yMetersPerSecond(), DELTA);
   }
 
   @Test
   void getDriveRotation_usesSimulatedRightStick() {
+    // Arrange
     controllerSim.setRightX(-1.0);
     controllerSim.notifyNewData();
     SimHooks.stepTiming(0.02);
 
+    // Act
     double omega = controller.getDriveRotation(0.05, 0.0, Math.toRadians(360));
 
+    // Assert
     assertEquals(Math.toRadians(360), omega, DELTA);
   }
 }
