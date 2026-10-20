@@ -75,8 +75,8 @@ public final class SwerveDriveTestFixture implements AutoCloseable {
     SwerveDrive.maxAngularSpeedRadiansPerSecond = Math.toRadians(540);
     heading.set(Rotation2d.kZero);
     swerve.stop();
-    swerve.resetPose(FieldConstants.kDefaultOdometryPose);
     swerve.seedSimulationPivotEncodersZero();
+    swerve.resetPose(FieldConstants.kDefaultOdometryPose);
     SimHooks.stepTiming(0.02);
   }
 

@@ -21,6 +21,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -30,7 +31,9 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.simulation.SimHooks;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -91,6 +94,19 @@ public class SwerveDrive extends SubsystemBase {
   private final SwerveDrivePoseEstimator kPoseEstimator;
 
   private final Supplier<Rotation2d> headingSupplier;
+
+  /** Integrated gyro substitute for desktop sim (NavX USB is not modeled in sim). */
+  private Rotation2d simulationHeading = Rotation2d.kZero;
+
+  /** Last robot-relative chassis setpoint; drives smooth desktop-sim odometry (see {@link #simulationPeriodic()}). */
+  private ChassisSpeeds lastRobotRelativeChassisSpeeds = new ChassisSpeeds();
+
+  private final SwerveModulePosition[] desktopSimModulePositions = {
+    new SwerveModulePosition(0.0, Rotation2d.kZero),
+    new SwerveModulePosition(0.0, Rotation2d.kZero),
+    new SwerveModulePosition(0.0, Rotation2d.kZero),
+    new SwerveModulePosition(0.0, Rotation2d.kZero),
+  };
 
   private final PIDController thetaPid = new PIDController(
       SwerveDriveConfig.DRIVE_ANGLE_P,
@@ -175,16 +191,50 @@ public class SwerveDrive extends SubsystemBase {
   /** Updates {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator} from module encoders and gyro. */
   @Override
   public void periodic() {
+    if (useDesktopKinematicSimulation()) {
+      return;
+    }
     kPoseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngleForOdometry(), getSwerveModulePositions());
   }
 
-  /** Steps REV {@link com.revrobotics.sim.SparkMaxSim} on each module when running desktop simulation. */
+  /**
+   * Desktop {@code simulateJava}: integrate commanded chassis speeds for the Field widget. JUnit sim tests
+   * still step REV {@link com.revrobotics.sim.SparkMaxSim} on each module.
+   */
   @Override
   public void simulationPeriodic() {
+    if (useDesktopKinematicSimulation()) {
+      integrateDesktopSimulationOdometry(TimedRobot.kDefaultPeriod);
+      return;
+    }
     kFrontLeft.simulationPeriodic();
     kFrontRight.simulationPeriodic();
     kRearLeft.simulationPeriodic();
     kRearRight.simulationPeriodic();
+  }
+
+  /**
+   * Integrates robot-relative chassis speeds into field pose. Does not feed kinematic module angles into
+   * {@link SwerveDrivePoseEstimator} — those angles can jump when paths rotate (and differ from pivot
+   * shortest-path flips on hardware). On {@code main}, sim odometry used measured module encoders instead.
+   */
+  private void integrateDesktopSimulationOdometry(double dt) {
+    ChassisSpeeds speeds = ChassisSpeeds.discretize(lastRobotRelativeChassisSpeeds, dt);
+    Pose2d pose = getPose().transformBy(
+        new Transform2d(
+            speeds.vxMetersPerSecond * dt,
+            speeds.vyMetersPerSecond * dt,
+            Rotation2d.fromRadians(speeds.omegaRadiansPerSecond * dt)));
+    simulationHeading = pose.getRotation();
+    resetDesktopSimulationOdometryState(pose);
+  }
+
+  private void resetDesktopSimulationOdometryState(Pose2d pose) {
+    simulationHeading = pose.getRotation();
+    for (int i = 0; i < 4; i++) {
+      desktopSimModulePositions[i] = new SwerveModulePosition(0.0, desktopSimModulePositions[i].angle);
+    }
+    kPoseEstimator.resetPosition(simulationHeading, desktopSimModulePositions, pose);
   }
 
   /**
@@ -235,6 +285,10 @@ public class SwerveDrive extends SubsystemBase {
    * @param pose new field pose
    */
   public void resetPose(Pose2d pose) {
+    if (useDesktopKinematicSimulation()) {
+      resetDesktopSimulationOdometryState(pose);
+      return;
+    }
     kPoseEstimator.resetPosition(getAngleForOdometry(), getSwerveModulePositions(), pose);
   }
 
@@ -244,6 +298,7 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   private void setModuleStates(ChassisSpeeds chassisSpeeds) {
+    lastRobotRelativeChassisSpeeds = chassisSpeeds;
     SwerveModuleState[] desiredStates = getOptimizedModuleStatesFromChassisSpeeds(chassisSpeeds);
     kFrontLeft.setDesiredState(desiredStates[0]);
     kFrontRight.setDesiredState(desiredStates[1]);
@@ -259,7 +314,15 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   private Rotation2d getAngleForOdometry() {
+    if (useDesktopKinematicSimulation()) {
+      return simulationHeading;
+    }
     return headingSupplier.get();
+  }
+
+  /** {@code simulateJava} only — not JUnit HAL tests ({@link DriverStation#isTest()}). */
+  private static boolean useDesktopKinematicSimulation() {
+    return RobotBase.isSimulation() && !DriverStation.isTest();
   }
 
   /** Releases module CAN devices; for simulation unit tests only. */
@@ -272,16 +335,10 @@ public class SwerveDrive extends SubsystemBase {
 
   /** Seeds pivot CANcoder sim at 0° on all modules (sim unit tests). */
   void seedSimulationPivotEncodersZero() {
-    seedSimulationPivotEncoder(kFrontLeft);
-    seedSimulationPivotEncoder(kFrontRight);
-    seedSimulationPivotEncoder(kRearLeft);
-    seedSimulationPivotEncoder(kRearRight);
-  }
-
-  private static void seedSimulationPivotEncoder(SwerveModule module) {
-    module.pivotEncoderSimState().setSupplyVoltage(12.0);
-    module.pivotEncoderSimState().setRawPosition(Units.Rotations.of(0.0));
-    module.refreshPivotAbsolutePosition();
+    kFrontLeft.resetSimulationEncoderState();
+    kFrontRight.resetSimulationEncoderState();
+    kRearLeft.resetSimulationEncoderState();
+    kRearRight.resetSimulationEncoderState();
     SimHooks.stepTiming(0.02);
   }
 
@@ -353,6 +410,7 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   private void stopModulesButHoldPivotAngle() {
+    lastRobotRelativeChassisSpeeds = new ChassisSpeeds();
     kFrontLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(kFrontLeft.getAngle())));
     kFrontRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(kFrontRight.getAngle())));
     kRearLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(kRearLeft.getAngle())));
@@ -381,6 +439,7 @@ public class SwerveDrive extends SubsystemBase {
 
   /** Stops all modules and resets the heading-hold PID controller. */
   public void stop() {
+    lastRobotRelativeChassisSpeeds = new ChassisSpeeds();
     kFrontRight.stop();
     kFrontLeft.stop();
     kRearRight.stop();
@@ -390,6 +449,7 @@ public class SwerveDrive extends SubsystemBase {
 
   /** Angles modules in an X pattern to resist being pushed on defense or on a slope. */
   public void lock() {
+    lastRobotRelativeChassisSpeeds = new ChassisSpeeds();
     kFrontRight.setDesiredState(0, -45);
     kFrontLeft.setDesiredState(0, 45);
     kRearRight.setDesiredState(0, 45);
