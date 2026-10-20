@@ -24,7 +24,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -48,9 +47,6 @@ import frc.robot.util.AngleUtils;
  * @see SwerveDrive
  */
 public class SwerveModule extends SubsystemBase {
-  private static final DCMotor kNeoMotor = DCMotor.getNEO(1);
-  private static final double kSimLoopPeriodSec = 0.02;
-
   /** Module label (e.g. {@code FrontLeft}) for logging and Shuffleboard. */
   public final String name;
   /** Calibrated CANcoder offset added to absolute reading (degrees). */
@@ -182,18 +178,8 @@ public class SwerveModule extends SubsystemBase {
       return;
     }
     double busVoltage = RoboRioSim.getVInVoltage();
-    // REV iterate() expects motor RPM from a physics model; scale NEO free speed by applied output.
-    double neoFreeSpeedRpm = kNeoMotor.freeSpeedRadPerSec * 60.0 / (2.0 * Math.PI);
-    double driveMotorRpm =
-        driveSim.getAppliedOutput() * neoFreeSpeedRpm / SwerveDriveConfig.SDS_L2_DRIVE_GEARING;
-    driveSim.iterate(driveMotorRpm, busVoltage, kSimLoopPeriodSec);
-
-    double pivotMotorRpm = pivotSim.getAppliedOutput() * neoFreeSpeedRpm;
-    pivotSim.iterate(pivotMotorRpm, busVoltage, kSimLoopPeriodSec);
-
-    // Pivot angle odometry reads the CANcoder; keep sim encoder in sync with pivot motor rotation.
-    pivotEncoderSimState().setRawPosition(Units.Rotations.of(pivotSim.getPosition()));
-    refreshPivotAbsolutePosition();
+    driveSim.iterate(driveSim.getVelocity(), busVoltage, 0.02);
+    pivotSim.iterate(pivotSim.getVelocity(), busVoltage, 0.02);
   }
 
   /** Steps REV physics sim; used by unit tests and robot simulation. */
@@ -214,22 +200,6 @@ public class SwerveModule extends SubsystemBase {
   /** Forces a fresh CANcoder absolute position sample (sim / tests). */
   void refreshPivotAbsolutePosition() {
     BaseStatusSignal.refreshAll(pivotEncoder.getAbsolutePosition());
-  }
-
-  /** Zeros drive/pivot REV sim encoder state (sim tests and fixture reset between tests). */
-  void resetSimulationEncoderState() {
-    if (driveSim == null) {
-      return;
-    }
-    driveSim.setPosition(0.0);
-    driveSim.setVelocity(0.0);
-    driveEncoder.setPosition(0.0);
-    pivotSim.setPosition(0.0);
-    pivotSim.setVelocity(0.0);
-    pivotEncoderSimState().setSupplyVoltage(12.0);
-    pivotEncoderSimState().setRawPosition(Units.Rotations.of(0.0));
-    refreshPivotAbsolutePosition();
-    stop();
   }
 
   /** @return pivot {@link SparkMaxSim}, or null on the roboRIO */

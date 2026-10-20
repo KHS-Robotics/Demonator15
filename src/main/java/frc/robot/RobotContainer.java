@@ -336,8 +336,10 @@ public class RobotContainer {
   /** https://pathplanner.dev/pplib-custom-logging.html */
   private void configurePathPlannerLogging() {
     // Logging callback for current robot pose
-    // Robot.robotPeriodic() already sets kField from kSwerveDrive.getPose(); avoid a second pose source in sim.
-    PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {});
+    PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
+      // Do whatever you want with the pose here
+      kField.setRobotPose(pose);
+    });
 
     // Logging callback for target robot pose
     PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
