@@ -98,15 +98,13 @@ public class SwerveDrive extends SubsystemBase {
   /** Integrated gyro substitute for desktop sim (NavX USB is not modeled in sim). */
   private Rotation2d simulationHeading = Rotation2d.kZero;
 
+  /** Teleop-only desktop pose; autonomous sim uses module encoders like {@code main}. */
+  private Pose2d desktopSimPose = FieldConstants.kDefaultOdometryPose;
+
+  private boolean desktopKinematicSimulationActive;
+
   /** Last robot-relative chassis setpoint; drives smooth desktop-sim odometry (see {@link #simulationPeriodic()}). */
   private ChassisSpeeds lastRobotRelativeChassisSpeeds = new ChassisSpeeds();
-
-  private final SwerveModulePosition[] desktopSimModulePositions = {
-    new SwerveModulePosition(0.0, Rotation2d.kZero),
-    new SwerveModulePosition(0.0, Rotation2d.kZero),
-    new SwerveModulePosition(0.0, Rotation2d.kZero),
-    new SwerveModulePosition(0.0, Rotation2d.kZero),
-  };
 
   private final PIDController thetaPid = new PIDController(
       SwerveDriveConfig.DRIVE_ANGLE_P,
@@ -195,6 +193,9 @@ public class SwerveDrive extends SubsystemBase {
       return;
     }
     kPoseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngleForOdometry(), getSwerveModulePositions());
+    if (useDesktopSimulation()) {
+      simulationHeading = kPoseEstimator.getEstimatedPosition().getRotation();
+    }
   }
 
   /**
@@ -204,9 +205,15 @@ public class SwerveDrive extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     if (useDesktopKinematicSimulation()) {
+      if (!desktopKinematicSimulationActive) {
+        desktopSimPose = kPoseEstimator.getEstimatedPosition();
+        simulationHeading = desktopSimPose.getRotation();
+      }
+      desktopKinematicSimulationActive = true;
       integrateDesktopSimulationOdometry(TimedRobot.kDefaultPeriod);
       return;
     }
+    desktopKinematicSimulationActive = false;
     kFrontLeft.simulationPeriodic();
     kFrontRight.simulationPeriodic();
     kRearLeft.simulationPeriodic();
@@ -220,21 +227,12 @@ public class SwerveDrive extends SubsystemBase {
    */
   private void integrateDesktopSimulationOdometry(double dt) {
     ChassisSpeeds speeds = ChassisSpeeds.discretize(lastRobotRelativeChassisSpeeds, dt);
-    Pose2d pose = getPose().transformBy(
+    desktopSimPose = desktopSimPose.transformBy(
         new Transform2d(
             speeds.vxMetersPerSecond * dt,
             speeds.vyMetersPerSecond * dt,
             Rotation2d.fromRadians(speeds.omegaRadiansPerSecond * dt)));
-    simulationHeading = pose.getRotation();
-    resetDesktopSimulationOdometryState(pose);
-  }
-
-  private void resetDesktopSimulationOdometryState(Pose2d pose) {
-    simulationHeading = pose.getRotation();
-    for (int i = 0; i < 4; i++) {
-      desktopSimModulePositions[i] = new SwerveModulePosition(0.0, desktopSimModulePositions[i].angle);
-    }
-    kPoseEstimator.resetPosition(simulationHeading, desktopSimModulePositions, pose);
+    simulationHeading = desktopSimPose.getRotation();
   }
 
   /**
@@ -245,6 +243,9 @@ public class SwerveDrive extends SubsystemBase {
    * @param stdDevs per-axis standard deviations; use {@link #kDefaultVisionMeasurementStdDevs} for defaults
    */
   public void addVisionMeasurementForOdometry(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs) {
+    if (useDesktopSimulation()) {
+      return;
+    }
     kPoseEstimator.addVisionMeasurement(pose, timestamp, stdDevs);
   }
 
@@ -276,6 +277,9 @@ public class SwerveDrive extends SubsystemBase {
 
   /** @return fused field pose (meters, radians) from odometry and vision */
   public Pose2d getPose() {
+    if (useDesktopKinematicSimulation()) {
+      return desktopSimPose;
+    }
     return kPoseEstimator.getEstimatedPosition();
   }
 
@@ -286,14 +290,21 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void resetPose(Pose2d pose) {
     if (useDesktopKinematicSimulation()) {
-      resetDesktopSimulationOdometryState(pose);
+      desktopSimPose = pose;
+      simulationHeading = pose.getRotation();
       return;
+    }
+    if (useDesktopSimulation()) {
+      simulationHeading = pose.getRotation();
     }
     kPoseEstimator.resetPosition(getAngleForOdometry(), getSwerveModulePositions(), pose);
   }
 
   /** @return current chassis speeds from measured module states (robot-relative) */
   public ChassisSpeeds getChassisSpeeds() {
+    if (useDesktopKinematicSimulation()) {
+      return lastRobotRelativeChassisSpeeds;
+    }
     return kSwerveKinematics.toChassisSpeeds(getSwerveModuleStates());
   }
 
@@ -314,15 +325,23 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   private Rotation2d getAngleForOdometry() {
-    if (useDesktopKinematicSimulation()) {
+    if (useDesktopSimulation()) {
       return simulationHeading;
     }
     return headingSupplier.get();
   }
 
   /** {@code simulateJava} only — not JUnit HAL tests ({@link DriverStation#isTest()}). */
-  private static boolean useDesktopKinematicSimulation() {
+  private static boolean useDesktopSimulation() {
     return RobotBase.isSimulation() && !DriverStation.isTest();
+  }
+
+  /**
+   * Teleop desktop sim integrates commanded chassis speeds; autonomous uses module physics odometry
+   * (PathPlanner needs measured {@link #getChassisSpeeds()} and encoder-based pose like on the real robot).
+   */
+  private static boolean useDesktopKinematicSimulation() {
+    return useDesktopSimulation() && !DriverStation.isAutonomous();
   }
 
   /** Releases module CAN devices; for simulation unit tests only. */
